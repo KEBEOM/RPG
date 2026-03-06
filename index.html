@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JRPG: 마을과 탈출 던전</title>
+    <style>
+        :root {
+            --bg-color: #0f0f0f;
+            --ui-bg: rgba(25, 25, 25, 0.95);
+            --border-color: #555;
+            --text-color: #eee;
+            --highlight: #00ffcc;
+            --exit-color: #ff9f43;
+            --danger: #ff4757;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        #game-container {
+            position: relative;
+            width: 95vw;
+            max-width: 500px;
+            aspect-ratio: 1/1;
+            border: 3px solid var(--border-color);
+            background: #000;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+        }
+
+        .overlay {
+            position: absolute;
+            background: var(--ui-bg);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            z-index: 10;
+        }
+
+        #status-bar {
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            font-size: 13px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .menu-btns {
+            pointer-events: auto;
+            display: flex;
+            gap: 5px;
+        }
+
+        .small-btn {
+            padding: 4px 8px;
+            font-size: 11px;
+            background: #333;
+            border: 1px solid #777;
+            color: white;
+            cursor: pointer;
+        }
+
+        #dialogue-box {
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            min-height: 50px;
+            display: none;
+            pointer-events: auto;
+            border-left: 5px solid var(--highlight);
+            z-index: 15;
+        }
+
+        /* 지도 팝업 스타일 */
+        #map-modal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            background: var(--ui-bg);
+            border: 2px solid var(--highlight);
+            display: none;
+            flex-direction: column;
+            padding: 15px;
+            z-index: 30;
+        }
+
+        #minimap-canvas {
+            flex-grow: 1;
+            background: #000;
+            border: 1px solid #444;
+            margin-bottom: 10px;
+        }
+
+        #battle-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            display: none;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .battle-info {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            background: #111;
+        }
+
+        #battle-log {
+            flex-grow: 1;
+            padding: 20px;
+            color: var(--highlight);
+            font-size: 14px;
+            overflow-y: auto;
+            border-top: 1px solid #333;
+        }
+
+        .battle-menu {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            padding: 10px;
+            pointer-events: auto;
+        }
+
+        button {
+            background: #222;
+            color: white;
+            border: 1px solid #555;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:active {
+            background: #444;
+            transform: scale(0.95);
+        }
+
+        #controls {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 200px;
+        }
+
+        .btn-dir {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: #333;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- 상단 상태바 및 귀환/지도 버튼 -->
+    <div id="status-bar" class="overlay">
+        <div>
+            LV <span id="ui-lv">1</span> | HP <span id="ui-hp">100/100</span> | <span id="ui-loc">마을</span>
+        </div>
+        <div class="menu-btns">
+            <button class="small-btn" onclick="openMap()">지도(M)</button>
+            <button id="recall-btn" class="small-btn" style="display:none; background: var(--danger);" onclick="recallToTown()">귀환</button>
+        </div>
+    </div>
+
+    <!-- 지도 팝업 -->
+    <div id="map-modal">
+        <h3 style="margin-top:0; color:var(--highlight);">전체 지도</h3>
+        <canvas id="minimap-canvas"></canvas>
+        <div style="display:flex; gap: 5px;">
+            <button style="flex:1; padding:10px;" onclick="teleportToPortal()">포탈 텔레포트 (10MP)</button>
+            <button style="flex:1; padding:10px; background:#444;" onclick="closeMap()">닫기</button>
+        </div>
+        <p style="font-size:10px; color:#aaa; margin-top:5px;">* 🌀: 포탈, ✨: 탈출구, 🔴: 현재 위치</p>
+    </div>
+
+    <div id="dialogue-box" class="overlay">
+        <div id="dialogue-text">...</div>
+    </div>
+
+    <div id="battle-screen">
+        <div class="battle-info">
+            <div id="enemy-name">몬스터</div>
+            <div id="enemy-hp">HP: ?</div>
+        </div>
+        <div id="battle-log">전투 시작!</div>
+        <div class="battle-menu">
+            <button onmousedown="battleAction('attack')" ontouchstart="event.preventDefault(); battleAction('attack')">공격</button>
+            <button onmousedown="battleAction('magic')" ontouchstart="event.preventDefault(); battleAction('magic')">마법 (5MP)</button>
+            <button onmousedown="battleAction('heal')" ontouchstart="event.preventDefault(); battleAction('heal')">회복 (8MP)</button>
+            <button onmousedown="battleAction('run')" ontouchstart="event.preventDefault(); battleAction('run')">도망</button>
+        </div>
+    </div>
+</div>
+
+<div id="controls">
+    <div></div>
+    <button class="btn-dir" onmousedown="startContinuousMove(0,-1)" ontouchstart="event.preventDefault(); startContinuousMove(0,-1)" onmouseup="stopContinuousMove()" ontouchend="stopContinuousMove()" onmouseleave="stopContinuousMove()">↑</button>
+    <div></div>
+    <button class="btn-dir" onmousedown="startContinuousMove(-1,0)" ontouchstart="event.preventDefault(); startContinuousMove(-1,0)" onmouseup="stopContinuousMove()" ontouchend="stopContinuousMove()" onmouseleave="stopContinuousMove()">←</button>
+    <button class="btn-dir" onmousedown="startContinuousMove(0,1)" ontouchstart="event.preventDefault(); startContinuousMove(0,1)" onmouseup="stopContinuousMove()" ontouchend="stopContinuousMove()" onmouseleave="stopContinuousMove()">↓</button>
+    <button class="btn-dir" onmousedown="startContinuousMove(1,0)" ontouchstart="event.preventDefault(); startContinuousMove(1,0)" onmouseup="stopContinuousMove()" ontouchend="stopContinuousMove()" onmouseleave="stopContinuousMove()">→</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    const TILE_SIZE = 40;
+    const VIEW_SIZE = 11;
+    canvas.width = canvas.height = TILE_SIZE * VIEW_SIZE;
+
+    const TILES = {
+        WATER: { id: 0, color: '#1e3799', name: '물', walk: false },
+        SAND: { id: 1, color: '#f6b93b', name: '모래', walk: true },
+        GRASS: { id: 2, color: '#78e08f', name: '풀밭', walk: true },
+        FOREST: { id: 3, color: '#38ada9', name: '숲', walk: true },
+        MOUNTAIN: { id: 4, color: '#60a3bc', name: '바위', walk: false },
+        PORTAL: { id: 5, color: '#a55eea', name: '입구', walk: true },
+        TOWN_WALL: { id: 6, color: '#4b6584', name: '벽', walk: false },
+        TOWN_FLOOR: { id: 7, color: '#d1d8e0', name: '바닥', walk: true },
+        EXIT: { id: 8, color: '#ff9f43', name: '탈출구', walk: true }
+    };
+
+    const RULES = {
+        [TILES.GRASS.id]: [TILES.GRASS.id, TILES.FOREST.id, TILES.SAND.id],
+        [TILES.FOREST.id]: [TILES.GRASS.id, TILES.FOREST.id, TILES.MOUNTAIN.id],
+        [TILES.SAND.id]: [TILES.GRASS.id, TILES.SAND.id, TILES.WATER.id],
+        [TILES.MOUNTAIN.id]: [TILES.FOREST.id, TILES.MOUNTAIN.id],
+        [TILES.WATER.id]: [TILES.SAND.id, TILES.WATER.id]
+    };
+
+    const VILLAGE_MAP_DATA = [
+        [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,5,7,7,7,7,7,7,3,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
+        [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]
+    ];
+
+    let gameState = 'explore';
+    let worldMode = 'village'; 
+    let dungeonMap = {}; 
+    let player = { 
+        vx: 7, vy: 7, 
+        dx: 0, dy: 0, 
+        hp: 100, maxHp: 100, mp: 30, maxMp: 30, lv: 1, exp: 0, atk: 25 
+    };
+    let currentEnemy = null;
+    let moveInterval = null;
+    let keysPressed = {};
+
+    function generateDungeon() {
+        dungeonMap = {};
+        dungeonMap["0,0"] = TILES.PORTAL.id;
+        const exitX = (Math.random() > 0.5 ? 1 : -1) * (12 + Math.floor(Math.random() * 8));
+        const exitY = (Math.random() > 0.5 ? 1 : -1) * (12 + Math.floor(Math.random() * 8));
+        dungeonMap[`${exitX},${exitY}`] = TILES.EXIT.id;
+    }
+
+    function getTileAt(x, y) {
+        if (worldMode === 'village') {
+            if (y >= 0 && y < VILLAGE_MAP_DATA.length && x >= 0 && x < VILLAGE_MAP_DATA[0].length) {
+                return VILLAGE_MAP_DATA[y][x];
+            }
+            return TILES.TOWN_WALL.id;
+        } else {
+            const key = `${x},${y}`;
+            if (dungeonMap[key] !== undefined) return dungeonMap[key];
+            let neighbors = [
+                dungeonMap[`${x-1},${y}`], dungeonMap[`${x+1},${y}`],
+                dungeonMap[`${x},${y-1}`], dungeonMap[`${x},${y+1}`]
+            ].filter(id => id !== undefined && id !== TILES.PORTAL.id && id !== TILES.EXIT.id);
+            let possible = [TILES.GRASS.id, TILES.FOREST.id, TILES.SAND.id, TILES.WATER.id, TILES.MOUNTAIN.id];
+            neighbors.forEach(nId => {
+                if (RULES[nId]) possible = possible.filter(pId => RULES[nId].includes(pId));
+            });
+            const finalId = possible.length > 0 ? possible[Math.floor(Math.random() * possible.length)] : TILES.GRASS.id;
+            dungeonMap[key] = finalId;
+            return finalId;
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const half = Math.floor(VIEW_SIZE / 2);
+        const px = worldMode === 'village' ? player.vx : player.dx;
+        const py = worldMode === 'village' ? player.vy : player.dy;
+
+        for (let iy = -half; iy <= half; iy++) {
+            for (let ix = -half; ix <= half; ix++) {
+                const wx = px + ix;
+                const wy = py + iy;
+                const tileId = getTileAt(wx, wy);
+                const tileData = Object.values(TILES).find(t => t.id === tileId);
+                const dx = (ix + half) * TILE_SIZE;
+                const dy = (iy + half) * TILE_SIZE;
+
+                if (tileData) {
+                    ctx.fillStyle = tileData.color;
+                    ctx.fillRect(dx, dy, TILE_SIZE, TILE_SIZE);
+                    if (tileId === TILES.PORTAL.id) {
+                        ctx.font = "24px Arial"; ctx.textAlign = "center";
+                        ctx.fillText("🌀", dx + TILE_SIZE/2, dy + TILE_SIZE/1.4);
+                    }
+                    if (tileId === TILES.EXIT.id) {
+                        ctx.font = "24px Arial"; ctx.textAlign = "center";
+                        ctx.fillText("✨", dx + TILE_SIZE/2, dy + TILE_SIZE/1.4);
+                    }
+                }
+                if (worldMode === 'village' && wx === 11 && wy === 4) {
+                    ctx.fillStyle = '#3498db'; ctx.beginPath();
+                    ctx.arc(dx + TILE_SIZE/2, dy + TILE_SIZE/2, 12, 0, Math.PI*2); ctx.fill();
+                }
+            }
+        }
+        ctx.fillStyle = '#ff3f34'; ctx.shadowBlur = 10; ctx.shadowColor = "red";
+        ctx.fillRect(half * TILE_SIZE + 10, half * TILE_SIZE + 10, TILE_SIZE - 20, TILE_SIZE - 20);
+        ctx.shadowBlur = 0;
+        updateUI();
+    }
+
+    function updateUI() {
+        document.getElementById('ui-lv').innerText = player.lv;
+        document.getElementById('ui-hp').innerText = `${player.hp}/${player.maxHp}`;
+        document.getElementById('ui-loc').innerText = worldMode === 'village' ? '마을' : '던전';
+        document.getElementById('recall-btn').style.display = worldMode === 'dungeon' ? 'block' : 'none';
+    }
+
+    function move(dx, dy) {
+        if (gameState !== 'explore') return;
+        let nx = (worldMode === 'village' ? player.vx : player.dx) + dx;
+        let ny = (worldMode === 'village' ? player.vy : player.dy) + dy;
+        const targetTileId = getTileAt(nx, ny);
+        const tileData = Object.values(TILES).find(t => t.id === targetTileId);
+
+        if (tileData && tileData.walk) {
+            if (worldMode === 'village') { player.vx = nx; player.vy = ny; }
+            else { player.dx = nx; player.dy = ny; }
+            
+            if (targetTileId === TILES.PORTAL.id) {
+                stopContinuousMove();
+                setTimeout(toggleWorld, 50);
+            }
+            else if (targetTileId === TILES.EXIT.id) {
+                stopContinuousMove();
+                completeDungeon();
+            }
+            else if (worldMode === 'village' && nx === 11 && ny === 4) {
+                stopContinuousMove();
+                showDialogue("촌장: '탈출구(✨)를 찾아 생존하게나!'");
+            }
+            else if (worldMode === 'dungeon' && Math.random() < 0.01) {
+                stopContinuousMove();
+                startBattle();
+            }
+        }
+        draw();
+    }
+
+    function startContinuousMove(dx, dy) {
+        if (moveInterval) clearInterval(moveInterval);
+        if (gameState !== 'explore') return;
+        move(dx, dy); 
+        moveInterval = setInterval(() => move(dx, dy), 150); 
+    }
+
+    function stopContinuousMove() {
+        if (moveInterval) {
+            clearInterval(moveInterval);
+            moveInterval = null;
+        }
+    }
+
+    function toggleWorld() {
+        if (worldMode === 'village') {
+            showDialogue("던전 진입!"); worldMode = 'dungeon';
+            generateDungeon(); player.dx = 0; player.dy = 0;
+        } else {
+            showDialogue("마을 후퇴..."); worldMode = 'village';
+            player.vx = 4; player.vy = 5; 
+        }
+        setTimeout(() => { gameState = 'explore'; draw(); }, 800);
+    }
+
+    /**
+     * 귀환하기: 던전에서 즉시 마을로 이동
+     */
+    function recallToTown() {
+        if (worldMode !== 'dungeon' || gameState !== 'explore') return;
+        showDialogue("마을로 긴급 귀환 중...");
+        setTimeout(() => {
+            worldMode = 'village';
+            player.vx = 7; player.vy = 5;
+            gameState = 'explore';
+            draw();
+        }, 500);
+    }
+
+    /**
+     * 지도 팝업 로직
+     */
+    function openMap() {
+        if (gameState !== 'explore') return;
+        gameState = 'map';
+        document.getElementById('map-modal').style.display = 'flex';
+        renderMinimap();
+    }
+
+    function closeMap() {
+        document.getElementById('map-modal').style.display = 'none';
+        gameState = 'explore';
+    }
+
+    function renderMinimap() {
+        const mCanvas = document.getElementById('minimap-canvas');
+        const mCtx = mCanvas.getContext('2d');
+        const mSize = 250;
+        mCanvas.width = mCanvas.height = mSize;
+        mCtx.clearRect(0,0,mSize,mSize);
+
+        if (worldMode === 'village') {
+            mCtx.fillStyle = '#444';
+            mCtx.font = "14px Arial";
+            mCtx.textAlign = "center";
+            mCtx.fillText("마을에서는 지도를 볼 수 없습니다.", mSize/2, mSize/2);
+            return;
+        }
+
+        // 던전 전체 탐색된 타일 그리기
+        const scale = 5; 
+        const offset = mSize / 2;
+
+        for (let key in dungeonMap) {
+            const [x, y] = key.split(',').map(Number);
+            const id = dungeonMap[key];
+            const tData = Object.values(TILES).find(t => t.id === id);
+            
+            mCtx.fillStyle = tData.color;
+            mCtx.fillRect(offset + x*scale, offset + y*scale, scale, scale);
+
+            if (id === TILES.PORTAL.id) {
+                mCtx.fillStyle = 'white';
+                mCtx.fillText("🌀", offset + x*scale, offset + y*scale + scale);
+            }
+            if (id === TILES.EXIT.id) {
+                mCtx.fillStyle = 'white';
+                mCtx.fillText("✨", offset + x*scale, offset + y*scale + scale);
+            }
+        }
+
+        // 현재 플레이어 위치 표시
+        mCtx.fillStyle = "red";
+        mCtx.beginPath();
+        mCtx.arc(offset + player.dx*scale + scale/2, offset + player.dy*scale + scale/2, 3, 0, Math.PI*2);
+        mCtx.fill();
+    }
+
+    /**
+     * 텔레포트: 마력을 소모하여 입구(0,0)로 즉시 이동
+     */
+    function teleportToPortal() {
+        if (worldMode !== 'dungeon') return;
+        if (player.mp < 10) {
+            alert("마력이 부족합니다! (필요: 10MP)");
+            return;
+        }
+        player.mp -= 10;
+        player.dx = 0; player.dy = 0;
+        closeMap();
+        showDialogue("입구로 텔레포트했습니다!");
+        draw();
+    }
+
+    function completeDungeon() {
+        const bonus = player.lv * 200;
+        showDialogue(`탈출 성공! 보너스 EXP +${bonus}`);
+        player.exp += bonus; checkLevelUp();
+        worldMode = 'village'; player.vx = 4; player.vy = 5;
+        setTimeout(() => { gameState = 'explore'; draw(); }, 1200);
+    }
+
+    function showDialogue(text) {
+        const box = document.getElementById('dialogue-box');
+        document.getElementById('dialogue-text').innerText = text;
+        box.style.display = 'block'; 
+        const prev = gameState;
+        gameState = 'dialogue';
+        setTimeout(() => { 
+            box.style.display = 'none'; 
+            if (gameState === 'dialogue') gameState = prev === 'battle' ? 'battle' : 'explore'; 
+        }, 1500);
+    }
+
+    const ENEMIES = [
+        { name: '슬라임', hp: 50, atk: 10, exp: 40 },
+        { name: '스켈레톤', hp: 90, atk: 18, exp: 80 },
+        { name: '거대 거미', hp: 160, atk: 28, exp: 160 }
+    ];
+
+    function startBattle() {
+        gameState = 'battle';
+        const idx = Math.min(ENEMIES.length - 1, Math.floor(Math.random() * player.lv));
+        currentEnemy = { ...ENEMIES[idx] }; 
+        document.getElementById('battle-screen').style.display = 'flex';
+        document.getElementById('enemy-name').innerText = currentEnemy.name;
+        document.getElementById('battle-log').innerHTML = `${currentEnemy.name} 발견!`;
+        updateBattleUI();
+    }
+
+    function updateBattleUI() { document.getElementById('enemy-hp').innerText = `HP: ${currentEnemy.hp}`; }
+
+    function battleAction(type) {
+        if (gameState !== 'battle') return;
+        let log = document.getElementById('battle-log');
+        
+        if (type === 'attack') {
+            let d = Math.floor(player.atk * (0.8 + Math.random() * 0.4));
+            currentEnemy.hp -= d; log.innerHTML += `<br>공격: ${d} 피해.`;
+        } else if (type === 'magic') {
+            if (player.mp < 5) return;
+            player.mp -= 5; let d = Math.floor(player.atk * 2.5);
+            currentEnemy.hp -= d; log.innerHTML += `<br>마법: ${d} 피해!`;
+        } else if (type === 'heal') {
+            if (player.mp < 8) return;
+            player.mp -= 8; player.hp = Math.min(player.maxHp, player.hp + 40);
+            log.innerHTML += `<br>회복 완료!`;
+        } else if (type === 'run') {
+            if (Math.random() > 0.4) { endBattle(); return; }
+            log.innerHTML += `<br>도망 실패!`;
+        }
+
+        if (currentEnemy.hp <= 0) {
+            log.innerHTML += `<br><b>승리! +${currentEnemy.exp} EXP.</b>`;
+            player.exp += currentEnemy.exp; checkLevelUp();
+            setTimeout(endBattle, 1000); return;
+        }
+
+        setTimeout(() => {
+            if (currentEnemy.hp > 0 && gameState === 'battle') {
+                let d = Math.floor(currentEnemy.atk * (0.7 + Math.random() * 0.6));
+                player.hp -= d; log.innerHTML += `<br>${currentEnemy.name}의 공격: ${d} 피해.`;
+                updateBattleUI();
+                if (player.hp <= 0) { alert("사망했습니다."); location.reload(); }
+            }
+        }, 500);
+    }
+
+    function checkLevelUp() {
+        let req = player.lv * 150;
+        if (player.exp >= req) {
+            player.lv++; player.exp -= req; 
+            player.atk += 10; player.maxHp += 40; player.maxMp += 10;
+            player.hp = player.maxHp; player.mp = player.maxMp;
+            showDialogue(`LEVEL UP! 현재 레벨: ${player.lv}`);
+        }
+    }
+
+    function endBattle() {
+        gameState = 'explore';
+        document.getElementById('battle-screen').style.display = 'none';
+        draw();
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (keysPressed[e.key]) return; 
+        keysPressed[e.key] = true;
+        
+        if (gameState === 'explore') {
+            if (e.key === 'ArrowUp') startContinuousMove(0, -1);
+            else if (e.key === 'ArrowDown') startContinuousMove(0, 1);
+            else if (e.key === 'ArrowLeft') startContinuousMove(-1, 0);
+            else if (e.key === 'ArrowRight') startContinuousMove(1, 0);
+            else if (e.key.toLowerCase() === 'm') openMap();
+        } else if (gameState === 'map') {
+            if (e.key.toLowerCase() === 'm' || e.key === 'Escape') closeMap();
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        delete keysPressed[e.key];
+        if (!keysPressed['ArrowUp'] && !keysPressed['ArrowDown'] && 
+            !keysPressed['ArrowLeft'] && !keysPressed['ArrowRight']) {
+            stopContinuousMove();
+        }
+    });
+
+    draw();
+</script>
+</body>
+</html>
+
+
+이거 파이썬으로 실행 못하지/
