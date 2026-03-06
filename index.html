@@ -91,7 +91,6 @@
             z-index: 15;
         }
 
-        /* 지도 팝업 스타일 */
         #map-modal {
             position: absolute;
             top: 50%;
@@ -129,6 +128,22 @@
             justify-content: space-between;
             font-size: 18px;
             background: #111;
+        }
+
+        #enemy-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+            background: #1a1a1a;
+            border-bottom: 1px solid #333;
+        }
+
+        #enemy-img {
+            max-height: 120px;
+            max-width: 120px;
+            object-fit: contain;
+            image-rendering: pixelated;
         }
 
         #battle-log {
@@ -189,7 +204,6 @@
 <div id="game-container">
     <canvas id="gameCanvas"></canvas>
     
-    <!-- 상단 상태바 및 귀환/지도 버튼 -->
     <div id="status-bar" class="overlay">
         <div>
             LV <span id="ui-lv">1</span> | HP <span id="ui-hp">100/100</span> | <span id="ui-loc">마을</span>
@@ -200,7 +214,6 @@
         </div>
     </div>
 
-    <!-- 지도 팝업 -->
     <div id="map-modal">
         <h3 style="margin-top:0; color:var(--highlight);">전체 지도</h3>
         <canvas id="minimap-canvas"></canvas>
@@ -220,6 +233,11 @@
             <div id="enemy-name">몬스터</div>
             <div id="enemy-hp">HP: ?</div>
         </div>
+
+        <div id="enemy-image-container">
+            <img id="enemy-img" src="" alt="몬스터 이미지">
+        </div>
+
         <div id="battle-log">전투 시작!</div>
         <div class="battle-menu">
             <button onmousedown="battleAction('attack')" ontouchstart="event.preventDefault(); battleAction('attack')">공격</button>
@@ -246,6 +264,15 @@
     const TILE_SIZE = 40;
     const VIEW_SIZE = 11;
     canvas.width = canvas.height = TILE_SIZE * VIEW_SIZE;
+
+    // --- [사이즈 변경 설정 부분 시작] ---
+    // 캐릭터의 표시 크기를 조절합니다. (예: 40은 타일과 동일, 60은 타일보다 크게)
+    const PLAYER_DISPLAY_SIZE = 160; 
+    
+    // --- [사이즈 변경 설정 부분 끝] ---
+
+    const playerImage = new Image();
+    playerImage.src = 'player.png'; 
 
     const TILES = {
         WATER: { id: 0, color: '#1e3799', name: '물', walk: false },
@@ -361,9 +388,23 @@
                 }
             }
         }
-        ctx.fillStyle = '#ff3f34'; ctx.shadowBlur = 10; ctx.shadowColor = "red";
-        ctx.fillRect(half * TILE_SIZE + 10, half * TILE_SIZE + 10, TILE_SIZE - 20, TILE_SIZE - 20);
-        ctx.shadowBlur = 0;
+
+        // 캐릭터 중앙 좌표 계산
+        const centerX = half * TILE_SIZE + TILE_SIZE / 2;
+        const centerY = half * TILE_SIZE + TILE_SIZE / 2;
+        
+        // PLAYER_DISPLAY_SIZE에 따른 그리기 위치 보정
+        const drawX = centerX - PLAYER_DISPLAY_SIZE / 2;
+        const drawY = centerY - PLAYER_DISPLAY_SIZE / 2;
+
+        if (playerImage.complete && playerImage.naturalWidth !== 0) {
+            ctx.drawImage(playerImage, drawX, drawY, PLAYER_DISPLAY_SIZE, PLAYER_DISPLAY_SIZE);
+        } else {
+            ctx.fillStyle = '#ff3f34'; ctx.shadowBlur = 10; ctx.shadowColor = "red";
+            ctx.fillRect(drawX + 5, drawY + 5, PLAYER_DISPLAY_SIZE - 10, PLAYER_DISPLAY_SIZE - 10);
+            ctx.shadowBlur = 0;
+        }
+
         updateUI();
     }
 
@@ -397,7 +438,7 @@
                 stopContinuousMove();
                 showDialogue("촌장: '탈출구(✨)를 찾아 생존하게나!'");
             }
-            else if (worldMode === 'dungeon' && Math.random() < 0.01) {
+            else if (worldMode === 'dungeon' && Math.random() < 0.05) {
                 stopContinuousMove();
                 startBattle();
             }
@@ -430,9 +471,6 @@
         setTimeout(() => { gameState = 'explore'; draw(); }, 800);
     }
 
-    /**
-     * 귀환하기: 던전에서 즉시 마을로 이동
-     */
     function recallToTown() {
         if (worldMode !== 'dungeon' || gameState !== 'explore') return;
         showDialogue("마을로 긴급 귀환 중...");
@@ -444,9 +482,6 @@
         }, 500);
     }
 
-    /**
-     * 지도 팝업 로직
-     */
     function openMap() {
         if (gameState !== 'explore') return;
         gameState = 'map';
@@ -474,7 +509,6 @@
             return;
         }
 
-        // 던전 전체 탐색된 타일 그리기
         const scale = 5; 
         const offset = mSize / 2;
 
@@ -496,16 +530,12 @@
             }
         }
 
-        // 현재 플레이어 위치 표시
         mCtx.fillStyle = "red";
         mCtx.beginPath();
         mCtx.arc(offset + player.dx*scale + scale/2, offset + player.dy*scale + scale/2, 3, 0, Math.PI*2);
         mCtx.fill();
     }
 
-    /**
-     * 텔레포트: 마력을 소모하여 입구(0,0)로 즉시 이동
-     */
     function teleportToPortal() {
         if (worldMode !== 'dungeon') return;
         if (player.mp < 10) {
@@ -540,9 +570,9 @@
     }
 
     const ENEMIES = [
-        { name: '슬라임', hp: 50, atk: 10, exp: 40 },
-        { name: '스켈레톤', hp: 90, atk: 18, exp: 80 },
-        { name: '거대 거미', hp: 160, atk: 28, exp: 160 }
+        { name: '일본보병', hp: 50, atk: 10, exp: 40, image: 'JapanSoldier.png' },
+        { name: '일본포병', hp: 90, atk: 18, exp: 80, image: 'JapanCannon.png' },
+        { name: '일본장군', hp: 160, atk: 28, exp: 160, image: 'JapanGeneral.png' }
     ];
 
     function startBattle() {
@@ -551,6 +581,7 @@
         currentEnemy = { ...ENEMIES[idx] }; 
         document.getElementById('battle-screen').style.display = 'flex';
         document.getElementById('enemy-name').innerText = currentEnemy.name;
+        document.getElementById('enemy-img').src = currentEnemy.image;
         document.getElementById('battle-log').innerHTML = `${currentEnemy.name} 발견!`;
         updateBattleUI();
     }
@@ -631,6 +662,8 @@
             stopContinuousMove();
         }
     });
+
+    playerImage.onload = () => { draw(); };
 
     draw();
 </script>
