@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JRPG: 마을과 탈출 던전 (반응형 UI 최적화)</title>
+    <title>JRPG: 마을과 탈출 던전 (모바일 가로모드/터치 최적화)</title>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
@@ -23,18 +23,16 @@
             font-family: 'Pretendard', sans-serif;
             display: flex; align-items: center; justify-content: center;
             width: 100vw; height: 100vh; overflow: hidden; touch-action: none; 
-            /* 모바일 노치 대응 */
+            /* 모바일 노치 및 홈 바 영역 기본 대응 */
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
             box-sizing: border-box;
         }
 
-        /* 게임 컨테이너: 이제 화면 전체를 사용합니다 */
         #game-container {
             position: relative; width: 100%; height: 100%;
             background: #000; overflow: hidden;
         }
 
-        /* 캔버스(게임 화면): 16:9 비율 유지하며 중앙 정렬 */
         canvas { 
             display: block; position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto;
             width: 100%; height: 100%;
@@ -47,17 +45,20 @@
             backdrop-filter: var(--ui-glass); -webkit-backdrop-filter: var(--ui-glass); z-index: 10;
         }
 
-        /* --- 상단 상태창 UI --- */
+        /* --- 상단 상태창 UI (크기 및 여백 확대) --- */
         #status-bar {
-            top: 2vmin; left: 2vmin; right: 2vmin; padding: clamp(8px, 1.5vmin, 15px) clamp(15px, 2.5vmin, 30px);
-            font-size: clamp(14px, 2vmin, 20px); border-radius: 8px; 
+            top: calc(15px + env(safe-area-inset-top)); 
+            left: calc(15px + env(safe-area-inset-left)); 
+            right: calc(15px + env(safe-area-inset-right)); 
+            padding: 12px 20px;
+            font-size: clamp(16px, 2.5vmin, 22px); border-radius: 8px; 
             display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
             pointer-events: none;
         }
-        .menu-btns { pointer-events: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+        .menu-btns { pointer-events: auto; display: flex; gap: 10px; flex-wrap: wrap; }
         .small-btn {
-            padding: clamp(6px, 1vmin, 10px) clamp(10px, 1.5vmin, 20px); 
-            font-size: clamp(12px, 1.5vmin, 16px); border-radius: 6px;
+            padding: 12px 18px; /* 터치하기 편하도록 버튼 크기 확대 */
+            font-size: clamp(14px, 2vmin, 18px); border-radius: 6px;
             background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
             color: white; cursor: pointer; transition: 0.2s; font-weight: 600;
         }
@@ -72,17 +73,22 @@
             text-align: center;
         }
 
-        /* --- 방향키 컨트롤러 UI --- */
+        /* --- 방향키 컨트롤러 UI (잘림 방지 및 크기 확대) --- */
         #controls {
-            position: absolute; bottom: 4vmin; right: 4vmin; display: grid;
-            grid-template-columns: repeat(3, 1fr); gap: 8px; 
-            width: clamp(160px, 25vmin, 240px);
+            position: absolute; 
+            /* 하단 홈 바와 겹치지 않게 안전 영역 + 25px 추가 여백 확보 */
+            bottom: calc(25px + env(safe-area-inset-bottom)); 
+            right: calc(25px + env(safe-area-inset-right)); 
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); gap: 10px; 
+            /* 가로 모드에서도 최소 210px의 너비를 가지도록 강제하여 작아짐 방지 */
+            width: clamp(210px, 35vmin, 280px); 
             z-index: 15; opacity: 0.8; transition: opacity 0.2s;
         }
         #controls:hover, #controls:active { opacity: 1; }
         .btn-dir {
             width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
-            font-size: clamp(24px, 4vmin, 40px); background: rgba(30,30,30,0.8); border-radius: 12px;
+            font-size: clamp(28px, 5vmin, 40px); background: rgba(30,30,30,0.8); border-radius: 12px;
             border: 2px solid rgba(255,255,255,0.2); color: white; cursor: pointer; user-select: none;
             -webkit-user-select: none;
         }
@@ -134,6 +140,7 @@
         .battle-bottom { 
             position: absolute; bottom: 0; left: 0; width: 100%; height: auto; min-height: 35%;
             display: flex; flex-direction: column; background: linear-gradient(to top, #000 70%, transparent); z-index: 5;
+            padding-bottom: env(safe-area-inset-bottom); /* 전투 메뉴가 홈 바에 안 가려지도록 */
         }
         #battle-log { 
             flex-grow: 1; padding: 15px 25px; color: #ddd; 
@@ -158,15 +165,16 @@
         ========================================= */
         @media (max-aspect-ratio: 1/1) {
             #controls {
-                right: 50%; bottom: 8vmin;
+                right: 50%; 
+                bottom: calc(40px + env(safe-area-inset-bottom)); /* 세로 모드에서도 하단 여유 확보 */
                 transform: translateX(50%);
-                width: 60vw; max-width: 300px;
+                width: 65vw; max-width: 320px;
                 gap: 12px;
             }
             #status-bar { flex-direction: column; align-items: stretch; text-align: center; }
             .menu-btns { justify-content: center; }
-            #dialogue-box { bottom: 35vh; width: 85%; } /* 방향키 위로 이동 */
-            .battle-menu { grid-template-columns: repeat(2, 1fr); } /* 세로 화면에선 버튼 2열 배치 */
+            #dialogue-box { bottom: 35vh; width: 85%; } 
+            .battle-menu { grid-template-columns: repeat(2, 1fr); } 
         }
     </style>
 </head>
