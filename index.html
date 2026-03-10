@@ -14,109 +14,202 @@
         --safe-top: env(safe-area-inset-top);
     }
 
-    /* 💡 화면 비율 문제 해결: 배경은 까맣게, 게임 화면은 중앙에 모바일 폼팩터로 고정 */
+    /* 💡 전체 스크롤 원천 차단 및 중앙 정렬 */
     html, body {
         width: 100%; height: 100%; margin: 0; padding: 0; 
         background-color: #000; display: flex; justify-content: center; align-items: center;
         font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
+        overflow: hidden; 
     }
 
     #app-wrapper {
-        width: 100%; max-width: 450px; height: 100%; max-height: 950px;
+        width: 100%; height: 100%; max-width: 100%;
         position: relative; background-color: #1a1a1a; color: #fff;
         overflow: hidden; display: flex; flex-direction: column;
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
         box-sizing: border-box;
     }
 
-    .screen-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; box-sizing: border-box; padding-bottom: calc(20px + var(--safe-bottom)); }
-    
-    .game-title { font-size: 3rem; color: #ffd700; text-align: center; margin-bottom: 10px; text-shadow: 2px 2px 0px #d32f2f; flex: none; }
-    #data-status { color: #a5d6a7; font-size: 1rem; margin-bottom: 15px; text-align: center; line-height: 1.5; }
-    #high-score-display { font-size: 1.4rem; color: #4dd0e1; margin-bottom: 25px; font-weight: bold; text-shadow: 1px 1px 0px #333; background-color: #2c3e50; padding: 10px 20px; border-radius: 8px; border: 2px solid #34495e; }
+    /* 기본 모바일 세로 모드보다 큰 화면에서는 모서리를 둥글게 */
+    @media (min-width: 451px) {
+        #app-wrapper { max-width: 450px; height: 95vh; border-radius: 20px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+    }
 
-    .title-btn-group { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px; }
-    .title-btn { background-color: #e65100; color: white; border: none; padding: 18px; font-size: 1.5rem; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.5); transition: transform 0.1s; font-weight: bold; }
+    .screen-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; box-sizing: border-box; }
+    
+    .game-title { font-size: 2.8rem; color: #ffd700; text-align: center; margin-bottom: 10px; text-shadow: 2px 2px 0px #d32f2f; flex: none; }
+    #data-status { color: #a5d6a7; font-size: 1rem; margin-bottom: 15px; text-align: center; }
+    #high-score-display { font-size: 1.2rem; color: #4dd0e1; margin-bottom: 20px; font-weight: bold; text-shadow: 1px 1px 0px #333; background-color: #2c3e50; padding: 10px 20px; border-radius: 8px; border: 2px solid #34495e; }
+
+    .title-btn-group { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 280px; }
+    .title-btn { background-color: #e65100; color: white; border: none; padding: 15px; font-size: 1.3rem; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-weight: bold; transition: transform 0.1s;}
     .title-btn.study-btn { background-color: #0277bd; }
     .title-btn.load-btn { background-color: #00838f; }
-    .title-btn:active { transform: scale(0.95); }
-    .back-btn { background-color: #616161; color: white; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 6px; cursor: pointer; flex: none; margin-bottom: 10px; margin-top: 10px;}
+    button:active { transform: scale(0.95); }
+    .back-btn { background-color: #616161; color: white; border: none; padding: 12px; font-size: 1rem; border-radius: 6px; cursor: pointer; flex: none; width: 100%; margin-top: 10px;}
+
+    .help-btn { position: absolute; top: 12px; right: 12px; background-color: #0277bd; border: 1.5px solid #fff; color: #fff; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; justify-content: center; z-index: 500; }
 
     #range-screen { display: none; z-index: 120; }
-    .range-box { background-color: #2c3e50; padding: 30px; border-radius: 15px; border: 2px solid #f39c12; text-align: center; width: 100%; box-sizing: border-box; }
-    .range-box h2 { color: #ffd700; margin-top: 0; margin-bottom: 20px; }
+    .range-box { background-color: #2c3e50; padding: 25px; border-radius: 15px; border: 2px solid #f39c12; text-align: center; width: 100%; box-sizing: border-box; max-width: 400px;}
     .select-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-    .select-wrapper span { font-size: 1.2rem; font-weight: bold; color: #ecf0f1; }
-    select { padding: 10px; font-size: 1.1rem; border-radius: 5px; border: none; background-color: #ecf0f1; color: #2c3e50; font-family: inherit; width: 60%; }
-    .start-game-btn { background-color: #d32f2f; width: 100%; margin-top: 20px; font-size: 1.3rem; padding: 15px; }
+    select { padding: 10px; font-size: 1rem; border-radius: 5px; width: 65%; }
 
-    #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; overflow-y: auto; justify-content: flex-start; padding: 30px 15px;}
-    #reward-screen .game-title { margin-bottom: 20px; font-size: 2rem; }
-    #reward-cards-container { display: block; width: 100%; }
-    
-    .reward-card { 
-        background-color: #2c3e50; border: 3px solid #f39c12; border-radius: 12px; 
-        display: flex; flex-direction: row; width: 100%; padding: 15px 20px; justify-content: flex-start; align-items: center; text-align: left; 
-        margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.4); box-sizing: border-box; cursor: pointer; transition: transform 0.2s;
-    }
-    .reward-card:active { transform: scale(0.95); }
-    .reward-icon { font-size: 2.5rem; margin-bottom: 0; margin-right: 15px; flex: none; }
-    .reward-text-wrap { align-items: flex-start; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; padding: 20px; justify-content: center; align-items: center;}
+    #reward-cards-container { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 400px; }
+    .reward-card { background-color: #2c3e50; border: 3px solid #f39c12; border-radius: 12px; display: flex; flex-direction: row; width: 100%; padding: 15px; align-items: center; text-align: left; box-shadow: 0 4px 8px rgba(0,0,0,0.4); box-sizing: border-box; cursor: pointer; transition: transform 0.2s;}
+    .reward-icon { font-size: 2.5rem; margin-right: 15px; flex: none; }
+    .reward-text-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
     .reward-title { color: #ffd700; font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
-    .reward-desc { color: #ecf0f1; font-size: 0.95rem; word-break: keep-all; line-height: 1.3; margin-bottom: 0; }
+    .reward-desc { color: #ecf0f1; font-size: 0.9rem; line-height: 1.3; word-break: keep-all;}
 
     #study-screen { display: none; background-color: #1a1a1a; z-index: 150; }
-    #study-content { flex: 1; width: 100%; overflow-y: auto; background-color: #212f3d; border-radius: 10px; padding: 15px; border: 2px solid #34495e; box-sizing: border-box;}
-    .category-header { background-color: #e65100; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.2rem; font-weight: bold; margin-top: 10px; margin-bottom: 5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
-    .category-content { display: none; padding-left: 10px; border-left: 3px solid #e65100; margin-bottom: 20px; margin-top: 10px; }
-    .study-item { background-color: #34495e; border-radius: 8px; margin-bottom: 10px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
-    .study-keyword { padding: 15px; font-size: 1.1rem; color: #4dd0e1; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-    .study-desc { display: none; padding: 15px; font-size: 1rem; color: #ecf0f1; background-color: #2c3e50; border-top: 1px dashed #7f8c8d; word-break: keep-all; line-height: 1.5; }
+    #study-content { flex: 1; width: 100%; max-width: 600px; overflow-y: auto; background-color: #212f3d; border-radius: 10px; padding: 15px; border: 2px solid #34495e; box-sizing: border-box;}
+    .category-header { background-color: #e65100; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; margin-top: 10px; cursor: pointer; display: flex; justify-content: space-between;}
+    .category-content { display: none; padding-left: 10px; border-left: 3px solid #e65100; margin-bottom: 10px; margin-top: 10px; }
+    .study-item { background-color: #34495e; border-radius: 8px; margin-bottom: 8px; overflow: hidden;}
+    .study-keyword { padding: 12px; font-size: 1rem; color: #4dd0e1; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between;}
+    .study-desc { display: none; padding: 12px; font-size: 0.9rem; color: #ecf0f1; background-color: #2c3e50; line-height: 1.4; }
 
     #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
     
-    #status-bar { display: flex; justify-content: space-between; flex-wrap: wrap; background-color: #333; padding: 10px; font-size: 0.95rem; border-bottom: 2px solid #555; gap: 8px; flex: none; z-index: 10; }
+    #status-bar { display: flex; justify-content: space-between; flex-wrap: wrap; background-color: #333; padding: 8px 12px; font-size: 0.9rem; border-bottom: 2px solid #555; gap: 5px; flex: none; z-index: 10; }
     .stat-box { flex: 1 1 45%; min-width: 80px; }
     .stat-box span { color: #ffd700; font-weight: bold; }
     .hp-text { color: #ff6b6b; }
-    
-    .help-btn { background-color: #0277bd; border: 1px solid #fff; color: #fff; border-radius: 5px; padding: 2px 8px; cursor: pointer; font-size: 0.8rem; margin-left: 5px; font-weight: bold; }
 
-    #main-screen { flex: 1; display: flex; flex-direction: column; position: relative; overflow-y: auto; box-sizing: border-box; }
-    
-    #monster-area { display: none; flex-direction: column; align-items: center; margin-bottom: 15px; flex: none; width: 100%; }
+    #main-screen { flex: 1; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
+    #action-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; width: 100%; gap: 10px;}
+    #left-panel, #right-panel { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; }
+
+    #monster-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
     #monster-name { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0;}
-    #monster-image { width: 80px; height: 80px; background-color: #555; border: 3px solid #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 5px; }
-    #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 10px; width: 100%; font-size: 1.05rem; line-height: 1.4; word-break: keep-all; box-sizing: border-box; flex: none; }
-
-    .button-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; flex: none; }
-    button { color: white; border: none; padding: 12px 10px; font-size: 0.95rem; border-radius: 8px; cursor: pointer; flex: 1 1 45%; box-shadow: 0 4px 6px rgba(0,0,0,0.3); box-sizing: border-box; }
-    button:active { transform: scale(0.95); }
-
-    .lobby-btn { background-color: #7b1fa2; font-size: 1.05rem; padding: 15px; }
-    .shop-btn { background-color: #00838f; padding: 15px; font-size: 1rem; flex: 1 1 100%;}
-    .bag-btn { background-color: #8d6e63; }
-    .system-btn { background-color: #455a64; flex: 1 1 45%; margin-top: 5px; }
-    .quit-btn { background-color: #c62828; flex: 1 1 45%; margin-top: 5px; }
-    .quiz-btn { background-color: #d32f2f; font-size: 1.1rem; padding: 15px; flex: 1 1 100%; }
-    .option-btn { background-color: #34495e; font-size: 1rem; flex: 1 1 100%; }
-    .potion-btn { background-color: #fbc02d; color: #333; }
-
-    #inventory-modal { display: none; position: absolute; top: 5%; left: 5%; right: 5%; bottom: 5%; background: rgba(30, 40, 50, 0.95); border: 3px solid #f39c12; z-index: 200; border-radius: 15px; padding: 20px; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
-    .inv-item { display: flex; justify-content: space-between; align-items: center; background: #34495e; padding: 10px; margin-bottom: 10px; border-radius: 8px; text-align: left; }
-    .inv-item-info { flex: 1; }
-    .inv-item-title { font-size: 1rem; color: #ffd700; margin-bottom: 5px; font-weight: bold; }
-    .inv-item-desc { font-size: 0.85rem; color: #bdc3c7; line-height: 1.3;}
-    .use-btn { background-color: #e65100; padding: 10px; min-width: 60px; flex: none; margin-left: 10px; }
+    #monster-image { width: 80px; height: 80px; background-color: #555; border: 3px solid #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 5px; }
     
-    #log-box { flex: none; height: 120px; background-color: #000; border-top: 2px solid #555; padding: 10px; overflow-y: auto; font-size: 0.95rem; line-height: 1.4; box-sizing: border-box; }
-    #log-box p { margin: 5px 0; }
+    #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 10px; width: 100%; font-size: 1rem; line-height: 1.4; word-break: keep-all; box-sizing: border-box; text-align: center; }
+
+    button { color: white; border: none; font-size: 0.95rem; border-radius: 8px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.3); box-sizing: border-box; padding: 10px; font-family: inherit;}
+
+    /* 💡 GRID 시스템: 겹침 현상, 잘림 현상 완벽 방지 */
+    .grid-ui { display: none; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; align-content: center; }
+    .full-width { grid-column: 1 / -1; } 
+    .option-btn { margin: 0 !important; font-size: 1rem; padding: 12px; background-color: #34495e; text-align: center; }
+
+    .lobby-btn { background-color: #7b1fa2; font-size: 1rem; }
+    .bag-btn { background-color: #8d6e63; }
+    .system-btn { background-color: #455a64; }
+    .quit-btn { background-color: #c62828; }
+    
+    .shop-btn { background-color: #00838f; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; padding: 10px 5px;}
+    .shop-btn span { font-size:0.75rem; color:#b2ebf2; word-break: keep-all;}
+
+    .quiz-btn { background-color: #d32f2f; font-size: 1.05rem; }
+    .potion-btn { background-color: #fbc02d; color: #333; font-weight: bold;}
+    
+    #log-box { flex: none; height: 100px; background-color: #000; border-top: 2px solid #555; padding: 8px; overflow-y: auto; font-size: 0.85rem; line-height: 1.3; box-sizing: border-box; }
+    #log-box p { margin: 3px 0; }
+
+    #inventory-modal { display: none; position: absolute; top: 5%; left: 5%; right: 5%; bottom: 5%; background: rgba(30, 40, 50, 0.98); border: 3px solid #f39c12; z-index: 600; border-radius: 15px; padding: 15px; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); max-width: 500px; margin: 0 auto;}
+    #inventory-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .inv-item { display: flex; justify-content: space-between; align-items: center; background: #34495e; padding: 10px; border-radius: 8px; }
+    .inv-item-info { flex: 1; }
+    .inv-item-title { font-size: 0.95rem; color: #ffd700; font-weight: bold; margin-bottom: 3px;}
+    .inv-item-desc { font-size: 0.8rem; color: #bdc3c7; line-height: 1.2;}
+    .use-btn { background-color: #e65100; padding: 8px 12px; flex: none; margin-left: 10px; }
+
+    /* =========================================
+       📱 모바일 가로모드 (스마트폰 눕혔을 때)
+       ========================================= */
+    @media (max-height: 500px) and (orientation: landscape) {
+        #app-wrapper { max-width: 100%; border-radius: 0; }
+        #status-bar { padding: 4px 10px; font-size: 0.8rem; }
+        
+        #action-area { flex-direction: row; gap: 15px; padding: 10px; align-items: stretch;}
+        #left-panel { width: 35%; justify-content: center; }
+        #right-panel { width: 60%; justify-content: center; }
+        
+        #monster-area { margin-bottom: 0; }
+        #monster-image { width: 70px; height: 70px; font-size: 2rem; }
+        
+        #quiz-box { margin-bottom: 8px; padding: 10px; font-size: 0.95rem; }
+        .grid-ui { gap: 6px; }
+        button { padding: 8px; font-size: 0.85rem; }
+        .option-btn { padding: 8px; }
+        
+        #log-box { height: 60px; font-size: 0.8rem; padding: 5px 10px; }
+
+        #reward-cards-container { flex-direction: row; justify-content: center; max-width: 100%; height: 100%; align-items: stretch; gap: 10px;}
+        .reward-card { flex: 1; flex-direction: column; padding: 10px; text-align: center; }
+        .reward-icon { margin-right: 0; margin-bottom: 5px; font-size: 2rem; }
+    }
+
+    /* =========================================
+       📟 태블릿 세로모드
+       ========================================= */
+    @media (min-width: 600px) and (max-width: 900px) and (min-height: 501px) {
+        #app-wrapper { max-width: 600px; height: 90vh; border-radius: 20px; }
+        .game-title { font-size: 3.5rem; }
+        #monster-image { width: 120px; height: 120px; font-size: 3.5rem; }
+        #monster-name { font-size: 1.6rem; }
+        #quiz-box { font-size: 1.2rem; padding: 20px; }
+        button { padding: 15px; font-size: 1.1rem; }
+        .option-btn { padding: 15px; }
+        .shop-btn span { font-size: 0.9rem; margin-top: 8px;}
+        #log-box { height: 120px; font-size: 1rem; }
+    }
+
+    /* =========================================
+       💻 노트북, 모니터 (스크린샷 잘림 현상 해결!)
+       ========================================= */
+    @media (min-width: 901px) and (min-height: 501px) {
+        #app-wrapper { 
+            max-width: 950px; 
+            height: 85vh; /* 창 높이 비율 확보 */
+            min-height: 600px; /* 너무 짜부라지지 않게 최소 높이 고정 */
+            border-radius: 15px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+        }
+        .game-title { font-size: 3.5rem; margin-bottom: 15px; }
+        .title-btn-group { flex-direction: row; max-width: 700px; gap: 20px; }
+        .title-btn { flex: 1; padding: 15px; font-size: 1.4rem; }
+        
+        #status-bar { font-size: 1.05rem; padding: 10px 25px; }
+        
+        /* 여백 다이어트 및 좌우 분할 */
+        #action-area { flex-direction: row; align-items: stretch; padding: 15px 30px; gap: 30px; }
+        #left-panel { width: 40%; border-right: 2px dashed #444; padding-right: 20px; justify-content: center; }
+        #right-panel { width: 60%; padding-left: 10px; justify-content: center; display: flex; flex-direction: column; }
+
+        /* 요괴 덩치 감소 */
+        #monster-image { width: 130px; height: 130px; font-size: 4.5rem; margin-bottom: 10px;}
+        #monster-name { font-size: 1.8rem; margin-bottom: 0;}
+        .hp-text { font-size: 1.2rem; margin-top: 5px;}
+        
+        /* 퀴즈 및 버튼 여백 다이어트 */
+        #quiz-box { font-size: 1.1rem; padding: 15px; margin-bottom: 15px; flex: none; }
+        
+        .grid-ui { gap: 10px; }
+        button { font-size: 1.05rem; padding: 12px; }
+        .option-btn { font-size: 1.05rem; padding: 12px; margin-bottom: 0; } /* 여백 삭제 */
+        .shop-btn span { font-size: 0.85rem; margin-top: 5px;}
+        
+        /* 로그 박스 사이즈 축소 */
+        #log-box { height: 100px; font-size: 1rem; padding: 10px 30px; border-top: 2px solid #555;}
+        
+        #reward-cards-container { flex-direction: row; max-width: 90%; gap: 15px; height: auto;}
+        .reward-card { flex: 1; flex-direction: column; text-align: center; padding: 25px 15px; }
+        .reward-card:hover { transform: translateY(-5px); background-color: #34495e;}
+        .reward-icon { margin-right: 0; margin-bottom: 10px; font-size: 3.5rem; }
+        .reward-title { font-size: 1.3rem; margin-bottom: 5px;}
+        .reward-desc { font-size: 0.95rem; }
+    }
 </style>
 </head>
 <body>
 
 <div id="app-wrapper">
+    <button id="global-help" class="help-btn" style="display:none;" onclick="showHelp()">?</button>
+
     <div id="title-screen" class="screen-panel">
         <h1 class="game-title">올라라!<br>역사 타워</h1>
         <div id="high-score-display">🏆 최고 도달 기록: <span id="high-score-ui">1</span>층</div>
@@ -131,593 +224,638 @@
     <div id="range-screen" class="screen-panel">
         <div class="range-box">
             <h2>📜 출제 범위 선택</h2>
-            <div class="select-wrapper">
-                <span>시작:</span>
-                <select id="start-category"></select>
-            </div>
-            <div style="color: #bdc3c7; font-size: 1.5rem; margin-bottom: 10px;">~</div>
-            <div class="select-wrapper">
-                <span>끝:</span>
-                <select id="end-category"></select>
-            </div>
+            <div class="select-wrapper"><span>시작:</span><select id="start-category"></select></div>
+            <div class="select-wrapper"><span>끝:</span><select id="end-category"></select></div>
             <button class="title-btn start-game-btn" onclick="startCustomGame()">도전 시작!</button>
         </div>
-        <button class="back-btn" onclick="closeRangeScreen()">⬅️ 메인 메뉴로</button>
+        <button class="back-btn" style="max-width:400px;" onclick="closeRangeScreen()">⬅️ 돌아가기</button>
     </div>
 
     <div id="reward-screen" class="screen-panel">
-        <h2 class="game-title">🎁 층 클리어 보상 선택</h2>
+        <h2 class="game-title">🎁 층 클리어 보상</h2>
         <div id="reward-cards-container"></div>
     </div>
 
     <div id="study-screen" class="screen-panel">
         <h2 class="game-title" style="font-size: 2rem; margin-bottom: 15px;">📖 역사 지식 노트</h2>
         <div id="study-content"></div>
-        <button class="back-btn" onclick="closeStudyScreen()">⬅️ 메인 메뉴로</button>
+        <button class="back-btn" style="max-width: 600px;" onclick="closeStudyScreen()">⬅️ 돌아가기</button>
     </div>
 
     <div id="game-container">
         <div id="status-bar">
-            <div class="stat-box" style="flex: 1 1 100%;">
-                층수: <span id="floor-ui">1F</span>
-                <button class="help-btn" onclick="showHelp()">[?] 용어 도움말</button>
-            </div>
+            <div class="stat-box" style="flex: 1 1 100%;">층수: <span id="floor-ui">1F</span></div>
             <div class="stat-box hp-text">지식[HP]: <span id="hp-ui">100/100</span></div>
             <div class="stat-box">Gold: <span id="gold-ui">0</span>G</div>
-            <div class="stat-box" style="color:#ffb74d;">정화력[공격력]: <span id="atk-ui">+0</span></div>
+            <div class="stat-box" style="color:#ffb74d;">정화력[공격]: <span id="atk-ui">+0</span></div>
             <div class="stat-box" style="color:#81c784;">회피율: <span id="eva-ui">0</span>%</div>
             <div class="stat-box">회복제: <span id="potion-ui">3</span>개</div>
-            <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.9rem; margin-top: 5px; flex: 1 1 100%; text-align: center;" id="buff-ui">적용중인 특수 효과 없음</div>
+            <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
         </div>
 
         <div id="main-screen">
-            <div style="flex: 1; min-height: 10px;"></div>
-            
-            <div style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 10px; box-sizing: border-box;">
-                <div id="monster-area">
-                    <h2 id="monster-name">망각의 요괴</h2>
-                    <div id="monster-image">👻</div>
-                    <h3 class="hp-text" style="margin-bottom: 0;">망각 에너지[적HP]: <span id="monster-hp">50/50</span></h3>
+            <div id="action-area">
+                <div id="left-panel">
+                    <div id="monster-area">
+                        <h2 id="monster-name">망각의 요괴</h2>
+                        <div id="monster-image">👻</div>
+                        <h3 class="hp-text" style="margin:0;">적 에너지: <span id="monster-hp">50/50</span></h3>
+                    </div>
                 </div>
 
-                <div id="quiz-box"></div>
+                <div id="right-panel">
+                    <div id="quiz-box"></div>
 
-                <div id="hub-ui" class="button-group">
-                    <button class="lobby-btn" onclick="startBattle()" style="flex: 1 1 100%;">🚪 다음 층으로 (실전 테스트)</button>
-                    <button class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">🛒 상점 (아이템 선택/구매)</button>
-                    <button class="bag-btn" onclick="openInventory()">🎒 내 가방</button>
-                    <button class="system-btn" onclick="saveGame()">💾 기록하기</button>
-                    <button class="quit-btn" onclick="confirmReturnToTitle()">🏠 메인 메뉴로</button>
+                    <div id="hub-ui" class="grid-ui">
+                        <button class="lobby-btn full-width" onclick="startBattle()">🚪 다음 층 테스트 (전투)</button>
+                        <button class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">🛒 상점 방문</button>
+                        <button class="bag-btn" onclick="openInventory()">🎒 내 가방</button>
+                        <button class="system-btn" onclick="saveGame()">💾 저장하기</button>
+                        <button class="quit-btn" onclick="confirmReturnToTitle()">🏠 나가기</button>
+                    </div>
+
+                    <div id="shop-ui" class="grid-ui">
+                        <button class="shop-btn" onclick="buyItem('potion')">
+                            🧪 집중력 회복제 (30G)
+                            <span>지식 40 즉시 회복</span>
+                        </button>
+                        <button class="shop-btn" onclick="buyItem('shield')">
+                            🛡️ 절대 방패 (50G)
+                            <span>적 공격 1회 무효화</span>
+                        </button>
+                        <button class="shop-btn" onclick="buyItem('powerUp')">
+                            💥 지식의 물약 (50G)
+                            <span>2회 정화력 상승</span>
+                        </button>
+                        <button class="shop-btn" onclick="buyItem('maxhp')">
+                            🧠 지식의 샘 (100G)
+                            <span>최대 지식 +20 증가</span>
+                        </button>
+                        <button class="back-btn full-width" style="margin-top:0;" onclick="closeShop()">⬅️ 상점 닫기</button>
+                    </div>
+
+                    <div id="battle-ui" class="grid-ui">
+                        <button class="quiz-btn full-width" onclick="loadQuiz()">📝 개념 일깨우기 (공격)</button>
+                        <button class="potion-btn" onclick="usePotion()">🧪 회복제 사용</button>
+                        <button class="bag-btn" onclick="openInventory()">🎒 아이템 가방</button>
+                    </div>
+
+                    <div id="options-ui" class="grid-ui" style="grid-template-columns: 1fr;"></div>
                 </div>
-
-                <div id="shop-ui" class="button-group" style="display: none; height: 300px; overflow-y: auto;">
-                    <button class="shop-btn" onclick="buyItem('potion')">🧪 집중력 회복제 (30G)<br><span style="font-size:0.8rem;">지식[HP] 40 회복</span></button>
-                    <button class="shop-btn" onclick="buyItem('shield')">🛡️ 절대 방패 (50G)<br><span style="font-size:0.8rem;">1회 적 공격 무효 (가방 지급)</span></button>
-                    <button class="shop-btn" onclick="buyItem('powerUp')">💥 지식의 물약 (50G)<br><span style="font-size:0.8rem;">2회 동안 정화력[공격력] 상승 (가방 지급)</span></button>
-                    <button class="shop-btn" onclick="buyItem('maxhp')">🧠 지식의 샘 (100G)<br><span style="font-size:0.8rem;">최대 지식[HP] +20 영구 증가</span></button>
-                    <button class="back-btn" style="flex: 1 1 100%;" onclick="closeShop()">⬅️ 돌아가기</button>
-                </div>
-
-                <div id="battle-ui" class="button-group" style="display: none;">
-                    <button class="quiz-btn" onclick="loadQuiz()">📝 개념 일깨우기 (공격하기)</button>
-                    <button class="potion-btn" onclick="usePotion()">🧪 회복제 사용</button>
-                    <button class="bag-btn" onclick="openInventory()">🎒 아이템 가방</button>
-                </div>
-
-                <div id="options-ui" class="button-group" style="display: none;"></div>
-            </div>
-            
-            <div style="flex: 1; min-height: 10px;"></div>
-            
-            <div id="inventory-modal">
-                <h2 style="margin-top: 0; color: #fff;">🎒 내 가방</h2>
-                <div id="inventory-list" style="flex: 1; overflow-y: auto; margin-bottom: 20px;"></div>
-                <button class="back-btn" onclick="closeInventory()" style="flex: none;">닫기</button>
             </div>
         </div>
 
         <div id="log-box"></div>
     </div>
+
+    <div id="inventory-modal">
+        <h2 style="margin-top: 0; color: #fff;">🎒 가방 내용물</h2>
+        <div id="inventory-list"></div>
+        <button class="back-btn" onclick="closeInventory()" style="flex: none; margin-top:10px;">닫기</button>
+    </div>
 </div>
 
 <script>
+    // ==========================================
+    // 1. 기본 변수 및 데이터 설정
+    // ==========================================
     let quizBank = [];
     let studyBank = [];
     let categoryList = [];
     let activeQuizBank = [];
     
+    let player = {};
+    let monster = null;
+    let activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
+    
     let savedHighScore = localStorage.getItem('historyTowerMaxFloor') || 1;
     document.getElementById('high-score-ui').innerText = savedHighScore;
 
-    function showHelp() {
-        alert("💡 [용어 안내]\n- 지식 = 플레이어 체력(HP)\n- 정화력 = 공격력(ATK)\n- 회피율 = 요괴 공격 무시 확률\n\n🛒 [아이템 구매 및 사용]\n- [상점]에서 절대 방패, 지식의 물약 등을 구매할 수 있습니다.\n- 구매한 아이템은 전투 중 [🎒내 가방]을 열어 선택해 사용하세요!");
-    }
-
-    function parseAllData() {
-        let statusText = "";
-        categoryList = [];
-        if (typeof rawQuizData !== 'undefined') {
-            const lines = rawQuizData.split('\n');
-            let currentCategory = "기타";
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i].trim();
-                if (line.length === 0) continue;
-                if (line.startsWith('[') && line.endsWith(']')) {
-                    currentCategory = line.slice(1, -1).trim();
-                    if (!categoryList.includes(currentCategory)) categoryList.push(currentCategory);
-                    continue;
-                }
-                let parts = line.split('|').map(item => item.trim());
-                if (parts.length >= 5) {
-                    quizBank.push({ category: currentCategory, q: parts[0], options: [parts[1], parts[2], parts[3]], answer: parseInt(parts[4]) - 1 });
-                    if (!categoryList.includes(currentCategory)) categoryList.push(currentCategory);
-                }
-            }
-            statusText += `✅ 퀴즈: ${quizBank.length}개 연동 완료<br>`;
-        } else statusText += `⚠️ quiz_data.js 오류<br>`;
-
-        if (typeof rawStudyData !== 'undefined') {
-            const lines = rawStudyData.split('\n');
-            let currentCategory = "기타";
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i].trim();
-                if (line.length === 0) continue;
-                if (line.startsWith('[') && line.endsWith(']')) {
-                    currentCategory = line.slice(1, -1).trim(); continue;
-                }
-                let parts = line.split('|').map(item => item.trim());
-                if (parts.length >= 2) {
-                    studyBank.push({ category: currentCategory, keyword: parts[0], desc: parts[1] });
-                }
-            }
-            statusText += `✅ 학습: ${studyBank.length}개 연동 완료`;
-        } else statusText += `⚠️ study_data.js 오류`;
-
-        document.getElementById('data-status').innerHTML = statusText;
-        updateCategorySelects();
-    }
-
-    function updateCategorySelects() {
-        const startSel = document.getElementById('start-category');
-        const endSel = document.getElementById('end-category');
-        startSel.innerHTML = ""; endSel.innerHTML = "";
-        categoryList.forEach((cat, index) => {
-            let opt1 = document.createElement('option'); opt1.value = index; opt1.innerText = cat;
-            let opt2 = document.createElement('option'); opt2.value = index; opt2.innerText = cat;
-            startSel.appendChild(opt1); endSel.appendChild(opt2);
-        });
-        if(categoryList.length > 0) endSel.value = categoryList.length - 1;
-    }
-
-    parseAllData();
-
-    function openRangeScreen() {
-        if (quizBank.length === 0) { alert("문제가 없습니다!"); return; }
-        document.getElementById('title-screen').style.display = 'none';
-        document.getElementById('range-screen').style.display = 'flex';
-    }
-    function closeRangeScreen() {
-        document.getElementById('range-screen').style.display = 'none';
-        document.getElementById('title-screen').style.display = 'flex';
-    }
-
-    function startCustomGame() {
-        let startIndex = parseInt(document.getElementById('start-category').value);
-        let endIndex = parseInt(document.getElementById('end-category').value);
-        if (startIndex > endIndex) { alert("시작 시대가 끝나는 시대보다 뒤에 있을 수 없습니다!"); return; }
-        let selectedCategories = categoryList.slice(startIndex, endIndex + 1);
-        activeQuizBank = quizBank.filter(quiz => selectedCategories.includes(quiz.category));
-        if (activeQuizBank.length === 0) { alert("선택한 범위에 문제가 없습니다!"); return; }
-
-        document.getElementById('range-screen').style.display = 'none';
-        document.getElementById('game-container').style.display = 'flex';
-        player = getNewPlayerStat();
-        activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
-        document.getElementById('log-box').innerHTML = "";
-        addLog(`[출제 범위: ${categoryList[startIndex]} ~ ${categoryList[endIndex]}]`, "#64b5f6");
-        addLog("역사 타워에 입장했습니다. 지식을 일깨워 꼭대기로 향하세요!", "#ffd700");
-        updateUI(); enterHub();
-    }
-
-    function openStudyScreen() {
-        document.getElementById('title-screen').style.display = 'none';
-        document.getElementById('study-screen').style.display = 'flex';
-        const container = document.getElementById('study-content');
-        container.innerHTML = "";
-        if (studyBank.length === 0) { container.innerHTML = "<p style='text-align:center; color:#ff5252;'>학습 데이터가 없습니다.</p>"; return; }
-
-        let categories = {};
-        studyBank.forEach((item, index) => {
-            if (!categories[item.category]) categories[item.category] = [];
-            categories[item.category].push({ ...item, originalIndex: index });
-        });
-
-        let htmlStr = ""; let catIndex = 0;
-        for (let cat in categories) {
-            htmlStr += `
-                <div class="category-header" onclick="toggleCategory(${catIndex})">
-                    <span>👑 ${cat}</span>
-                    <span id="cat-icon-${catIndex}" style="font-size: 1rem; color: #ffd700;">▼ 열람</span>
-                </div>
-                <div class="category-content" id="cat-content-${catIndex}">
-            `;
-            categories[cat].forEach(item => {
-                htmlStr += `
-                    <div class="study-item">
-                        <div class="study-keyword" onclick="toggleStudyDesc(${item.originalIndex})">
-                            <span>📌 ${item.keyword}</span>
-                            <span id="study-icon-${item.originalIndex}" style="font-size: 0.9rem; color: #bdc3c7;">▼</span>
-                        </div>
-                        <div class="study-desc" id="study-desc-${item.originalIndex}">${item.desc}</div>
-                    </div>`;
-            });
-            htmlStr += `</div>`; catIndex++;
-        }
-        container.innerHTML = htmlStr;
-    }
-
-    function toggleCategory(index) {
-        const content = document.getElementById(`cat-content-${index}`);
-        const icon = document.getElementById(`cat-icon-${index}`);
-        if (content.style.display === 'block') { content.style.display = 'none'; icon.innerText = '▼ 열람'; } 
-        else { content.style.display = 'block'; icon.innerText = '▲ 닫기'; }
-    }
-
-    function toggleStudyDesc(index) {
-        const desc = document.getElementById(`study-desc-${index}`);
-        const icon = document.getElementById(`study-icon-${index}`);
-        if (desc.style.display === 'block') { desc.style.display = 'none'; icon.innerText = '▼'; } 
-        else { desc.style.display = 'block'; icon.innerText = '▲'; }
-    }
-    function closeStudyScreen() {
-        document.getElementById('study-screen').style.display = 'none';
-        document.getElementById('title-screen').style.display = 'flex';
-    }
-
-    function getNewPlayerStat() { 
-        return { hp: 100, maxHp: 100, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0 }; 
-    }
-
     const ITEM_DB = {
-        revive: { name: "🪶 부활의 깃털", desc: "지식 에너지가 고갈될 때 절반 회복 (1회용, 자동 소멸)" },
-        shield: { name: "🛡️ 절대 방패", desc: "사용 시 다음 1회 요괴의 공격 무효화" },
-        powerUp: { name: "🧪 지식의 물약", desc: "2회 동안 정답 시 정화력 대폭 상승" },
-        weaken: { name: "📉 약화의 부적", desc: "2회 동안 요괴의 흡수량 절반 감소" },
-        armorBreak: { name: "💥 파괴의 부적", desc: "2회 동안 요괴가 1.5배 피해를 입음" }
+        revive: { name: "🪶 부활 깃털", desc: "사망 시 체력 절반 부활 (자동)" },
+        shield: { name: "🛡️ 절대 방패", desc: "다음 1회 공격 무효화" },
+        powerUp: { name: "🧪 지식 물약", desc: "2회 정답 정화력 상승" },
+        weaken: { name: "📉 약화 부적", desc: "2회 적 공격력 반감" },
+        armorBreak: { name: "💥 파괴 부적", desc: "2회 적 피해 1.5배" }
     };
 
     const REWARD_CARDS = [
-        { id: 'heal', icon: '🛌', title: "휴식", desc: "지식[HP]을 40 회복합니다.", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("충분한 휴식으로 지식을 40 회복했습니다.", "#64b5f6"); } },
-        { id: 'maxHp', icon: '🧠', title: "지식의 샘", desc: "최대 지식[HP]이 15 영구 증가합니다.", action: () => { player.maxHp += 15; player.hp += 15; addLog("최대 지식이 15 영구 증가했습니다.", "#ffeb3b"); } },
-        { id: 'atkUp', icon: '⚔️', title: "깨달음의 검", desc: "기본 정화력[공격력]이 영구적으로 5 상승합니다.", action: () => { player.baseAtk += 5; addLog("정화력이 영구적으로 5 상승했습니다!", "#ff8a65"); } },
-        { id: 'evasionUp', icon: '💨', title: "날렵한 몸놀림", desc: "요괴의 공격 회피율이 5% 영구 상승합니다.", action: () => { player.evasion += 5; addLog("회피율이 영구적으로 5% 상승했습니다!", "#81c784"); } },
-        { id: 'gold', icon: '💰', title: "숨겨진 유물", desc: "연구 자금 40G를 획득합니다.", action: () => { player.gold += 40; addLog("유물을 발견하여 40G를 획득했습니다!", "#ffd700"); } },
-        { id: 'buyItem', icon: '🎒', title: "비밀 상인", desc: "30G를 내고 무작위 물건 1개를 얻습니다.", action: () => { 
-            if(player.gold >= 30) { 
-                player.gold -= 30; 
-                let keys = Object.keys(ITEM_DB);
-                let drop = keys[Math.floor(Math.random() * keys.length)];
-                player.inventory[drop] = (player.inventory[drop] || 0) + 1;
-                addLog(`비밀 상인에게 30G를 내고 ${ITEM_DB[drop].name}을(를) 얻었습니다!`, "#e040fb");
-            } else { addLog("골드가 부족하여 지나쳤습니다...", "#ff5252"); }
-        } },
-        { id: 'potion', icon: '🧪', title: "연금술사의 조각", desc: "집중력 회복제 1개를 얻습니다.", action: () => { player.potions++; addLog("집중력 회복제를 1개 획득했습니다.", "#a5d6a7"); } },
-        { id: 'boss', icon: '👿', title: "정예 요괴 소환", desc: "[위험] 강력한 요괴와 즉시 전투합니다.", action: () => { startBossBattle(); return 'boss'; } }
+        { 
+            id: 'heal', icon: '🛌', title: "휴식", desc: "지식[HP] 40 회복", 
+            action: () => { 
+                player.hp = Math.min(player.maxHp, player.hp + 40); 
+                addLog("충분한 휴식으로 지식을 40 회복했습니다.", "#64b5f6"); 
+            } 
+        },
+        { 
+            id: 'maxHp', icon: '🧠', title: "지식의 샘", desc: "최대 지식 +15 영구 증가", 
+            action: () => { 
+                player.maxHp += 15; player.hp += 15; 
+                addLog("최대 지식이 15 영구 증가했습니다.", "#ffeb3b"); 
+            } 
+        },
+        { 
+            id: 'atkUp', icon: '⚔️', title: "깨달음의 검", desc: "정화력 +5 영구 상승", 
+            action: () => { 
+                player.baseAtk += 5; 
+                addLog("정화력이 영구적으로 5 상승했습니다!", "#ff8a65"); 
+            } 
+        },
+        { 
+            id: 'evasionUp', icon: '💨', title: "날렵함", desc: "회피율 +5% 영구 상승", 
+            action: () => { 
+                player.evasion += 5; 
+                addLog("회피율이 영구적으로 5% 상승했습니다!", "#81c784"); 
+            } 
+        },
+        { 
+            id: 'gold', icon: '💰', title: "숨겨진 유물", desc: "연구 자금 40G 획득", 
+            action: () => { 
+                player.gold += 40; 
+                addLog("40G를 획득했습니다!", "#ffd700"); 
+            } 
+        },
+        { 
+            id: 'buyItem', icon: '🎒', title: "비밀 상인", desc: "30G로 무작위 아이템 획득", 
+            action: () => { 
+                if (player.gold >= 30) { 
+                    player.gold -= 30; 
+                    let keys = Object.keys(ITEM_DB); 
+                    let drop = keys[Math.floor(Math.random() * keys.length)];
+                    player.inventory[drop] = (player.inventory[drop] || 0) + 1; 
+                    addLog(`비밀 상인에게 ${ITEM_DB[drop].name}을(를) 얻었습니다!`, "#e040fb");
+                } else { 
+                    addLog("골드가 부족하여 지나쳤습니다...", "#ff5252"); 
+                }
+            } 
+        },
+        { 
+            id: 'potion', icon: '🧪', title: "회복제 조각", desc: "회복제 1개 획득", 
+            action: () => { 
+                player.potions++; 
+                addLog("회복제를 1개 획득했습니다.", "#a5d6a7"); 
+            } 
+        },
+        { 
+            id: 'boss', icon: '👿', title: "정예 소환", desc: "[위험] 정예 요괴와 전투", 
+            action: () => { 
+                startBossBattle(); 
+                return 'boss'; 
+            } 
+        }
     ];
 
-    let currentQuiz = null;
-    let player = {};
-    let monster = null;
-    let gameState = 'title';
-    let activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
+    // ==========================================
+    // 2. 초기 로딩 및 팝업 화면들
+    // ==========================================
+    function showHelp() {
+        alert("💡 [가이드]\n- 지식(HP): 플레이어 체력\n- 정화력(ATK): 공격력\n- 상점 아이템은 [내 가방]에서 꺼내 써야 발동됩니다.");
+    }
 
-    function loadGameFromTitle() {
-        let saved = localStorage.getItem('historyTowerSave');
-        if (saved) {
-            let savedData = JSON.parse(saved);
-            activeQuizBank = savedData.savedQuizBank || quizBank;
-            if(activeQuizBank.length === 0) { alert("세이브 파일 문제 오류!"); return; }
+    function parseAllData() {
+        if (typeof rawQuizData !== 'undefined') {
+            const lines = rawQuizData.split('\n'); 
+            let cat = "기타";
+            lines.forEach(l => {
+                let ln = l.trim(); 
+                if (!ln) return;
+                if (ln.startsWith('[') && ln.endsWith(']')) { 
+                    cat = ln.slice(1, -1); 
+                    if (!categoryList.includes(cat)) categoryList.push(cat); 
+                } else { 
+                    let p = ln.split('|').map(x => x.trim()); 
+                    if (p.length >= 5) {
+                        quizBank.push({ category: cat, q: p[0], options: [p[1], p[2], p[3]], answer: parseInt(p[4]) - 1 }); 
+                    }
+                }
+            });
             
-            player = savedData;
-            if(!player.inventory) player.inventory = {}; 
-            if(player.baseAtk === undefined) player.baseAtk = 0;
-            if(player.evasion === undefined) player.evasion = 0;
+            document.getElementById('data-status').innerText = "✅ 시스템 준비 완료";
+            
+            const s = document.getElementById('start-category');
+            const e = document.getElementById('end-category');
+            categoryList.forEach((c, i) => { 
+                s.options.add(new Option(c, i)); 
+                e.options.add(new Option(c, i)); 
+            });
+            if (categoryList.length > 0) e.value = categoryList.length - 1;
+        }
 
-            activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 }; 
-            document.getElementById('title-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'flex';
-            addLog("저장된 기록부터 이어서 시작합니다.", "#4db6ac");
-            updateUI(); enterHub();
-        } else alert("기록된 데이터가 없습니다!");
-    }
-
-    function saveGame() {
-        player.savedQuizBank = activeQuizBank; 
-        localStorage.setItem('historyTowerSave', JSON.stringify(player));
-        addLog("현재 층수와 획득한 아이템이 안전하게 기록되었습니다.", "#4db6ac");
-    }
-
-    function confirmReturnToTitle() {
-        if (confirm("메인 화면으로 돌아가시겠습니까?\n(저장하지 않은 진행 상황은 사라집니다.)")) {
-            document.getElementById('game-container').style.display = 'none';
-            document.getElementById('title-screen').style.display = 'flex';
+        if (typeof rawStudyData !== 'undefined') {
+            const lines = rawStudyData.split('\n'); 
+            let cat = "기타";
+            lines.forEach(l => {
+                let ln = l.trim(); 
+                if (!ln) return;
+                if (ln.startsWith('[') && ln.endsWith(']')) {
+                    cat = ln.slice(1, -1);
+                } else { 
+                    let p = ln.split('|').map(x => x.trim()); 
+                    if (p.length >= 2) {
+                        studyBank.push({ category: cat, keyword: p[0], desc: p[1] }); 
+                    }
+                }
+            });
         }
     }
 
-    function updateHighScore(floor) {
-        if (floor > savedHighScore) {
-            savedHighScore = floor;
-            localStorage.setItem('historyTowerMaxFloor', savedHighScore);
-            document.getElementById('high-score-ui').innerText = savedHighScore;
+    function openRangeScreen() { 
+        if (quizBank.length === 0) {
+            alert("데이터가 없습니다!");
+            return;
+        } 
+        document.getElementById('title-screen').style.display = 'none'; 
+        document.getElementById('range-screen').style.display = 'flex'; 
+    }
+    
+    function closeRangeScreen() { 
+        document.getElementById('range-screen').style.display = 'none'; 
+        document.getElementById('title-screen').style.display = 'flex'; 
+    }
+
+    // ==========================================
+    // 3. 게임 시작 및 로비(Hub) 관리
+    // ==========================================
+    function startCustomGame() {
+        let s = parseInt(document.getElementById('start-category').value);
+        let e = parseInt(document.getElementById('end-category').value);
+        
+        if (s > e) { 
+            alert("출제 범위가 잘못되었습니다!"); 
+            return; 
         }
+        
+        activeQuizBank = quizBank.filter(q => categoryList.slice(s, e + 1).includes(q.category));
+        
+        document.getElementById('range-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
+        document.getElementById('global-help').style.display = 'flex';
+        
+        player = { hp: 100, maxHp: 100, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0 };
+        document.getElementById('log-box').innerHTML = ""; 
+        addLog("역사 타워에 입장했습니다!", "#ffd700"); 
+        
+        enterHub();
+    }
+
+    function enterHub() {
+        monster = null; 
+        updateUI();
+        document.getElementById('monster-area').style.display = 'none';
+        document.getElementById('battle-ui').style.display = 'none';
+        document.getElementById('quiz-box').style.display = 'none';
+        document.getElementById('options-ui').style.display = 'none';
+        document.getElementById('shop-ui').style.display = 'none';
+        document.getElementById('hub-ui').style.display = 'grid'; 
     }
 
     function updateUI() {
-        document.getElementById('floor-ui').innerText = player.floor + "F";
-        document.getElementById('hp-ui').innerText = `${player.hp}/${player.maxHp}`;
-        document.getElementById('gold-ui').innerText = player.gold;
+        document.getElementById('floor-ui').innerText = player.floor + "F"; 
+        document.getElementById('hp-ui').innerText = player.hp + "/" + player.maxHp;
+        document.getElementById('gold-ui').innerText = player.gold + "G"; 
         document.getElementById('potion-ui').innerText = player.potions;
-        document.getElementById('atk-ui').innerText = `+${player.baseAtk}`;
-        document.getElementById('eva-ui').innerText = player.evasion;
-
-        if (monster) document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
-
-        let buffTexts = [];
-        if(activeEffects.shield > 0) buffTexts.push(`방어(${activeEffects.shield}회)`);
-        if(activeEffects.powerUp > 0) buffTexts.push(`정화력↑(${activeEffects.powerUp}회)`);
-        if(activeEffects.weaken > 0) buffTexts.push(`적흡수↓(${activeEffects.weaken}회)`);
-        if(activeEffects.armorBreak > 0) buffTexts.push(`적약점↑(${activeEffects.armorBreak}회)`);
-        document.getElementById('buff-ui').innerText = buffTexts.length > 0 ? "적용 효과: " + buffTexts.join(", ") : "적용중인 특수 효과 없음";
+        document.getElementById('atk-ui').innerText = "+" + player.baseAtk; 
+        document.getElementById('eva-ui').innerText = player.evasion + "%";
+        
+        let b = []; 
+        if (activeEffects.shield > 0) b.push(`방어`); 
+        if (activeEffects.powerUp > 0) b.push(`강화`);
+        
+        document.getElementById('buff-ui').innerText = b.length ? "효과: " + b.join(",") : "적용 효과 없음";
+        
+        if (monster) {
+            document.getElementById('monster-hp').innerText = monster.hp + "/" + monster.maxHp;
+        }
     }
 
-    function addLog(msg, color = "white") {
-        const logBox = document.getElementById('log-box');
-        logBox.innerHTML += `<p style="color: ${color};">${msg}</p>`;
-        logBox.scrollTop = logBox.scrollHeight;
+    function addLog(m, c = "white") { 
+        const l = document.getElementById('log-box'); 
+        l.innerHTML += `<p style="color:${c};">${m}</p>`; 
+        l.scrollTop = l.scrollHeight; 
+    }
+
+    // ==========================================
+    // 4. 상점 및 가방 시스템
+    // ==========================================
+    function openShop() { 
+        document.getElementById('hub-ui').style.display = 'none'; 
+        document.getElementById('shop-ui').style.display = 'grid'; 
+    }
+    
+    function closeShop() { 
+        document.getElementById('shop-ui').style.display = 'none'; 
+        document.getElementById('hub-ui').style.display = 'grid'; 
+    }
+
+    function buyItem(type) {
+        let prices = { potion: 30, shield: 50, powerUp: 50, maxhp: 100 };
+        
+        if (player.gold >= prices[type]) {
+            player.gold -= prices[type];
+            if (type === 'potion') {
+                player.potions++;
+            } else if (type === 'maxhp') { 
+                player.maxHp += 20; 
+                player.hp += 20; 
+            } else {
+                player.inventory[type] = (player.inventory[type] || 0) + 1;
+            }
+            addLog("🛒 구매 완료!", "#69f0ae"); 
+            updateUI();
+        } else {
+            alert("골드가 부족합니다.");
+        }
     }
 
     function openInventory() {
-        const invList = document.getElementById('inventory-list');
-        invList.innerHTML = "";
-        let hasItems = false;
-        for (let key in player.inventory) {
-            if (player.inventory[key] > 0) {
-                hasItems = true;
-                let itemInfo = ITEM_DB[key];
-                let isPassive = (key === 'revive');
-                invList.innerHTML += `
-                    <div class="inv-item">
-                        <div class="inv-item-info">
-                            <div class="inv-item-title">${itemInfo.name} x${player.inventory[key]}</div>
-                            <div class="inv-item-desc">${itemInfo.desc}</div>
-                        </div>
-                        <button class="use-btn" ${isPassive ? 'disabled' : `onclick="useItem('${key}')"`}>${isPassive ? '패시브' : '사용'}</button>
-                    </div>`;
+        const l = document.getElementById('inventory-list'); 
+        l.innerHTML = ""; 
+        let has = false;
+        
+        for (let k in player.inventory) {
+            if (player.inventory[k] > 0) { 
+                has = true; 
+                l.innerHTML += `
+                <div class="inv-item">
+                    <div class="inv-item-info">
+                        <div class="inv-item-title">${ITEM_DB[k].name} x${player.inventory[k]}</div>
+                        <div class="inv-item-desc">${ITEM_DB[k].desc}</div>
+                    </div>
+                    <button onclick="useItem('${k}')" class="use-btn">사용</button>
+                </div>`; 
             }
         }
-        if (!hasItems) invList.innerHTML = "<p style='text-align:center; color:#bdc3c7;'>가방이 텅 비어있습니다.</p>";
+        if (!has) l.innerHTML = "<p style='text-align:center;'>가방이 빕니다.</p>";
         document.getElementById('inventory-modal').style.display = 'flex';
     }
     
     function closeInventory() { 
         document.getElementById('inventory-modal').style.display = 'none'; 
     }
-
-    function useItem(itemKey) {
-        if (player.inventory[itemKey] > 0) {
-            player.inventory[itemKey]--;
-            if (itemKey === 'shield') { activeEffects.shield++; addLog("🛡️ 절대 방패를 펼쳤습니다! 요괴의 공격을 1회 막아냅니다.", "#64b5f6"); }
-            else if (itemKey === 'powerUp') { activeEffects.powerUp += 2; addLog("🧪 지식의 물약을 마셨습니다! 정화력[공격력]이 2회 대폭 상승합니다.", "#ff8a65"); }
-            else if (itemKey === 'weaken') { activeEffects.weaken += 2; addLog("📉 약화의 부적을 붙였습니다! 요괴의 공격력이 2회 반토막납니다.", "#ba68c8"); }
-            else if (itemKey === 'armorBreak') { activeEffects.armorBreak += 2; addLog("💥 파괴의 부적을 던졌습니다! 요괴가 2회 동안 1.5배 피해를 입습니다.", "#ffb74d"); }
-            closeInventory(); updateUI();
-        }
+    
+    function useItem(k) { 
+        if (player.inventory[k] > 0) { 
+            player.inventory[k]--; 
+            if (k === 'shield') activeEffects.shield++; 
+            if (k === 'powerUp') activeEffects.powerUp += 2; 
+            closeInventory(); 
+            updateUI(); 
+            addLog("아이템이 사용되었습니다.", "#64b5f6"); 
+        } 
+    }
+    
+    function usePotion() { 
+        if (player.potions > 0) { 
+            player.potions--; 
+            player.hp = Math.min(player.maxHp, player.hp + 40); 
+            updateUI(); 
+            addLog("회복제 사용. 지식 회복!", "#a5d6a7"); 
+        } 
     }
 
-    function enterHub() {
-        gameState = 'hub';
-        document.getElementById('monster-area').style.display = 'none';
-        document.getElementById('battle-ui').style.display = 'none';
-        document.getElementById('quiz-box').style.display = 'none';
-        document.getElementById('options-ui').style.display = 'none';
-        document.getElementById('shop-ui').style.display = 'none';
-        document.getElementById('hub-ui').style.display = 'flex';
-        updateUI();
-    }
-
-    function openShop() { document.getElementById('hub-ui').style.display = 'none'; document.getElementById('shop-ui').style.display = 'flex'; }
-    function closeShop() { document.getElementById('shop-ui').style.display = 'none'; document.getElementById('hub-ui').style.display = 'flex'; }
-
-    function buyItem(itemType) {
-        if (itemType === 'potion' && player.gold >= 30) { player.gold -= 30; player.potions++; updateUI(); addLog("🧪 회복제를 1개 구매했습니다.", "#a5d6a7");} 
-        else if (itemType === 'maxhp' && player.gold >= 100) { player.gold -= 100; player.maxHp += 20; player.hp += 20; updateUI(); addLog("🧠 최대 지식[HP]이 증가했습니다.", "#ffeb3b");} 
-        else if (itemType === 'shield' && player.gold >= 50) { player.gold -= 50; player.inventory['shield'] = (player.inventory['shield'] || 0) + 1; updateUI(); addLog("🛡️ 절대 방패를 구매했습니다. (가방 확인)", "#64b5f6");}
-        else if (itemType === 'powerUp' && player.gold >= 50) { player.gold -= 50; player.inventory['powerUp'] = (player.inventory['powerUp'] || 0) + 1; updateUI(); addLog("💥 지식의 물약을 구매했습니다. (가방 확인)", "#ff8a65");}
-        else { addLog("골드가 부족합니다!", "#ff5252"); }
-    }
-
+    // ==========================================
+    // 5. 전투 및 퀴즈 로직
+    // ==========================================
     function startBattle() {
-        gameState = 'battle';
         document.getElementById('hub-ui').style.display = 'none';
-        document.getElementById('battle-ui').style.display = 'flex';
+        document.getElementById('battle-ui').style.display = 'grid';
         document.getElementById('monster-area').style.display = 'flex';
-        let maxHp = 30 + (player.floor * 10);
-        monster = { name: "망각의 요괴", hp: maxHp, maxHp: maxHp, goldReward: 20 + (player.floor * 5), isBoss: false };
-        addLog(`야생의 ${monster.name}이(가) 나타나 기억을 지우려 합니다!`, "#ff9800"); updateUI();
+        
+        let mhp = 30 + (player.floor * 10); 
+        monster = { name: "망각의 요괴", hp: mhp, maxHp: mhp, goldReward: 20 + (player.floor * 5), isBoss: false };
+        document.getElementById('monster-image').innerText = "👻"; 
+        
+        updateUI(); 
+        addLog(`👻 ${player.floor}층 요괴 등장!`, "#ff9800");
     }
 
     function startBossBattle() {
-        gameState = 'battle';
         document.getElementById('hub-ui').style.display = 'none';
-        document.getElementById('battle-ui').style.display = 'flex';
+        document.getElementById('battle-ui').style.display = 'grid';
         document.getElementById('monster-area').style.display = 'flex';
-        let maxHp = 50 + (player.floor * 15); 
-        monster = { name: "정예 망각의 대요괴", hp: maxHp, maxHp: maxHp, goldReward: 100, isBoss: true };
+        
+        let mhp = 50 + (player.floor * 15); 
+        monster = { name: "정예 대요괴", hp: mhp, maxHp: mhp, goldReward: 100, isBoss: true };
         document.getElementById('monster-image').innerText = "👹"; 
-        addLog(`[경고] 매우 위험한 정예 요괴가 등장했습니다!!`, "#ff5252"); updateUI();
+        
+        updateUI(); 
+        addLog("🚨 정예 요괴 등장!", "#ff5252");
     }
 
     function loadQuiz() {
-        let randIdx = Math.floor(Math.random() * activeQuizBank.length);
-        currentQuiz = activeQuizBank[randIdx];
-        
+        let q = activeQuizBank[Math.floor(Math.random() * activeQuizBank.length)];
         document.getElementById('battle-ui').style.display = 'none';
         document.getElementById('quiz-box').style.display = 'block';
-        document.getElementById('quiz-box').innerText = currentQuiz.q;
+        document.getElementById('quiz-box').innerText = q.q;
         
-        const optionsUi = document.getElementById('options-ui');
-        optionsUi.style.display = 'flex'; 
-        optionsUi.innerHTML = ""; 
+        const opt = document.getElementById('options-ui'); 
+        opt.style.display = 'grid'; 
+        opt.innerHTML = "";
         
-        let originalOptions = currentQuiz.options;
-        let correctAnswerText = originalOptions[currentQuiz.answer];
-        let shuffledOptions = [...originalOptions].sort(() => Math.random() - 0.5);
-
-        shuffledOptions.forEach((opt, index) => {
-            let btn = document.createElement("button"); 
-            btn.className = "option-btn"; 
-            btn.innerText = `${index + 1}. ${opt}`;
-            
-            let isCorrect = (opt === correctAnswerText);
-            btn.onclick = () => checkAnswer(isCorrect, correctAnswerText); 
-            optionsUi.appendChild(btn);
+        let shuf = [...q.options].sort(() => Math.random() - 0.5);
+        shuf.forEach((o, i) => {
+            let b = document.createElement("button"); 
+            b.className = "option-btn"; 
+            b.innerText = (i + 1) + ". " + o;
+            b.onclick = () => checkAnswer(o === q.options[q.answer], q.options[q.answer]);
+            opt.appendChild(b);
         });
     }
 
-    function checkAnswer(isCorrect, correctAnswerText) {
+    function checkAnswer(isCorrect, ans) {
         document.getElementById('quiz-box').style.display = 'none';
         document.getElementById('options-ui').style.display = 'none';
-        document.getElementById('battle-ui').style.display = 'none';
-
+        
         if (isCorrect) {
-            let dmg = 25 + Math.floor(Math.random() * 10) + player.baseAtk;
-            if(activeEffects.powerUp > 0) { dmg += 15; activeEffects.powerUp--; }
-            if(activeEffects.armorBreak > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.armorBreak--; }
-
-            monster.hp -= dmg; player.gold += 10;
-            addLog(`⭕ 정답입니다! 요괴의 체력을 ${dmg}만큼 깎았습니다! (+10G)`, "#00e676");
+            let d = 25 + player.baseAtk + (activeEffects.powerUp > 0 ? 15 : 0); 
+            if (activeEffects.powerUp > 0) activeEffects.powerUp--;
+            if (activeEffects.armorBreak > 0) { 
+                d = Math.floor(d * 1.5); 
+                activeEffects.armorBreak--; 
+            }
+            monster.hp -= d; 
+            addLog(`⭕ 정답! ${d} 피해!`, "#00e676");
         } else {
-            addLog(`❌ 오답입니다! 틈을 보여 기회를 놓쳤습니다. (정답: ${correctAnswerText})`, "#ff5252");
+            addLog(`❌ 오답! (정답: ${ans})`, "#ff5252");
         }
+        
         updateUI();
-
+        
         if (monster.hp <= 0) {
-            setTimeout(winBattle, 800);
+            player.gold += monster.goldReward; 
+            addLog(`✨ 처치! ${monster.goldReward}G 획득`); 
+            setTimeout(showRewards, 1000);
         } else {
             setTimeout(() => {
-                if (player.evasion > 0 && (Math.random() * 100 < player.evasion)) {
-                    addLog(`💨 날렵한 몸놀림! 요괴의 공격을 완벽하게 회피했습니다! (피해 0)`, "#81c784");
+                if (player.evasion > 0 && Math.random() * 100 < player.evasion) {
+                    addLog("💨 회피 성공!", "#81c784");
                 } else {
-                    let monsterDmg = (monster.isBoss ? 25 : 15) + Math.floor(Math.random() * 5); 
-                    if(activeEffects.weaken > 0) { monsterDmg = Math.floor(monsterDmg / 2); activeEffects.weaken--; }
-
-                    if (activeEffects.shield > 0) {
-                        activeEffects.shield--;
-                        addLog(`🛡️ 절대 방패가 요괴의 공격을 막아냈습니다!`, "#64b5f6");
-                    } else {
-                        player.hp -= monsterDmg;
-                        addLog(`👻 요괴의 턴! 당신의 지식[HP]을 ${monsterDmg}만큼 깎았습니다!`, "#ff9800");
+                    let md = (monster.isBoss ? 25 : 15) + Math.floor(Math.random() * 5);
+                    if (activeEffects.weaken > 0) { 
+                        md = Math.floor(md / 2); 
+                        activeEffects.weaken--; 
                     }
+                    if (activeEffects.shield > 0) { 
+                        md = 0; 
+                        activeEffects.shield--; 
+                        addLog("🛡️ 방어!", "#64b5f6"); 
+                    }
+                    player.hp -= md; 
+                    addLog(`👻 반격! ${md} 피해`, "#ff9800");
                 }
-
-                if (player.hp <= 0 && player.inventory['revive'] > 0) {
-                    player.inventory['revive']--;
-                    player.hp = Math.floor(player.maxHp / 2);
-                    addLog(`✨ 사망 직전, 부활의 깃털이 빛나며 체력을 회복했습니다! (깃털 1개 소멸됨)`, "#ffeb3b");
+                
+                if (player.hp <= 0 && player.inventory['revive'] > 0) { 
+                    player.inventory['revive']--; 
+                    player.hp = Math.floor(player.maxHp / 2); 
+                    addLog("✨ 깃털로 부활!", "#ffeb3b"); 
                 }
                 
                 updateUI();
                 
-                if (player.hp <= 0) {
-                    setTimeout(gameOver, 800);
+                if (player.hp <= 0) { 
+                    alert("지식이 모두 소진되어 패배했습니다."); 
+                    location.reload(); 
                 } else {
-                    document.getElementById('battle-ui').style.display = 'flex';
+                    document.getElementById('battle-ui').style.display = 'grid';
                 }
             }, 800);
         }
     }
 
-    function usePotion() {
-        if (player.potions > 0) { player.potions--; player.hp = Math.min(player.maxHp, player.hp + 40); updateUI(); } 
-    }
-
-    function winBattle() {
-        addLog(`${monster.name} 처치 완료! (보상 ${monster.goldReward}G)`, "#69f0ae");
-        player.gold += monster.goldReward;
-        
-        if (monster.isBoss) {
-            let itemKeys = Object.keys(ITEM_DB);
-            let dropKey1 = itemKeys[Math.floor(Math.random() * itemKeys.length)];
-            let dropKey2 = itemKeys[Math.floor(Math.random() * itemKeys.length)];
-            player.inventory[dropKey1] = (player.inventory[dropKey1] || 0) + 1;
-            player.inventory[dropKey2] = (player.inventory[dropKey2] || 0) + 1;
-            addLog(`👑 정예 요괴 처치 보상: ${ITEM_DB[dropKey1].name}, ${ITEM_DB[dropKey2].name} 획득!`, "#e040fb");
-            
-            document.getElementById('monster-image').innerText = "👻"; 
-            monster = null; updateUI(); setTimeout(enterHub, 1500);
-            return;
-        }
-
-        if (Math.random() < 0.4) {
-            let itemKeys = Object.keys(ITEM_DB);
-            let dropKey = itemKeys[Math.floor(Math.random() * itemKeys.length)];
-            player.inventory[dropKey] = (player.inventory[dropKey] || 0) + 1;
-            addLog(`🎁 유용한 물건 발견: ${ITEM_DB[dropKey].name}! (가방 확인)`, "#e040fb");
-        }
-
-        updateHighScore(player.floor);
-        activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 }; 
-        monster = null; 
-        player.floor++; 
-        updateUI(); 
-        
-        setTimeout(showRewardCards, 1500);
-    }
-
-    function showRewardCards() {
-        document.getElementById('game-container').style.display = 'none';
+    function showRewards() {
+        document.getElementById('game-container').style.display = 'none'; 
         document.getElementById('reward-screen').style.display = 'flex';
+        const cont = document.getElementById('reward-cards-container'); 
+        cont.innerHTML = "";
         
-        const container = document.getElementById('reward-cards-container');
-        container.innerHTML = "";
-        
-        let shuffled = [...REWARD_CARDS].sort(() => 0.5 - Math.random());
-        let choices = shuffled.slice(0, 3);
-        
-        choices.forEach(choice => {
-            let card = document.createElement('div');
-            card.className = "reward-card";
-            card.onclick = () => selectRewardCard(choice);
-            card.innerHTML = `
-                <div class="reward-icon">${choice.icon}</div>
-                <div class="reward-text-wrap">
-                    <div class="reward-title">${choice.title}</div>
-                    <div class="reward-desc">${choice.desc}</div>
-                </div>
-            `;
-            container.appendChild(card);
+        let ch = [...REWARD_CARDS].sort(() => 0.5 - Math.random()).slice(0, 3);
+        ch.forEach(c => {
+            let div = document.createElement('div'); 
+            div.className = "reward-card";
+            div.innerHTML = `
+                <div class='reward-icon'>${c.icon}</div>
+                <div class='reward-text-wrap'>
+                    <div class='reward-title'>${c.title}</div>
+                    <div class='reward-desc'>${c.desc}</div>
+                </div>`;
+            div.onclick = () => { 
+                document.getElementById('reward-screen').style.display = 'none'; 
+                document.getElementById('game-container').style.display = 'flex'; 
+                if (c.action() !== 'boss') { 
+                    player.floor++; 
+                    updateHighScore(player.floor); 
+                    enterHub(); 
+                } 
+            };
+            cont.appendChild(div);
         });
     }
 
-    function selectRewardCard(choice) {
-        document.getElementById('reward-screen').style.display = 'none';
-        document.getElementById('game-container').style.display = 'flex';
-        
-        let result = choice.action(); 
-        updateUI();
-        
-        if (result !== 'boss') {
-            enterHub();
+    // ==========================================
+    // 6. 데이터 저장 및 공부하기 화면
+    // ==========================================
+    function saveGame() { 
+        localStorage.setItem('historyTowerSave', JSON.stringify(player)); 
+        addLog("💾 게임이 안전하게 저장되었습니다.", "#4db6ac"); 
+    }
+    
+    function loadGameFromTitle() { 
+        let s = localStorage.getItem('historyTowerSave'); 
+        if (s) { 
+            player = JSON.parse(s); 
+            document.getElementById('title-screen').style.display = 'none'; 
+            document.getElementById('game-container').style.display = 'flex'; 
+            document.getElementById('global-help').style.display = 'flex'; 
+            enterHub(); 
+        } else {
+            alert("저장된 기록이 없습니다."); 
         }
     }
-
-    function gameOver() {
-        addLog("체력(지식)이 고갈되어 쓰러졌습니다...", "#d50000");
-        updateHighScore(player.floor);
-        alert(`타워 등반 실패!\n도달한 층수: ${player.floor}F\n확인을 누르면 메인 화면으로 돌아갑니다.`);
-        localStorage.removeItem('historyTowerSave'); location.reload(); 
+    
+    function confirmReturnToTitle() { 
+        if (confirm("메인 화면으로 나가시겠습니까?\n저장하지 않은 내용은 사라집니다.")) {
+            location.reload(); 
+        }
+    }
+    
+    function updateHighScore(f) { 
+        if (f > savedHighScore) { 
+            savedHighScore = f; 
+            localStorage.setItem('historyTowerMaxFloor', f); 
+            document.getElementById('high-score-ui').innerText = f; 
+        } 
     }
 
+    function openStudyScreen() {
+        document.getElementById('title-screen').style.display = 'none'; 
+        document.getElementById('study-screen').style.display = 'flex';
+        
+        const c = document.getElementById('study-content'); 
+        c.innerHTML = "";
+        
+        if (studyBank.length === 0) { 
+            c.innerHTML = "<p style='text-align:center;'>데이터가 없습니다.</p>"; 
+            return; 
+        }
+        
+        let cats = {}; 
+        studyBank.forEach((i, idx) => { 
+            if (!cats[i.category]) cats[i.category] = []; 
+            cats[i.category].push({ ...i, idx }); 
+        });
+        
+        let h = "";
+        let ci = 0;
+        for (let k in cats) {
+            h += `<div class="category-header" onclick="toggleCat(${ci})"><span>👑 ${k}</span><span id="ci-${ci}">▼</span></div>`;
+            h += `<div class="category-content" id="cc-${ci}">`;
+            cats[k].forEach(i => { 
+                h += `
+                <div class="study-item">
+                    <div class="study-keyword" onclick="toggleDesc(${i.idx})">
+                        <span>📌 ${i.keyword}</span>
+                        <span id="si-${i.idx}">▼</span>
+                    </div>
+                    <div class="study-desc" id="sd-${i.idx}">${i.desc}</div>
+                </div>`; 
+            });
+            h += `</div>`; 
+            ci++;
+        }
+        c.innerHTML = h;
+    }
+    
+    function closeStudyScreen() { 
+        document.getElementById('study-screen').style.display = 'none'; 
+        document.getElementById('title-screen').style.display = 'flex'; 
+    }
+    
+    function toggleCat(i) { 
+        const c = document.getElementById(`cc-${i}`);
+        const ic = document.getElementById(`ci-${i}`); 
+        if (c.style.display === 'block') {
+            c.style.display = 'none'; 
+            ic.innerText = '▼';
+        } else {
+            c.style.display = 'block'; 
+            ic.innerText = '▲';
+        } 
+    }
+    
+    function toggleDesc(i) { 
+        const d = document.getElementById(`sd-${i}`);
+        const ic = document.getElementById(`si-${i}`); 
+        if (d.style.display === 'block') {
+            d.style.display = 'none'; 
+            ic.innerText = '▼';
+        } else {
+            d.style.display = 'block'; 
+            ic.innerText = '▲';
+        } 
+    }
+
+    // 문서가 로드되면 데이터를 파싱합니다.
+    window.onload = parseAllData;
 </script>
 </body>
 </html>
