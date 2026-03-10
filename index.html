@@ -47,7 +47,7 @@
     select { padding: 10px; font-size: 1.1rem; border-radius: 5px; border: none; background-color: #ecf0f1; color: #2c3e50; font-family: inherit; width: 60%; }
     .start-game-btn { background-color: #d32f2f; width: 100%; margin-top: 20px; font-size: 1.3rem; padding: 15px; }
 
-    /* --- 🎁 층 클리어 보상 (PC/태블릿 기본 디자인) --- */
+    /* --- 🎁 층 클리어 보상 (PC/태블릿) --- */
     #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; overflow-y: auto; align-items: center; justify-content: center; padding: 40px 20px;}
     #reward-screen .game-title { margin-bottom: 30px; font-size: 3rem; }
     #reward-cards-container { display: flex; flex-direction: row; gap: 25px; flex-wrap: wrap; justify-content: center; max-width: 1100px; width: 100%; }
@@ -118,21 +118,20 @@
         #status-bar { font-size: 0.95rem; padding: 8px 10px; }
         .stat-box { flex: 1 1 30%; min-width: 80px; }
         
-        /* 🎁 모바일 전용 보상 창 (크기 폭주 현상 해결) */
+        /* 🎁 모바일 전용 보상 창 (강제 세로 늘어남 완전 차단) */
         #reward-screen { justify-content: flex-start; padding: 30px 15px; }
         #reward-screen .game-title { margin-bottom: 20px; font-size: 2rem; }
-        #reward-cards-container { flex-direction: column; gap: 15px; width: 100%; }
+        
+        /* 컨테이너의 flex 속성을 없애 블록형으로 변경 -> 카드가 억지로 늘어나는 현상 제거 */
+        #reward-cards-container { display: block; width: 100%; }
         
         .reward-card { 
-            flex: none; /* 핵심 해결책: 세로 방향으로 카드가 280px만큼 억지로 늘어나는 것을 차단합니다. */
-            flex-direction: row; 
-            width: 100%; max-width: 100%; 
-            padding: 15px 20px; 
-            justify-content: flex-start; align-items: center; text-align: left; 
-            min-height: 80px;
+            display: flex; flex-direction: row; width: 100%; max-width: 100%; 
+            padding: 15px 20px; justify-content: flex-start; align-items: center; text-align: left; 
+            margin-bottom: 15px; height: auto; box-sizing: border-box; 
         }
         .reward-icon { font-size: 2.5rem; margin-bottom: 0; margin-right: 15px; flex: none; }
-        .reward-text-wrap { align-items: flex-start; flex: 1; }
+        .reward-text-wrap { align-items: flex-start; flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .reward-title { font-size: 1.2rem; margin-bottom: 5px; }
         .reward-desc { font-size: 0.95rem; line-height: 1.3; margin-bottom: 0;}
 
@@ -606,7 +605,9 @@
     function checkAnswer(isCorrect, correctAnswerText) {
         document.getElementById('quiz-box').style.display = 'none';
         document.getElementById('options-ui').style.display = 'none';
-        document.getElementById('battle-ui').style.display = 'flex';
+        
+        // 💡 핵심 버그 수정: 버튼 마구 누르기(중복 클릭) 방지를 위해 결과 처리 중에는 전투 UI를 완전히 숨깁니다.
+        document.getElementById('battle-ui').style.display = 'none';
 
         if (isCorrect) {
             let dmg = 25 + Math.floor(Math.random() * 10) + player.baseAtk;
@@ -621,6 +622,7 @@
         updateUI();
 
         if (monster.hp <= 0) {
+            // 보상 화면으로 넘어갈 때까지 전투 UI를 띄우지 않습니다.
             setTimeout(winBattle, 800);
         } else {
             setTimeout(() => {
@@ -644,8 +646,15 @@
                     player.hp = Math.floor(player.maxHp / 2);
                     addLog(`✨ 기억을 잃기 직전, 부활의 깃털이 빛나며 지식 에너지를 회복했습니다! (깃털 1개 소멸됨)`, "#ffeb3b");
                 }
+                
                 updateUI();
-                if (player.hp <= 0) setTimeout(gameOver, 800);
+                
+                if (player.hp <= 0) {
+                    setTimeout(gameOver, 800);
+                } else {
+                    // 💡 핵심 버그 수정: 플레이어가 살아남았고 몬스터도 살아있을 때만 비로소 공격 버튼들을 다시 보여줍니다.
+                    document.getElementById('battle-ui').style.display = 'flex';
+                }
             }, 800);
         }
     }
