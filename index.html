@@ -1,673 +1,331 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JRPG: 마을과 탈출 던전 (모바일 가로모드/터치 최적화)</title>
-    <style>
-        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>역사 타워 RPG</title>
+<style>
+    :root {
+        --safe-left: env(safe-area-inset-left);
+        --safe-right: env(safe-area-inset-right);
+        --safe-bottom: env(safe-area-inset-bottom);
+        --safe-top: env(safe-area-inset-top);
+    }
 
-        :root {
-            --bg-color: #050505;
-            --ui-bg: rgba(20, 20, 20, 0.85);
-            --ui-glass: blur(10px);
-            --border-color: rgba(255, 255, 255, 0.2);
-            --text-color: #f1f2f6;
-            --highlight: #00ffcc;
-            --danger: #ff4757;
-            --item: #f1c40f;
-        }
+    body {
+        margin: 0; padding: 0; background-color: #1a1a1a; color: #fff;
+        font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
+        display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+        padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+        box-sizing: border-box;
+    }
 
-        body {
-            margin: 0; background-color: var(--bg-color); color: var(--text-color);
-            font-family: 'Pretendard', sans-serif;
-            display: flex; align-items: center; justify-content: center;
-            width: 100vw; height: 100vh; overflow: hidden; touch-action: none; 
-            /* 모바일 노치 및 홈 바 영역 기본 대응 */
-            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            box-sizing: border-box;
-        }
+    /* --- 타이틀 화면 --- */
+    #title-screen {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background-color: #111; display: flex; flex-direction: column;
+        justify-content: center; align-items: center; z-index: 100;
+    }
+    .game-title { 
+        font-size: 3.5rem; color: #ffd700; text-align: center; 
+        margin-bottom: 50px; text-shadow: 2px 2px 0px #d32f2f; 
+    }
+    
+    /* 타이틀 버튼 가로 정렬을 위한 그룹 */
+    .title-btn-group {
+        display: flex;
+        gap: 20px; /* 버튼 사이 간격 */
+        justify-content: center;
+    }
 
-        #game-container {
-            position: relative; width: 100%; height: 100%;
-            background: #000; overflow: hidden;
-        }
+    .title-btn { 
+        background-color: #e65100; color: white; border: none; 
+        padding: 15px 40px; font-size: 1.4rem; border-radius: 10px; 
+        cursor: pointer; min-width: 180px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); 
+        transition: transform 0.1s;
+    }
+    .title-btn.load-btn { background-color: #00838f; }
+    .title-btn:active { transform: scale(0.95); }
 
-        canvas { 
-            display: block; position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto;
-            width: 100%; height: 100%;
-            max-width: calc(100vh * (16 / 9)); max-height: calc(100vw * (9 / 16));
-            image-rendering: pixelated; 
-        }
+    /* --- 게임 UI --- */
+    #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
+    #status-bar { display: flex; justify-content: space-between; background-color: #333; padding: 10px 20px; font-size: 1.2rem; border-bottom: 2px solid #555; }
+    .stat-box span { color: #ffd700; font-weight: bold; }
+    .hp-text { color: #ff6b6b; }
 
-        .overlay {
-            position: absolute; background: var(--ui-bg); border: 1px solid var(--border-color);
-            backdrop-filter: var(--ui-glass); -webkit-backdrop-filter: var(--ui-glass); z-index: 10;
-        }
+    #main-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
 
-        /* --- 상단 상태창 UI (크기 및 여백 확대) --- */
-        #status-bar {
-            top: calc(15px + env(safe-area-inset-top)); 
-            left: calc(15px + env(safe-area-inset-left)); 
-            right: calc(15px + env(safe-area-inset-right)); 
-            padding: 12px 20px;
-            font-size: clamp(16px, 2.5vmin, 22px); border-radius: 8px; 
-            display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px;
-            pointer-events: none;
-        }
-        .menu-btns { pointer-events: auto; display: flex; gap: 10px; flex-wrap: wrap; }
-        .small-btn {
-            padding: 12px 18px; /* 터치하기 편하도록 버튼 크기 확대 */
-            font-size: clamp(14px, 2vmin, 18px); border-radius: 6px;
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
-            color: white; cursor: pointer; transition: 0.2s; font-weight: 600;
-        }
-        .small-btn:active { transform: scale(0.95); }
+    /* 몬스터 및 퀴즈 영역 */
+    #monster-area { display: none; flex-direction: column; align-items: center; margin-bottom: 20px; }
+    #monster-image { width: 120px; height: 120px; background-color: #555; border: 3px solid #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin-bottom: 10px; }
+    #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 20px; width: 90%; max-width: 500px; font-size: 1.2rem; line-height: 1.4; }
 
-        /* --- 하단 대화창 UI --- */
-        #dialogue-box {
-            bottom: clamp(100px, 15vmin, 150px); left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 800px; padding: clamp(15px, 2.5vmin, 30px);
-            display: none; border-left: 6px solid var(--highlight); z-index: 20;
-            font-size: clamp(16px, 2.5vmin, 24px); line-height: 1.5; border-radius: 8px;
-            text-align: center;
-        }
+    /* 버튼 그룹 */
+    .button-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; }
+    button { color: white; border: none; padding: 15px 20px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; flex: 1 1 40%; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    button:active { transform: scale(0.95); }
 
-        /* --- 방향키 컨트롤러 UI (잘림 방지 및 크기 확대) --- */
-        #controls {
-            position: absolute; 
-            /* 하단 홈 바와 겹치지 않게 안전 영역 + 25px 추가 여백 확보 */
-            bottom: calc(25px + env(safe-area-inset-bottom)); 
-            right: calc(25px + env(safe-area-inset-right)); 
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); gap: 10px; 
-            /* 가로 모드에서도 최소 210px의 너비를 가지도록 강제하여 작아짐 방지 */
-            width: clamp(210px, 35vmin, 280px); 
-            z-index: 15; opacity: 0.8; transition: opacity 0.2s;
-        }
-        #controls:hover, #controls:active { opacity: 1; }
-        .btn-dir {
-            width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center;
-            font-size: clamp(28px, 5vmin, 40px); background: rgba(30,30,30,0.8); border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.2); color: white; cursor: pointer; user-select: none;
-            -webkit-user-select: none;
-        }
-        .btn-dir:active { background: rgba(80,80,80,0.8); transform: translateY(4px); }
+    /* 로비 & 상점 버튼 */
+    .lobby-btn { background-color: #7b1fa2; font-size: 1.2rem; padding: 15px; }
+    .study-btn { background-color: #0277bd; flex: 1 1 100%; }
+    .shop-btn { background-color: #00838f; }
+    .back-btn { background-color: #616161; }
+    .system-btn { background-color: #455a64; flex: 1 1 100%; margin-top: 10px; }
 
-        /* --- 전체 지도 모달 UI --- */
-        #map-modal {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90vw; max-width: 800px; height: 80vh; max-height: 700px;
-            background: var(--ui-bg); border: 2px solid var(--highlight);
-            display: none; flex-direction: column; padding: clamp(15px, 3vmin, 30px); z-index: 30; border-radius: 12px;
-        }
-        #map-modal h3 { font-size: clamp(18px, 3vmin, 28px); margin: 0 0 15px 0; color: var(--highlight); }
-        #minimap-canvas { 
-            flex-grow: 1; background: #000; border: 1px solid #444; 
-            margin-bottom: 15px; object-fit: contain; 
-            width: 100%; min-height: 0; border-radius: 4px;
-        }
-        .map-btns { display: flex; gap: 10px; flex-wrap: wrap; }
-        .map-btns button {
-            flex: 1; min-width: 120px; padding: clamp(12px, 2vmin, 20px); border-radius: 8px; border: none;
-            font-size: clamp(14px, 2vmin, 18px); font-weight: bold; cursor: pointer; transition: 0.2s;
-        }
+    /* 전투 버튼 */
+    .quiz-btn { background-color: #d32f2f; font-size: 1.3rem; padding: 20px; flex: 1 1 100%; }
+    .option-btn { background-color: #34495e; font-size: 1.1rem; flex: 1 1 100%; }
+    .potion-btn { background-color: #fbc02d; color: #333; }
 
-        /* --- 전투 화면 --- */
-        #battle-screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: none; flex-direction: column; z-index: 25; overflow: hidden;
-        }
-        .battle-info { 
-            padding: clamp(15px, 2.5vmin, 30px); display: flex; flex-direction: column; gap: 10px;
-            font-size: clamp(16px, 2.5vmin, 24px); font-weight: bold; 
-            background: linear-gradient(to bottom, rgba(17,17,17,0.9), transparent);
-            position: absolute; top: 0; left: 0; width: 100%; box-sizing: border-box; z-index: 5;
-        }
-        .battle-info-row { display: flex; justify-content: space-between; align-items: center; }
-        .player-stats { color: var(--highlight); } .enemy-stats { color: var(--danger); }
-        
-        #enemy-image-container { 
-            flex-grow: 1; display: flex; justify-content: center; align-items: center;
-            position: relative; background: radial-gradient(circle, #2a0808 0%, #000 70%);
-        }
-        #enemy-img { 
-            width: clamp(200px, 40vmin, 500px); height: clamp(200px, 40vmin, 500px); 
-            object-fit: contain; image-rendering: pixelated; z-index: 1;
-        }
-        #enemy-fallback { font-size: clamp(100px, 20vmin, 250px); z-index: 1; }
-
-        .battle-bottom { 
-            position: absolute; bottom: 0; left: 0; width: 100%; height: auto; min-height: 35%;
-            display: flex; flex-direction: column; background: linear-gradient(to top, #000 70%, transparent); z-index: 5;
-            padding-bottom: env(safe-area-inset-bottom); /* 전투 메뉴가 홈 바에 안 가려지도록 */
-        }
-        #battle-log { 
-            flex-grow: 1; padding: 15px 25px; color: #ddd; 
-            font-size: clamp(14px, 2vmin, 20px); line-height: 1.6;
-            overflow-y: auto; display: flex; flex-direction: column; justify-content: flex-end; 
-            max-height: 25vh;
-        }
-        .battle-menu { 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-            gap: 10px; padding: 15px 25px 25px 25px; 
-        }
-        .battle-menu button {
-            background: rgba(30,30,30,0.9); color: white; border: 1px solid rgba(255,255,255,0.2);
-            padding: clamp(12px, 2vmin, 20px); cursor: pointer; 
-            font-size: clamp(14px, 2vmin, 20px); font-weight: bold; border-radius: 8px; transition: 0.1s;
-        }
-        .battle-menu button:active { transform: translateY(4px); background: #444; }
-        .battle-menu button:disabled { background: rgba(10,10,10,0.8); color: #555; transform: none; cursor: not-allowed; }
-
-        /* =========================================
-           [모바일/태블릿 세로 모드 최적화 (Portrait)]
-        ========================================= */
-        @media (max-aspect-ratio: 1/1) {
-            #controls {
-                right: 50%; 
-                bottom: calc(40px + env(safe-area-inset-bottom)); /* 세로 모드에서도 하단 여유 확보 */
-                transform: translateX(50%);
-                width: 65vw; max-width: 320px;
-                gap: 12px;
-            }
-            #status-bar { flex-direction: column; align-items: stretch; text-align: center; }
-            .menu-btns { justify-content: center; }
-            #dialogue-box { bottom: 35vh; width: 85%; } 
-            .battle-menu { grid-template-columns: repeat(2, 1fr); } 
-        }
-    </style>
+    #log-box { height: 25%; background-color: #000; border-top: 2px solid #555; padding: 10px; overflow-y: auto; font-size: 1.1rem; line-height: 1.4; }
+    #log-box p { margin: 5px 0; }
+</style>
 </head>
 <body>
 
-<div id="game-container">
-    <canvas id="gameCanvas"></canvas>
-    
-    <div id="status-bar" class="overlay">
-        <div>LV <span id="ui-lv">1</span> | HP <span id="ui-hp">100/100</span> | MP <span id="ui-mp">30/30</span> | 🧪 <span id="ui-potion">3</span> | <span id="ui-loc">마을</span></div>
-        <div class="menu-btns">
-            <button class="small-btn" onclick="saveGame()">저장</button>
-            <button class="small-btn" onclick="loadGame()">불러오기</button>
-            <button class="small-btn" onclick="openMap()">지도(M)</button>
-            <button id="recall-btn" class="small-btn" style="display:none; background:var(--danger); border-color:transparent;" onclick="recallToTown()">귀환</button>
+    <div id="title-screen">
+        <h1 class="game-title">올라라!<br>역사 타워</h1>
+        
+        <div class="title-btn-group">
+            <button class="title-btn" onclick="startGame(true)">새로운 도전</button>
+            <button class="title-btn load-btn" onclick="loadGameFromTitle()">이어하기</button>
         </div>
     </div>
 
-    <div id="dialogue-box" class="overlay"><div id="dialogue-text">...</div></div>
-
-    <div id="controls">
-        <div></div>
-        <button class="btn-dir" onmousedown="startMove(0,-1)" ontouchstart="event.preventDefault(); startMove(0,-1)" onmouseup="stopMove()" ontouchend="stopMove()" onmouseleave="stopMove()">↑</button>
-        <div></div>
-        <button class="btn-dir" onmousedown="startMove(-1,0)" ontouchstart="event.preventDefault(); startMove(-1,0)" onmouseup="stopMove()" ontouchend="stopMove()" onmouseleave="stopMove()">←</button>
-        <button class="btn-dir" onmousedown="startMove(0,1)" ontouchstart="event.preventDefault(); startMove(0,1)" onmouseup="stopMove()" ontouchend="stopMove()" onmouseleave="stopMove()">↓</button>
-        <button class="btn-dir" onmousedown="startMove(1,0)" ontouchstart="event.preventDefault(); startMove(1,0)" onmouseup="stopMove()" ontouchend="stopMove()" onmouseleave="stopMove()">→</button>
-    </div>
-
-    <div id="map-modal">
-        <h3>전체 지도</h3>
-        <canvas id="minimap-canvas"></canvas>
-        <div class="map-btns">
-            <button style="background:var(--highlight); color:#000;" onclick="teleportToPortal()">포탈 텔레포트 (10MP)</button>
-            <button style="background:#444; color:#fff;" onclick="closeMap()">닫기</button>
+    <div id="game-container">
+        <div id="status-bar">
+            <div class="stat-box">층수: <span id="floor-ui">1F</span></div>
+            <div class="stat-box hp-text">HP: <span id="hp-ui">100/100</span></div>
+            <div class="stat-box">Gold: <span id="gold-ui">0</span>G</div>
+            <div class="stat-box">포션: <span id="potion-ui">3</span>개</div>
         </div>
-        <p style="font-size:clamp(12px, 1.5vmin, 16px); color:#aaa; margin-top:15px; text-align:center; word-break:keep-all;">* 🌀: 포탈, ✨: 탈출구, 🔴: 현재 위치 (경계를 벗어날 수 없습니다)</p>
-    </div>
 
-    <div id="battle-screen">
-        <div class="battle-info">
-            <div class="battle-info-row enemy-stats"><span id="enemy-name">몬스터</span><span id="enemy-hp">HP: ?</span></div>
-            <div class="battle-info-row player-stats">
-                <span>나 (LV <span id="b-player-lv">1</span>)</span>
-                <span>HP: <span id="b-player-hp">100</span> | MP: <span id="b-player-mp">30</span></span>
+        <div id="main-screen">
+            <div id="monster-area">
+                <h2 id="monster-name">망각의 요괴</h2>
+                <div id="monster-image">👻</div>
+                <h3 class="hp-text">HP: <span id="monster-hp">50/50</span></h3>
             </div>
-        </div>
-        <div id="enemy-image-container">
-            <img id="enemy-img" src="" alt="몬스터" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
-            <span id="enemy-fallback" style="display:none;">👹</span>
-        </div>
-        <div class="battle-bottom">
-            <div id="battle-log">전투 시작!</div>
-            <div class="battle-menu">
-                <button id="btn-atk" onclick="battleAction('attack')">기본 공격</button>
-                <button id="btn-mag" onclick="battleAction('magic')" style="color:#3498db;">마법 (5MP)</button>
-                <button id="btn-heal" onclick="battleAction('heal')" style="color:#78e08f;">체력 회복 (8MP)</button>
-                <button id="btn-potion" onclick="battleAction('potion')" style="color:var(--item);">포션 (<span id="b-potion-cnt">3</span>)</button>
-                <button id="btn-run" onclick="battleAction('run')">도망치기</button>
+
+            <div id="quiz-box"></div>
+
+            <div id="hub-ui" class="button-group">
+                <button class="study-btn" onclick="showStudyNote()">📖 오늘의 학습 노트 보기</button>
+                <button class="lobby-btn" onclick="startBattle()">⚔️ 실전 테스트 (다음 층)</button>
+                <button class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">🛒 상점 (정비)</button>
+                <button class="system-btn" onclick="saveGame()">💾 진행 상황 저장하기</button>
             </div>
+
+            <div id="shop-ui" class="button-group" style="display: none;">
+                <button class="shop-btn" onclick="buyItem('potion')">🧪 포션 구매 (30G)</button>
+                <button class="shop-btn" onclick="buyItem('maxhp')">❤️ 최대체력 +20 (100G)</button>
+                <button class="shop-btn back-btn" onclick="closeShop()">⬅️ 로비로 돌아가기</button>
+            </div>
+
+            <div id="battle-ui" class="button-group" style="display: none;">
+                <button class="quiz-btn" onclick="loadQuiz()">📝 개념 공격 (문제 풀기)</button>
+                <button class="potion-btn" onclick="usePotion()">🧪 체력 회복 (포션)</button>
+            </div>
+
+            <div id="options-ui" class="button-group" style="display: none;"></div>
         </div>
+
+        <div id="log-box"></div>
     </div>
-</div>
 
 <script>
-    /* ====================================================================
-       [섹션 1] DOM 요소 캐싱
-    ==================================================================== */
-    const UI = {
-        lv: document.getElementById('ui-lv'),
-        hp: document.getElementById('ui-hp'),
-        mp: document.getElementById('ui-mp'),
-        potion: document.getElementById('ui-potion'),
-        loc: document.getElementById('ui-loc'),
-        recallBtn: document.getElementById('recall-btn'),
-        dialogBox: document.getElementById('dialogue-box'),
-        dialogText: document.getElementById('dialogue-text'),
-        controls: document.getElementById('controls'),
-        mapModal: document.getElementById('map-modal'),
-        battleScreen: document.getElementById('battle-screen'),
-        battleLog: document.getElementById('battle-log'),
-        eName: document.getElementById('enemy-name'),
-        eHp: document.getElementById('enemy-hp'),
-        eImg: document.getElementById('enemy-img'),
-        eFallback: document.getElementById('enemy-fallback'),
-        bLv: document.getElementById('b-player-lv'),
-        bHp: document.getElementById('b-player-hp'),
-        bMp: document.getElementById('b-player-mp'),
-        bPotionCnt: document.getElementById('b-potion-cnt'),
-        btnAtk: document.getElementById('btn-atk'),
-        btnMag: document.getElementById('btn-mag'),
-        btnHeal: document.getElementById('btn-heal'),
-        btnPotion: document.getElementById('btn-potion'),
-        btnRun: document.getElementById('btn-run')
-    };
+    const studyContent = "📝 [핵심 요약]\n1. 1592년: 임진왜란 발발\n2. 한산도 대첩: 학익진 전술로 이순신 장군 승리\n3. 행주 대첩: 권율 장군과 백성들의 방어\n4. 명량 해전: 12척의 배로 대승";
 
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 1920; canvas.height = 1080;
-
-    /* ====================================================================
-       [섹션 2] 게임 설정 (크기, 타일, 몬스터, 맵 정보)
-    ==================================================================== */
-    const TILE_SIZE = 200;            
-    const PLAYER_DISPLAY_SIZE = 500;  
-    const DUNGEON_LIMIT = 24; 
-
-    const imgs = { player: new Image(), chief: new Image() };
-    imgs.player.src = 'player.png'; imgs.player.onload = () => draw();
-    imgs.chief.src = 'chief.png';   imgs.chief.onload = () => draw();
-
-    const TILES = {
-        WATER: { id: 0, color: '#1e3799', walk: false },
-        SAND: { id: 1, color: '#f6b93b', walk: true },
-        GRASS: { id: 2, color: '#78e08f', walk: true },
-        FOREST: { id: 3, color: '#38ada9', walk: true },
-        MOUNTAIN: { id: 4, color: '#60a3bc', walk: false },
-        PORTAL: { id: 5, color: '#a55eea', walk: true },
-        TOWN_WALL: { id: 6, color: '#4b6584', walk: false },
-        TOWN_FLOOR: { id: 7, color: '#d1d8e0', walk: true },
-        EXIT: { id: 8, color: '#ff9f43', walk: true },
-        VOID: { id: 9, color: '#000000', walk: false } 
-    };
-
-    const RULES = {
-        [TILES.GRASS.id]:[TILES.GRASS.id, TILES.FOREST.id, TILES.SAND.id],
-        [TILES.FOREST.id]:[TILES.GRASS.id, TILES.FOREST.id, TILES.MOUNTAIN.id],
-        [TILES.SAND.id]:[TILES.GRASS.id, TILES.SAND.id, TILES.WATER.id],
-        [TILES.MOUNTAIN.id]:[TILES.FOREST.id, TILES.MOUNTAIN.id],
-        [TILES.WATER.id]:[TILES.SAND.id, TILES.WATER.id]
-    };
-
-    const VILLAGE_MAP = [
-        [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,5,7,7,7,7,7,7,3,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,7,7,7,7,7,7,7,7,7,7,7,7,7,6],
-        [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]
+    const quizBank = [
+        { q: "임진왜란이 발발한 연도는 언제인가?", options: ["1492년", "1592년", "1636년"], answer: 1 },
+        { q: "이순신 장군이 '학익진' 전술을 사용하여 크게 승리한 해전은?", options: ["명량해전", "한산도대첩", "노량해전"], answer: 1 },
+        { q: "행주산성에서 권율 장군과 부녀자들이 힘을 합쳐 왜군을 물리친 전투는?", options: ["진주대첩", "행주대첩", "살수대첩"], answer: 1 },
+        { q: "단 12척의 배로 133척의 왜군을 물리친 기적적인 해전은?", options: ["명량해전", "부산포해전", "옥포해전"], answer: 0 }
     ];
 
-    const ENEMIES =[
-        { name: '일본보병', hp: 50, atk: 10, exp: 40, image: 'JapanSoldier.png' },
-        { name: '일본포병', hp: 90, atk: 18, exp: 80, image: 'JapanCannon.png' },
-        { name: '일본장군', hp: 160, atk: 28, exp: 160, image: 'JapanGeneral.png' }
-    ];
+    let currentQuiz = null;
+    let player = {};
+    let monster = null;
+    let gameState = 'title';
 
-    /* ====================================================================
-       [섹션 3] 게임 상태 변수
-    ==================================================================== */
-    let gameState = 'explore'; 
-    let worldMode = 'village'; 
-    let dungeonMap = {};
-    let currentEnemy = null;
-    let moveInterval = null;
-    let isPlayerTurn = true;
-
-    let player = {
-        vx: 7, vy: 5, dx: 0, dy: 0, 
-        hp: 100, maxHp: 100, mp: 30, maxMp: 30, lv: 1, exp: 0, atk: 25,
-        potions: 3
-    };
-
-    /* ====================================================================
-       저장 및 불러오기 기능
-    ==================================================================== */
-    function saveGame() {
-        const saveData = { player, worldMode, dungeonMap };
-        localStorage.setItem('jrpg_save', JSON.stringify(saveData));
-        showDialogue("💾 게임이 저장되었습니다!");
+    function getNewPlayerStat() {
+        return { hp: 100, maxHp: 100, gold: 50, potions: 3, floor: 1 };
     }
 
-    function loadGame() {
-        const saved = localStorage.getItem('jrpg_save');
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            player = parsed.player;
-            worldMode = parsed.worldMode;
-            dungeonMap = parsed.dungeonMap;
-            showDialogue("📂 게임을 불러왔습니다!");
-            updateUI();
-            draw();
-        } else {
-            showDialogue("❌ 저장된 데이터가 없습니다.");
-        }
-    }
-
-    /* ====================================================================
-       [섹션 4] 핵심 렌더링 및 맵 로직 
-    ==================================================================== */
-    function generateDungeon() {
-        dungeonMap = { "0,0": TILES.PORTAL.id };
-        const exitX = (Math.random() > 0.5 ? 1 : -1) * (12 + Math.floor(Math.random() * 8));
-        const exitY = (Math.random() > 0.5 ? 1 : -1) * (12 + Math.floor(Math.random() * 8));
-        dungeonMap[`${exitX},${exitY}`] = TILES.EXIT.id;
-    }
-
-    function getTileAt(x, y) {
-        if (worldMode === 'village') {
-            return (y >= 0 && y < VILLAGE_MAP.length && x >= 0 && x < VILLAGE_MAP[0].length) 
-                   ? VILLAGE_MAP[y][x] : TILES.VOID.id; 
-        } else {
-            if (x < -DUNGEON_LIMIT || x > DUNGEON_LIMIT || y < -DUNGEON_LIMIT || y > DUNGEON_LIMIT) {
-                return TILES.VOID.id; 
-            }
-            const key = `${x},${y}`;
-            if (dungeonMap[key] !== undefined) return dungeonMap[key];
-            
-            let neighbors = [ dungeonMap[`${x-1},${y}`], dungeonMap[`${x+1},${y}`], dungeonMap[`${x},${y-1}`], dungeonMap[`${x},${y+1}`] ]
-                            .filter(id => id !== undefined && id !== TILES.PORTAL.id && id !== TILES.EXIT.id);
-            let possible =[TILES.GRASS.id, TILES.FOREST.id, TILES.SAND.id, TILES.WATER.id, TILES.MOUNTAIN.id];
-            neighbors.forEach(nId => { if (RULES[nId]) possible = possible.filter(pId => RULES[nId].includes(pId)); });
-            
-            const finalId = possible.length > 0 ? possible[Math.floor(Math.random() * possible.length)] : TILES.GRASS.id;
-            return (dungeonMap[key] = finalId);
-        }
-    }
-
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const px = worldMode === 'village' ? player.vx : player.dx;
-        const py = worldMode === 'village' ? player.vy : player.dy;
-
-        const tilesX = Math.ceil(canvas.width / TILE_SIZE) + 1; 
-        const tilesY = Math.ceil(canvas.height / TILE_SIZE) + 1; 
+    function startGame(isNew) {
+        document.getElementById('title-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
         
-        for (let iy = -Math.floor(tilesY/2); iy <= Math.floor(tilesY/2); iy++) {
-            for (let ix = -Math.floor(tilesX/2); ix <= Math.floor(tilesX/2); ix++) {
-                const wx = px + ix, wy = py + iy;
-                const tileId = getTileAt(wx, wy);
-                const tileData = Object.values(TILES).find(t => t.id === tileId);
-                
-                const dx = (canvas.width / 2) - (TILE_SIZE / 2) + (ix * TILE_SIZE);
-                const dy = (canvas.height / 2) - (TILE_SIZE / 2) + (iy * TILE_SIZE);
-
-                if (tileData) {
-                    ctx.fillStyle = tileData.color; ctx.fillRect(dx, dy, TILE_SIZE, TILE_SIZE);
-                    if (tileId === TILES.PORTAL.id || tileId === TILES.EXIT.id) {
-                        ctx.font = "72px Arial"; ctx.textAlign = "center";
-                        ctx.fillText(tileId === TILES.PORTAL.id ? "🌀" : "✨", dx + TILE_SIZE/2, dy + TILE_SIZE/1.3);
-                    }
-                }
-                
-                if (worldMode === 'village' && wx === 11 && wy === 4) {
-                    if (imgs.chief.complete && imgs.chief.naturalWidth) ctx.drawImage(imgs.chief, dx, dy, TILE_SIZE, TILE_SIZE);
-                    else { ctx.font = `${TILE_SIZE * 0.8}px Arial`; ctx.fillText("👴", dx + TILE_SIZE/2, dy + TILE_SIZE/1.4); }
-                }
-            }
+        if(isNew) {
+            player = getNewPlayerStat();
+            document.getElementById('log-box').innerHTML = "";
+            addLog("역사 타워에 입장했습니다. 잃어버린 기억을 되찾으세요!", "#ffd700");
+            updateUI();
+            enterHub();
         }
+    }
 
-        const cx = canvas.width / 2, cy = canvas.height / 2;
-
-        if (worldMode === 'dungeon') {
-            const grad = ctx.createRadialGradient(cx, cy, TILE_SIZE * 1.5, cx, cy, TILE_SIZE * 3.5);
-            grad.addColorStop(0, 'rgba(0,0,0,0)');       
-            grad.addColorStop(1, 'rgba(0,0,0,0.95)');    
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        if (imgs.player.complete && imgs.player.naturalWidth) {
-            ctx.drawImage(imgs.player, cx - PLAYER_DISPLAY_SIZE/2, cy - PLAYER_DISPLAY_SIZE/2, PLAYER_DISPLAY_SIZE, PLAYER_DISPLAY_SIZE);
+    function loadGameFromTitle() {
+        let saved = localStorage.getItem('historyTowerSave');
+        if (saved) {
+            player = JSON.parse(saved);
+            startGame(false);
+            addLog("저장된 위치부터 이어서 시작합니다.", "#4db6ac");
+            updateUI();
+            enterHub();
         } else {
-            ctx.font = `${PLAYER_DISPLAY_SIZE * 0.8}px Arial`; ctx.fillText("🧙‍♂️", cx, cy + PLAYER_DISPLAY_SIZE/4);
+            alert("저장된 데이터가 없습니다! 새로운 도전을 시작해 주세요.");
+        }
+    }
+
+    function saveGame() {
+        localStorage.setItem('historyTowerSave', JSON.stringify(player));
+        addLog("현재 층수와 스탯이 안전하게 저장되었습니다.", "#4db6ac");
+    }
+
+    function updateUI() {
+        document.getElementById('floor-ui').innerText = player.floor + "F";
+        document.getElementById('hp-ui').innerText = `${player.hp}/${player.maxHp}`;
+        document.getElementById('gold-ui').innerText = player.gold;
+        document.getElementById('potion-ui').innerText = player.potions;
+        if (monster) document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
+    }
+
+    function addLog(msg, color = "white") {
+        const logBox = document.getElementById('log-box');
+        logBox.innerHTML += `<p style="color: ${color};">${msg}</p>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function enterHub() {
+        gameState = 'hub';
+        document.getElementById('monster-area').style.display = 'none';
+        document.getElementById('battle-ui').style.display = 'none';
+        document.getElementById('quiz-box').style.display = 'none';
+        document.getElementById('options-ui').style.display = 'none';
+        document.getElementById('shop-ui').style.display = 'none';
+        document.getElementById('hub-ui').style.display = 'flex';
+        
+        addLog(`--- [ ${player.floor}층 안전지대 ] 정비를 하거나 학습을 진행하세요. ---`, "#a5d6a7");
+        updateUI();
+    }
+
+    function showStudyNote() {
+        alert(studyContent);
+        addLog("학습 노트를 복습했습니다. 지식이 조금 더 선명해졌습니다.", "#4dd0e1");
+    }
+
+    function openShop() {
+        document.getElementById('hub-ui').style.display = 'none';
+        document.getElementById('shop-ui').style.display = 'flex';
+        addLog("상점에 입장했습니다. 모은 골드로 생존 물품을 구매하세요.", "#4dd0e1");
+    }
+
+    function closeShop() {
+        document.getElementById('shop-ui').style.display = 'none';
+        document.getElementById('hub-ui').style.display = 'flex';
+        addLog("상점에서 나왔습니다.", "#fff");
+    }
+
+    function buyItem(itemType) {
+        if (itemType === 'potion' && player.gold >= 30) {
+            player.gold -= 30; player.potions++;
+            addLog("포션을 1개 구매했습니다! (30G)", "#ffd700");
+        } else if (itemType === 'maxhp' && player.gold >= 100) {
+            player.gold -= 100; player.maxHp += 20; player.hp += 20;
+            addLog("최대 체력을 확장했습니다! +20 (100G)", "#ff8a65");
+        } else {
+            addLog("골드가 부족합니다! 문제를 더 맞혀야 합니다.", "#ff5252");
         }
         updateUI();
     }
 
-    /* ====================================================================
-       [섹션 5] UI 및 상태 업데이트 함수
-    ==================================================================== */
-    function updateUI() {
-        UI.lv.innerText = player.lv; UI.hp.innerText = `${player.hp}/${player.maxHp}`;
-        UI.mp.innerText = `${player.mp}/${player.maxMp}`; 
-        UI.potion.innerText = player.potions; 
-        UI.loc.innerText = worldMode === 'village' ? '마을' : '던전';
-        UI.recallBtn.style.display = worldMode === 'dungeon' ? 'block' : 'none';
-        UI.bPotionCnt.innerText = player.potions;
-    }
-
-    function recoverAll() { player.hp = player.maxHp; player.mp = player.maxMp; updateUI(); }
-
-    function showDialogue(text) {
-        UI.dialogText.innerText = text; UI.dialogBox.style.display = 'block';
-        const prev = gameState; gameState = 'dialogue';
-        setTimeout(() => { 
-            UI.dialogBox.style.display = 'none';
-            if (gameState === 'dialogue') gameState = prev === 'battle' ? 'battle' : 'explore';
-        }, 1500);
-    }
-
-    /* ====================================================================
-       [섹션 6] 이동 및 맵 상호작용
-    ==================================================================== */
-    function move(dx, dy) {
-        if (gameState !== 'explore') return;
-        let nx = (worldMode === 'village' ? player.vx : player.dx) + dx;
-        let ny = (worldMode === 'village' ? player.vy : player.dy) + dy;
-        const tId = getTileAt(nx, ny);
-        const tData = Object.values(TILES).find(t => t.id === tId);
-
-        if (tData && tData.walk) {
-            worldMode === 'village' ? (player.vx = nx, player.vy = ny) : (player.dx = nx, player.dy = ny);
-            
-            if (tId === TILES.PORTAL.id) { stopMove(); setTimeout(toggleWorld, 50); }
-            else if (tId === TILES.EXIT.id) { stopMove(); completeDungeon(); }
-            else if (worldMode === 'village' && nx === 11 && ny === 4) { stopMove(); showDialogue("촌장: '탈출구(✨)를 찾아 생존하게나!'"); }
-            else if (worldMode === 'dungeon' && Math.random() < 0.012) { stopMove(); startBattle(); } 
-        }
-        draw();
-    }
-
-    function startMove(dx, dy) { if (moveInterval) clearInterval(moveInterval); move(dx, dy); moveInterval = setInterval(() => move(dx, dy), 150); }
-    function stopMove() { if (moveInterval) { clearInterval(moveInterval); moveInterval = null; } }
-
-    function toggleWorld() {
-        if (worldMode === 'village') { showDialogue("던전 진입!"); worldMode = 'dungeon'; generateDungeon(); player.dx = player.dy = 0; }
-        else { showDialogue("마을 귀환 (전체 회복)"); worldMode = 'village'; player.vx = 4; player.vy = 5; recoverAll(); }
-        setTimeout(() => { gameState = 'explore'; draw(); }, 800);
-    }
-    
-    function recallToTown() {
-        if (worldMode !== 'dungeon' || gameState !== 'explore') return;
-        showDialogue("마을로 긴급 귀환 중..."); setTimeout(() => { worldMode = 'village'; player.vx = 7; player.vy = 5; gameState = 'explore'; recoverAll(); draw(); }, 500);
-    }
-
-    function completeDungeon() {
-        const bonus = player.lv * 200; showDialogue(`탈출 성공! 보너스 EXP +${bonus}`);
-        player.exp += bonus; checkLevelUp(); worldMode = 'village'; player.vx = 4; player.vy = 5;
-        recoverAll(); setTimeout(() => { gameState = 'explore'; draw(); }, 1200);
-    }
-
-    function openMap() { if (gameState !== 'explore') return; gameState = 'map'; UI.controls.style.display = 'none'; UI.mapModal.style.display = 'flex'; drawMinimap(); }
-    function closeMap() { UI.mapModal.style.display = 'none'; gameState = 'explore'; UI.controls.style.display = 'grid'; }
-    
-    function drawMinimap() {
-        const mCanvas = document.getElementById('minimap-canvas');
-        const mCtx = mCanvas.getContext('2d');
-        const mSize = 800; 
-        mCanvas.width = mCanvas.height = mSize; 
-        mCtx.clearRect(0, 0, mSize, mSize);
-
-        if (worldMode === 'village') { 
-            mCtx.fillStyle = '#444'; mCtx.font = "30px Arial"; mCtx.textAlign = "center"; mCtx.textBaseline = "middle";
-            mCtx.fillText("마을에서는 지도를 볼 수 없습니다.", mSize/2, mSize/2); 
-            return; 
-        }
-
-        const scale = 16;
-        const offset = mSize / 2;
-
-        for (let key in dungeonMap) {
-            const [x, y] = key.split(',').map(Number); 
-            const id = dungeonMap[key];
-            mCtx.fillStyle = Object.values(TILES).find(t => t.id === id).color;
-            mCtx.fillRect(offset + x*scale, offset + y*scale, scale, scale);
-        }
-
-        mCtx.textAlign = "center";
-        mCtx.textBaseline = "middle";
-
-        for (let key in dungeonMap) {
-            const [x, y] = key.split(',').map(Number); 
-            const id = dungeonMap[key];
-            const centerX = offset + x*scale + scale/2;
-            const centerY = offset + y*scale + scale/2;
-
-            if (id === TILES.PORTAL.id || id === TILES.EXIT.id) { 
-                mCtx.fillStyle = 'white'; mCtx.font = "48px Arial"; 
-                mCtx.shadowColor = "rgba(0, 0, 0, 0.8)"; mCtx.shadowBlur = 10;
-                mCtx.fillText(id === TILES.PORTAL.id ? "🌀" : "✨", centerX, centerY);
-                mCtx.shadowBlur = 0; 
-            }
-        }
-
-        const playerX = offset + player.dx*scale + scale/2;
-        const playerY = offset + player.dy*scale + scale/2;
-
-        mCtx.fillStyle = "#ff4757"; mCtx.strokeStyle = "#ffffff"; mCtx.lineWidth = 4; 
-        mCtx.beginPath(); mCtx.arc(playerX, playerY, 14, 0, Math.PI*2); 
-        mCtx.fill(); mCtx.stroke();
-    }
-    function teleportToPortal() { if (player.mp < 10) return alert("마력이 부족합니다! (10MP 필요)"); player.mp -= 10; player.dx = player.dy = 0; closeMap(); showDialogue("포탈로 텔레포트 완료!"); draw(); }
-
-    /* ====================================================================
-       [섹션 7] 전투 시스템
-    ==================================================================== */
     function startBattle() {
-        gameState = 'battle'; isPlayerTurn = true; UI.controls.style.display = 'none';
-        currentEnemy = { ...ENEMIES[Math.min(ENEMIES.length - 1, Math.floor(Math.random() * player.lv))] };
+        gameState = 'battle';
+        document.getElementById('hub-ui').style.display = 'none';
+        document.getElementById('battle-ui').style.display = 'flex';
+        document.getElementById('monster-area').style.display = 'flex';
+
+        let maxHp = 30 + (player.floor * 10);
+        monster = { name: "망각의 요괴", hp: maxHp, maxHp: maxHp, goldReward: 20 + (player.floor * 5) };
         
-        UI.battleScreen.style.display = 'flex'; UI.eName.innerText = currentEnemy.name;
-        UI.eImg.style.display = 'inline'; UI.eFallback.style.display = 'none'; UI.eImg.src = currentEnemy.image;
-        UI.battleLog.innerHTML = `<div style="color:var(--danger)">${currentEnemy.name} 발견!</div>`;
-        updateBattleUI(); toggleBattleBtns(false);
+        addLog(`야생의 ${monster.name}이(가) 나타나 개념을 훔쳐가려 합니다!`, "#ff9800");
+        updateUI();
     }
 
-    function updateBattleUI() {
-        UI.eHp.innerText = `HP: ${currentEnemy.hp}`; UI.bHp.innerText = player.hp;
-        UI.bMp.innerText = player.mp; UI.bLv.innerText = player.lv; updateUI();
-    }
+    function loadQuiz() {
+        let randIdx = Math.floor(Math.random() * quizBank.length);
+        currentQuiz = quizBank[randIdx];
 
-    function toggleBattleBtns(disabled) { 
-        UI.btnAtk.disabled = UI.btnMag.disabled = UI.btnHeal.disabled = UI.btnPotion.disabled = UI.btnRun.disabled = disabled; 
-    }
-
-    function battleAction(type) {
-        if (gameState !== 'battle' || !isPlayerTurn) return;
-        isPlayerTurn = false; toggleBattleBtns(true); let log = UI.battleLog;
+        document.getElementById('battle-ui').style.display = 'none';
+        document.getElementById('quiz-box').style.display = 'block';
+        document.getElementById('quiz-box').innerText = currentQuiz.q;
         
-        if (type === 'attack') {
-            let d = Math.floor(player.atk * (0.8 + Math.random() * 0.4)); currentEnemy.hp -= d; 
-            log.innerHTML += `<div>> 기본 공격! 적에게 <span style="color:var(--highlight)">${d}</span> 피해.</div>`;
-        } else if (type === 'magic') {
-            if (player.mp < 5) { log.innerHTML += `<div>> 마나 부족!</div>`; isPlayerTurn = true; toggleBattleBtns(false); return; }
-            player.mp -= 5; let d = Math.floor(player.atk * 2.5); currentEnemy.hp -= d; 
-            log.innerHTML += `<div>> 마법 공격! 적에게 <span style="color:var(--highlight)">${d}</span> 피해!</div>`;
-        } else if (type === 'heal') {
-            if (player.mp < 8) { log.innerHTML += `<div>> 마나 부족!</div>`; isPlayerTurn = true; toggleBattleBtns(false); return; }
-            player.mp -= 8; player.hp = Math.min(player.maxHp, player.hp + 40);
-            log.innerHTML += `<div>> 체력 회복! HP가 <span style="color:#78e08f">+40</span> 회복됨.</div>`;
-        } else if (type === 'potion') { 
-            if (player.potions <= 0) { log.innerHTML += `<div>> 남은 포션이 없습니다!</div>`; isPlayerTurn = true; toggleBattleBtns(false); return; }
-            player.potions--; player.hp = Math.min(player.maxHp, player.hp + 60);
-            log.innerHTML += `<div>> 🧪 포션 사용! HP가 <span style="color:#78e08f">+60</span> 회복됨.</div>`;
-        } else if (type === 'run') {
-            if (Math.random() > 0.4) { log.innerHTML += `<div>> 도망쳤다...</div>`; setTimeout(endBattle, 800); return; }
-            log.innerHTML += `<div>> 도망 실패!</div>`;
-        }
+        const optionsUi = document.getElementById('options-ui');
+        optionsUi.style.display = 'flex';
+        optionsUi.innerHTML = ""; 
 
-        updateBattleUI(); log.scrollTop = log.scrollHeight;
-
-        if (currentEnemy.hp <= 0) {
-            let dropMsg = "";
-            if (Math.random() < 0.35) { 
-                player.potions++;
-                dropMsg = `<br>🎁 <span style="color:var(--item)">포션을 1개 획득했습니다! (보유: ${player.potions}개)</span>`;
-            }
-            log.innerHTML += `<div style="margin-top:10px;"><span style="color:#78e08f">승리! +${currentEnemy.exp} EXP.</span>${dropMsg}</div>`;
-            player.exp += currentEnemy.exp; checkLevelUp(); setTimeout(endBattle, 1500); return;
-        }
-
-        setTimeout(() => {
-            if (currentEnemy.hp > 0 && gameState === 'battle') {
-                let d = Math.floor(currentEnemy.atk * (0.7 + Math.random() * 0.6)); player.hp -= d; 
-                log.innerHTML += `<div>> ${currentEnemy.name}의 반격! 나에게 <span style="color:var(--danger)">${d}</span> 피해.</div>`;
-                updateBattleUI(); log.scrollTop = log.scrollHeight;
-
-                if (player.hp <= 0) { 
-                    log.innerHTML += `<div style="color:red; font-size:1.2em; font-weight:bold;">사망했습니다...</div>`;
-                    setTimeout(() => { alert("사망했습니다. 재시작합니다."); localStorage.removeItem('jrpg_save'); location.reload(); }, 1500);
-                } else { isPlayerTurn = true; toggleBattleBtns(false); }
-            }
-        }, 800);
+        currentQuiz.options.forEach((opt, index) => {
+            let btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.innerText = `${index + 1}. ${opt}`;
+            btn.onclick = () => checkAnswer(index);
+            optionsUi.appendChild(btn);
+        });
     }
 
-    function checkLevelUp() {
-        let req = player.lv * 150;
-        if (player.exp >= req) {
-            player.lv++; player.exp -= req; player.atk += 10; player.maxHp += 40; player.maxMp += 10;
-            player.hp = player.maxHp; player.mp = player.maxMp;
-            showDialogue(`LEVEL UP! 현재 레벨: ${player.lv}`); updateBattleUI();
+    function checkAnswer(selectedIndex) {
+        document.getElementById('quiz-box').style.display = 'none';
+        document.getElementById('options-ui').style.display = 'none';
+        document.getElementById('battle-ui').style.display = 'flex';
+
+        if (selectedIndex === currentQuiz.answer) {
+            let dmg = 25 + Math.floor(Math.random() * 10);
+            monster.hp -= dmg;
+            player.gold += 10;
+            addLog(`⭕ 정답! ${monster.name}에게 ${dmg}의 피해를 입히고 10G를 얻었습니다!`, "#00e676");
+        } else {
+            let dmg = 15 + Math.floor(Math.random() * 5);
+            player.hp -= dmg;
+            addLog(`❌ 오답입니다... 개념이 흔들려 ${dmg}의 피해를 입었습니다! (정답: ${currentQuiz.options[currentQuiz.answer]})`, "#ff5252");
+        }
+
+        updateUI();
+
+        if (monster.hp <= 0) {
+            setTimeout(winBattle, 500);
+        } else if (player.hp <= 0) {
+            setTimeout(gameOver, 500);
         }
     }
-    function endBattle() { gameState = 'explore'; UI.battleScreen.style.display = 'none'; UI.controls.style.display = 'grid'; draw(); }
 
-    /* ====================================================================
-       [섹션 8] 키보드 입력 처리
-    ==================================================================== */
-    let keys = {};
-    window.addEventListener('keydown', (e) => {
-        if (keys[e.key]) return; keys[e.key] = true;
-        if (gameState === 'explore') {
-            if (e.key === 'ArrowUp') startMove(0, -1);
-            else if (e.key === 'ArrowDown') startMove(0, 1);
-            else if (e.key === 'ArrowLeft') startMove(-1, 0);
-            else if (e.key === 'ArrowRight') startMove(1, 0);
-            else if (e.key.toLowerCase() === 'm') openMap();
-        } else if (gameState === 'map' && (e.key.toLowerCase() === 'm' || e.key === 'Escape')) closeMap();
-    });
-    window.addEventListener('keyup', (e) => {
-        delete keys[e.key];
-        if (!keys['ArrowUp'] && !keys['ArrowDown'] && !keys['ArrowLeft'] && !keys['ArrowRight']) stopMove();
-    });
+    function usePotion() {
+        if (player.potions > 0) {
+            player.potions--;
+            player.hp = Math.min(player.maxHp, player.hp + 40);
+            addLog("포션을 사용하여 체력을 크게 회복했습니다.", "#fff176");
+            updateUI();
+        } else {
+            addLog("포션이 없습니다! 상점에서 구매하세요.", "#ff9800");
+        }
+    }
+
+    function winBattle() {
+        addLog(`${monster.name}을(를) 물리쳤습니다! 층 클리어 보상으로 ${monster.goldReward}G를 획득했습니다.`, "#69f0ae");
+        player.gold += monster.goldReward;
+        monster = null; 
+        player.floor++;
+        updateUI();
+        setTimeout(enterHub, 1500);
+    }
+
+    function gameOver() {
+        addLog("기억을 모두 빼앗겼습니다...", "#d50000");
+        alert(`타워 등반 실패!\n도달한 층수: ${player.floor}F\n확인을 누르면 타이틀로 돌아갑니다.`);
+        localStorage.removeItem('historyTowerSave'); 
+        location.reload(); 
+    }
+
 </script>
 </body>
 </html>
