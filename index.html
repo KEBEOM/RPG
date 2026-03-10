@@ -14,23 +14,22 @@
         --safe-top: env(safe-area-inset-top);
     }
 
+    html, body {
+        width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    }
+
     body {
-        margin: 0; padding: 0; background-color: #1a1a1a; color: #fff;
+        background-color: #1a1a1a; color: #fff;
         font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
         display: flex; flex-direction: column; 
-        /* 아이폰 주소창 이슈 해결을 위한 dvh 적용 */
-        height: 100vh; height: 100dvh; 
-        overflow: hidden;
-        padding: var(--safe-top) var(--safe-right) 0 var(--safe-left);
+        padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
         box-sizing: border-box;
     }
 
-    /* 공통 배경 및 패널 */
-    .screen-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; padding-bottom: calc(20px + var(--safe-bottom)); box-sizing: border-box; }
+    .screen-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; box-sizing: border-box; padding-bottom: calc(20px + var(--safe-bottom)); }
     
     .game-title { font-size: 3.5rem; color: #ffd700; text-align: center; margin-bottom: 10px; text-shadow: 2px 2px 0px #d32f2f; flex: none; }
     #data-status { color: #a5d6a7; font-size: 1rem; margin-bottom: 15px; text-align: center; line-height: 1.5; }
-    
     #high-score-display { font-size: 1.4rem; color: #4dd0e1; margin-bottom: 25px; font-weight: bold; text-shadow: 1px 1px 0px #333; background-color: #2c3e50; padding: 10px 20px; border-radius: 8px; border: 2px solid #34495e; }
 
     .title-btn-group { display: flex; flex-direction: column; gap: 15px; width: 80%; max-width: 300px; }
@@ -40,7 +39,6 @@
     .title-btn:active { transform: scale(0.95); }
     .back-btn { background-color: #616161; color: white; border: none; padding: 10px 20px; font-size: 1rem; border-radius: 6px; cursor: pointer; flex: none; margin-bottom: 10px; margin-top: 10px;}
 
-    /* --- 범위 선택 창 --- */
     #range-screen { display: none; z-index: 120; }
     .range-box { background-color: #2c3e50; padding: 30px; border-radius: 15px; border: 2px solid #f39c12; text-align: center; max-width: 400px; width: 100%; box-sizing: border-box; }
     .range-box h2 { color: #ffd700; margin-top: 0; margin-bottom: 20px; }
@@ -49,9 +47,8 @@
     select { padding: 10px; font-size: 1.1rem; border-radius: 5px; border: none; background-color: #ecf0f1; color: #2c3e50; font-family: inherit; width: 60%; }
     .start-game-btn { background-color: #d32f2f; width: 100%; margin-top: 20px; font-size: 1.3rem; padding: 15px; }
 
-    /* --- 층 클리어 보상 (카드 3장) UI --- */
     #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; overflow-y: auto; justify-content: flex-start; padding-top: 50px;}
-    #reward-cards-container { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; max-width: 800px; width: 100%; }
+    #reward-cards-container { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; max-width: 800px; width: 100%; padding-bottom: 40px; }
     .reward-card { background-color: #2c3e50; border: 3px solid #f39c12; border-radius: 12px; padding: 20px; flex: 1 1 200px; cursor: pointer; transition: transform 0.2s, background-color 0.2s; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 6px 10px rgba(0,0,0,0.5); }
     .reward-card:hover { transform: translateY(-5px) scale(1.02); background-color: #34495e; }
     .reward-card:active { transform: scale(0.95); }
@@ -59,7 +56,6 @@
     .reward-title { color: #ffd700; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
     .reward-desc { color: #ecf0f1; font-size: 1rem; word-break: keep-all; line-height: 1.4; }
 
-    /* --- 공부하기 화면 --- */
     #study-screen { display: none; background-color: #1a1a1a; z-index: 150; }
     #study-content { flex: 1; width: 100%; max-width: 600px; overflow-y: auto; background-color: #212f3d; border-radius: 10px; padding: 15px; border: 2px solid #34495e; box-sizing: border-box;}
     .category-header { background-color: #e65100; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.4rem; font-weight: bold; margin-top: 10px; margin-bottom: 5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
@@ -68,19 +64,19 @@
     .study-keyword { padding: 15px; font-size: 1.2rem; color: #4dd0e1; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
     .study-desc { display: none; padding: 15px; font-size: 1.1rem; color: #ecf0f1; background-color: #2c3e50; border-top: 1px dashed #7f8c8d; word-break: keep-all; line-height: 1.5; }
 
-    /* --- 게임 UI --- */
     #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
+    
     #status-bar { display: flex; justify-content: space-between; flex-wrap: wrap; background-color: #333; padding: 10px 15px; font-size: 1.1rem; border-bottom: 2px solid #555; gap: 8px; flex: none; }
     .stat-box { flex: 1 1 30%; min-width: 90px; }
     .stat-box span { color: #ffd700; font-weight: bold; }
     .hp-text { color: #ff6b6b; }
     
     #main-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; position: relative; overflow-y: auto; }
-    #monster-area { display: none; flex-direction: column; align-items: center; margin-bottom: 15px; }
+    #monster-area { display: none; flex-direction: column; align-items: center; margin-bottom: 15px; flex: none; }
     #monster-image { width: 100px; height: 100px; background-color: #555; border: 3px solid #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 10px; }
-    #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 15px; width: 100%; max-width: 500px; font-size: 1.1rem; line-height: 1.4; word-break: keep-all; box-sizing: border-box; }
+    #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 15px; width: 100%; max-width: 500px; font-size: 1.1rem; line-height: 1.4; word-break: keep-all; box-sizing: border-box; flex: none; }
 
-    .button-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; }
+    .button-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; flex: none; }
     button { color: white; border: none; padding: 12px 15px; font-size: 1rem; border-radius: 8px; cursor: pointer; flex: 1 1 45%; box-shadow: 0 4px 6px rgba(0,0,0,0.3); box-sizing: border-box; }
     button:active { transform: scale(0.95); }
 
@@ -99,10 +95,9 @@
     .inv-item-desc { font-size: 0.85rem; color: #bdc3c7; }
     .use-btn { background-color: #e65100; padding: 10px; min-width: 70px; flex: none; margin-left: 10px; }
     
-    #log-box { flex: none; height: 22%; min-height: 120px; background-color: #000; border-top: 2px solid #555; padding: 10px; padding-bottom: calc(10px + var(--safe-bottom)); overflow-y: auto; font-size: 1.05rem; line-height: 1.4; box-sizing: border-box; }
+    #log-box { flex: none; height: 140px; background-color: #000; border-top: 2px solid #555; padding: 10px; overflow-y: auto; font-size: 1.05rem; line-height: 1.4; box-sizing: border-box; }
     #log-box p { margin: 5px 0; }
 
-    /* 모바일 (아이폰 등) 전용 반응형 세팅 */
     @media (max-width: 600px) {
         .game-title { font-size: 2.5rem; }
         .title-btn { padding: 15px; font-size: 1.3rem; }
@@ -113,6 +108,7 @@
         .study-header { font-size: 1.6rem; }
         .category-header { font-size: 1.2rem; padding: 12px; }
         .study-keyword { font-size: 1.1rem; padding: 12px; }
+        #log-box { height: 110px; font-size: 0.95rem; }
     }
 </style>
 </head>
@@ -197,6 +193,12 @@
             </div>
 
             <div id="options-ui" class="button-group" style="display: none;"></div>
+            
+            <div id="inventory-modal">
+                <h2 style="margin-top: 0; color: #fff;">🎒 내 가방</h2>
+                <div id="inventory-list" style="flex: 1; overflow-y: auto; margin-bottom: 20px;"></div>
+                <button class="back-btn" onclick="closeInventory()" style="flex: none;">닫기</button>
+            </div>
         </div>
 
         <div id="log-box"></div>
@@ -367,7 +369,7 @@
     const REWARD_CARDS = [
         { id: 'heal', icon: '🛌', title: "휴식", desc: "지식 에너지를 40 회복합니다.", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("충분한 휴식으로 지식 에너지를 40 회복했습니다.", "#64b5f6"); } },
         { id: 'maxHp', icon: '🧠', title: "지식의 샘", desc: "최대 지식 에너지가 15 영구 증가합니다.", action: () => { player.maxHp += 15; player.hp += 15; addLog("새로운 깨달음! 최대 지식 에너지가 15 영구 증가했습니다.", "#ffeb3b"); } },
-        { id: 'atkUp', icon: '⚔️', title: "깨달음의 검", desc: "기본 정화력이 영구적으로 5 상승합니다.", action: () => { player.baseAtk += 5; addLog("정화력이 영구적으로 5 상승했습니다!", "#ff8a65"); } },
+        { id: 'atkUp', icon: '⚔️', title: "깨달음의 검", desc: "기본 정화력(공격력)이 영구적으로 5 상승합니다.", action: () => { player.baseAtk += 5; addLog("정화력이 영구적으로 5 상승했습니다!", "#ff8a65"); } },
         { id: 'evasionUp', icon: '💨', title: "날렵한 몸놀림", desc: "요괴의 공격을 피할 회피율이 영구적으로 5% 상승합니다.", action: () => { player.evasion += 5; addLog("회피율이 영구적으로 5% 상승했습니다!", "#81c784"); } },
         { id: 'gold', icon: '💰', title: "숨겨진 유물", desc: "연구 자금 40G를 획득합니다.", action: () => { player.gold += 40; addLog("유물을 발견하여 40G를 획득했습니다!", "#ffd700"); } },
         { id: 'buyItem', icon: '🎒', title: "비밀 상인", desc: "30G를 내고 무작위 물건 1개를 얻습니다.", action: () => { 
@@ -469,7 +471,10 @@
         if (!hasItems) invList.innerHTML = "<p style='text-align:center; color:#bdc3c7;'>가방이 텅 비어있습니다.</p>";
         document.getElementById('inventory-modal').style.display = 'flex';
     }
-    function closeInventory() { document.getElementById('inventory-modal').style.display = 'none'; }
+    
+    function closeInventory() { 
+        document.getElementById('inventory-modal').style.display = 'none'; 
+    }
 
     function useItem(itemKey) {
         if (player.inventory[itemKey] > 0) {
