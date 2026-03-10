@@ -14,7 +14,6 @@
         --safe-top: env(safe-area-inset-top);
     }
 
-    /* 화면 고정 및 스크롤 바운스 방지 */
     html, body {
         width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
     }
@@ -48,7 +47,7 @@
     select { padding: 10px; font-size: 1.1rem; border-radius: 5px; border: none; background-color: #ecf0f1; color: #2c3e50; font-family: inherit; width: 60%; }
     .start-game-btn { background-color: #d32f2f; width: 100%; margin-top: 20px; font-size: 1.3rem; padding: 15px; }
 
-    /* --- 🎁 층 클리어 보상 (PC/태블릿 최적화) --- */
+    /* --- 🎁 층 클리어 보상 (PC/태블릿 기본 디자인) --- */
     #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; overflow-y: auto; align-items: center; justify-content: center; padding: 40px 20px;}
     #reward-screen .game-title { margin-bottom: 30px; font-size: 3rem; }
     #reward-cards-container { display: flex; flex-direction: row; gap: 25px; flex-wrap: wrap; justify-content: center; max-width: 1100px; width: 100%; }
@@ -57,7 +56,7 @@
         background-color: #2c3e50; border: 3px solid #f39c12; border-radius: 12px; padding: 40px 20px; 
         flex: 1 1 280px; max-width: 350px; cursor: pointer; transition: transform 0.2s, background-color 0.2s; 
         display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; 
-        box-shadow: 0 8px 15px rgba(0,0,0,0.6); 
+        box-shadow: 0 8px 15px rgba(0,0,0,0.6); box-sizing: border-box;
     }
     .reward-card:hover { transform: translateY(-5px) scale(1.02); background-color: #34495e; }
     .reward-card:active { transform: scale(0.95); }
@@ -96,11 +95,8 @@
     .lobby-btn { background-color: #7b1fa2; font-size: 1.1rem; padding: 15px; }
     .shop-btn { background-color: #00838f; }
     .bag-btn { background-color: #8d6e63; }
-    
-    /* 하단 시스템 버튼 스타일 분리 (저장, 메인메뉴) */
     .system-btn { background-color: #455a64; flex: 1 1 45%; margin-top: 5px; }
     .quit-btn { background-color: #c62828; flex: 1 1 45%; margin-top: 5px; }
-    
     .quiz-btn { background-color: #d32f2f; font-size: 1.2rem; padding: 15px; flex: 1 1 100%; }
     .option-btn { background-color: #34495e; font-size: 1.05rem; flex: 1 1 100%; }
     .potion-btn { background-color: #fbc02d; color: #333; }
@@ -122,14 +118,23 @@
         #status-bar { font-size: 0.95rem; padding: 8px 10px; }
         .stat-box { flex: 1 1 30%; min-width: 80px; }
         
+        /* 🎁 모바일 전용 보상 창 (크기 폭주 현상 해결) */
         #reward-screen { justify-content: flex-start; padding: 30px 15px; }
         #reward-screen .game-title { margin-bottom: 20px; font-size: 2rem; }
-        #reward-cards-container { flex-direction: column; gap: 12px; }
-        .reward-card { flex-direction: row; width: 100%; max-width: 100%; padding: 15px 20px; justify-content: flex-start; align-items: center; text-align: left; }
-        .reward-icon { font-size: 2.8rem; margin-bottom: 0; margin-right: 20px; }
-        .reward-text-wrap { align-items: flex-start; }
+        #reward-cards-container { flex-direction: column; gap: 15px; width: 100%; }
+        
+        .reward-card { 
+            flex: none; /* 핵심 해결책: 세로 방향으로 카드가 280px만큼 억지로 늘어나는 것을 차단합니다. */
+            flex-direction: row; 
+            width: 100%; max-width: 100%; 
+            padding: 15px 20px; 
+            justify-content: flex-start; align-items: center; text-align: left; 
+            min-height: 80px;
+        }
+        .reward-icon { font-size: 2.5rem; margin-bottom: 0; margin-right: 15px; flex: none; }
+        .reward-text-wrap { align-items: flex-start; flex: 1; }
         .reward-title { font-size: 1.2rem; margin-bottom: 5px; }
-        .reward-desc { font-size: 0.95rem; }
+        .reward-desc { font-size: 0.95rem; line-height: 1.3; margin-bottom: 0;}
 
         #monster-name { font-size: 1.3rem; margin-bottom: 5px; }
         #monster-image { width: 70px; height: 70px; font-size: 1.8rem; margin-bottom: 5px; }
@@ -209,7 +214,6 @@
                     <button class="lobby-btn" onclick="startBattle()" style="flex: 1 1 100%;">🚪 다음 층으로 (실전 테스트)</button>
                     <button class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">🛒 상점 (물품 교환)</button>
                     <button class="bag-btn" onclick="openInventory()">🎒 내 가방</button>
-                    
                     <button class="system-btn" onclick="saveGame()">💾 기록하기</button>
                     <button class="quit-btn" onclick="confirmReturnToTitle()">🏠 메인 메뉴로</button>
                 </div>
@@ -419,7 +423,7 @@
             } else { addLog("골드가 부족하여 물건을 사지 못하고 지나쳤습니다...", "#ff5252"); }
         } },
         { id: 'potion', icon: '🧪', title: "연금술사의 조각", desc: "집중력 회복제 1개를 얻습니다.", action: () => { player.potions++; addLog("집중력 회복제를 1개 획득했습니다.", "#a5d6a7"); } },
-        { id: 'boss', icon: '👿', title: "정예 요괴 소환", desc: "[위험] 강력한 요괴와 즉시 전투합니다. (아이템 2개 확정 드랍)", action: () => { startBossBattle(); return 'boss'; } }
+        { id: 'boss', icon: '👿', title: "정예 요괴 소환", desc: "[위험] 강력한 요괴와 즉시 전투합니다.", action: () => { startBossBattle(); return 'boss'; } }
     ];
 
     let currentQuiz = null;
@@ -454,7 +458,6 @@
         addLog("현재 층수와 획득한 아이템이 안전하게 기록되었습니다.", "#4db6ac");
     }
 
-    // 메인 메뉴로 돌아가는 함수 추가
     function confirmReturnToTitle() {
         if (confirm("메인 화면으로 돌아가시겠습니까?\n(저장하지 않은 진행 상황은 사라집니다.)")) {
             document.getElementById('game-container').style.display = 'none';
