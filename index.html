@@ -83,7 +83,6 @@
     .stat-box span { color: #ffd700; font-weight: bold; }
     .hp-text { color: #ff6b6b; }
     
-    /* 화면 위쪽 잘림 원천 차단: 안전 스페이서 방식 */
     #main-screen { flex: 1; display: flex; flex-direction: column; position: relative; overflow-y: auto; box-sizing: border-box; }
     
     #monster-area { display: none; flex-direction: column; align-items: center; margin-bottom: 15px; flex: none; width: 100%; }
@@ -97,7 +96,11 @@
     .lobby-btn { background-color: #7b1fa2; font-size: 1.1rem; padding: 15px; }
     .shop-btn { background-color: #00838f; }
     .bag-btn { background-color: #8d6e63; }
-    .system-btn { background-color: #455a64; flex: 1 1 100%; margin-top: 5px; }
+    
+    /* 하단 시스템 버튼 스타일 분리 (저장, 메인메뉴) */
+    .system-btn { background-color: #455a64; flex: 1 1 45%; margin-top: 5px; }
+    .quit-btn { background-color: #c62828; flex: 1 1 45%; margin-top: 5px; }
+    
     .quiz-btn { background-color: #d32f2f; font-size: 1.2rem; padding: 15px; flex: 1 1 100%; }
     .option-btn { background-color: #34495e; font-size: 1.05rem; flex: 1 1 100%; }
     .potion-btn { background-color: #fbc02d; color: #333; }
@@ -119,20 +122,15 @@
         #status-bar { font-size: 0.95rem; padding: 8px 10px; }
         .stat-box { flex: 1 1 30%; min-width: 80px; }
         
-        /* 🎁 모바일 전용 보상 창 (가로 리스트형으로 변경!) */
         #reward-screen { justify-content: flex-start; padding: 30px 15px; }
         #reward-screen .game-title { margin-bottom: 20px; font-size: 2rem; }
         #reward-cards-container { flex-direction: column; gap: 12px; }
-        .reward-card { 
-            flex-direction: row; width: 100%; max-width: 100%; padding: 15px 20px; 
-            justify-content: flex-start; align-items: center; text-align: left; 
-        }
+        .reward-card { flex-direction: row; width: 100%; max-width: 100%; padding: 15px 20px; justify-content: flex-start; align-items: center; text-align: left; }
         .reward-icon { font-size: 2.8rem; margin-bottom: 0; margin-right: 20px; }
         .reward-text-wrap { align-items: flex-start; }
         .reward-title { font-size: 1.2rem; margin-bottom: 5px; }
         .reward-desc { font-size: 0.95rem; }
 
-        /* 메인 게임화면 슬림화 */
         #monster-name { font-size: 1.3rem; margin-bottom: 5px; }
         #monster-image { width: 70px; height: 70px; font-size: 1.8rem; margin-bottom: 5px; }
         #quiz-box { padding: 12px; font-size: 1rem; margin-bottom: 10px; }
@@ -211,7 +209,9 @@
                     <button class="lobby-btn" onclick="startBattle()" style="flex: 1 1 100%;">🚪 다음 층으로 (실전 테스트)</button>
                     <button class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">🛒 상점 (물품 교환)</button>
                     <button class="bag-btn" onclick="openInventory()">🎒 내 가방</button>
-                    <button class="system-btn" onclick="saveGame()">💾 진행 상황 기록하기</button>
+                    
+                    <button class="system-btn" onclick="saveGame()">💾 기록하기</button>
+                    <button class="quit-btn" onclick="confirmReturnToTitle()">🏠 메인 메뉴로</button>
                 </div>
 
                 <div id="shop-ui" class="button-group" style="display: none;">
@@ -454,6 +454,14 @@
         addLog("현재 층수와 획득한 아이템이 안전하게 기록되었습니다.", "#4db6ac");
     }
 
+    // 메인 메뉴로 돌아가는 함수 추가
+    function confirmReturnToTitle() {
+        if (confirm("메인 화면으로 돌아가시겠습니까?\n(저장하지 않은 진행 상황은 사라집니다.)")) {
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('title-screen').style.display = 'flex';
+        }
+    }
+
     function updateHighScore(floor) {
         if (floor > savedHighScore) {
             savedHighScore = floor;
@@ -686,7 +694,6 @@
         let shuffled = [...REWARD_CARDS].sort(() => 0.5 - Math.random());
         let choices = shuffled.slice(0, 3);
         
-        // 보상 카드 생성 시, 제목과 설명을 한 번 더 묶어 모바일 가로 배열에 최적화했습니다.
         choices.forEach(choice => {
             let card = document.createElement('div');
             card.className = "reward-card";
