@@ -17,13 +17,16 @@
     body {
         margin: 0; padding: 0; background-color: #1a1a1a; color: #fff;
         font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
-        display: flex; flex-direction: column; height: 100vh; overflow: hidden;
-        padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+        display: flex; flex-direction: column; 
+        /* 아이폰 주소창 이슈 해결을 위한 dvh 적용 */
+        height: 100vh; height: 100dvh; 
+        overflow: hidden;
+        padding: var(--safe-top) var(--safe-right) 0 var(--safe-left);
         box-sizing: border-box;
     }
 
     /* 공통 배경 및 패널 */
-    .screen-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; box-sizing: border-box; }
+    .screen-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; padding-bottom: calc(20px + var(--safe-bottom)); box-sizing: border-box; }
     
     .game-title { font-size: 3.5rem; color: #ffd700; text-align: center; margin-bottom: 10px; text-shadow: 2px 2px 0px #d32f2f; flex: none; }
     #data-status { color: #a5d6a7; font-size: 1rem; margin-bottom: 15px; text-align: center; line-height: 1.5; }
@@ -47,7 +50,7 @@
     .start-game-btn { background-color: #d32f2f; width: 100%; margin-top: 20px; font-size: 1.3rem; padding: 15px; }
 
     /* --- 층 클리어 보상 (카드 3장) UI --- */
-    #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; }
+    #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; overflow-y: auto; justify-content: flex-start; padding-top: 50px;}
     #reward-cards-container { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; max-width: 800px; width: 100%; }
     .reward-card { background-color: #2c3e50; border: 3px solid #f39c12; border-radius: 12px; padding: 20px; flex: 1 1 200px; cursor: pointer; transition: transform 0.2s, background-color 0.2s; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 6px 10px rgba(0,0,0,0.5); }
     .reward-card:hover { transform: translateY(-5px) scale(1.02); background-color: #34495e; }
@@ -67,37 +70,50 @@
 
     /* --- 게임 UI --- */
     #game-container { display: none; flex-direction: column; height: 100%; width: 100%; }
-    #status-bar { display: flex; justify-content: space-between; flex-wrap: wrap; background-color: #333; padding: 10px 15px; font-size: 1.1rem; border-bottom: 2px solid #555; gap: 8px; }
-    .stat-box { flex: 1 1 30%; min-width: 100px; }
+    #status-bar { display: flex; justify-content: space-between; flex-wrap: wrap; background-color: #333; padding: 10px 15px; font-size: 1.1rem; border-bottom: 2px solid #555; gap: 8px; flex: none; }
+    .stat-box { flex: 1 1 30%; min-width: 90px; }
     .stat-box span { color: #ffd700; font-weight: bold; }
     .hp-text { color: #ff6b6b; }
     
-    #main-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; position: relative; }
-    #monster-area { display: none; flex-direction: column; align-items: center; margin-bottom: 20px; }
-    #monster-image { width: 120px; height: 120px; background-color: #555; border: 3px solid #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin-bottom: 10px; }
-    #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 20px; width: 90%; max-width: 500px; font-size: 1.2rem; line-height: 1.4; word-break: keep-all; }
+    #main-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; position: relative; overflow-y: auto; }
+    #monster-area { display: none; flex-direction: column; align-items: center; margin-bottom: 15px; }
+    #monster-image { width: 100px; height: 100px; background-color: #555; border: 3px solid #fff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 10px; }
+    #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 15px; width: 100%; max-width: 500px; font-size: 1.1rem; line-height: 1.4; word-break: keep-all; box-sizing: border-box; }
 
-    .button-group { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; }
-    button { color: white; border: none; padding: 15px 20px; font-size: 1.1rem; border-radius: 8px; cursor: pointer; flex: 1 1 40%; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+    .button-group { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 600px; }
+    button { color: white; border: none; padding: 12px 15px; font-size: 1rem; border-radius: 8px; cursor: pointer; flex: 1 1 45%; box-shadow: 0 4px 6px rgba(0,0,0,0.3); box-sizing: border-box; }
     button:active { transform: scale(0.95); }
 
-    .lobby-btn { background-color: #7b1fa2; font-size: 1.2rem; padding: 15px; }
+    .lobby-btn { background-color: #7b1fa2; font-size: 1.1rem; padding: 15px; }
     .shop-btn { background-color: #00838f; }
     .bag-btn { background-color: #8d6e63; }
-    .system-btn { background-color: #455a64; flex: 1 1 100%; margin-top: 10px; }
-    .quiz-btn { background-color: #d32f2f; font-size: 1.3rem; padding: 20px; flex: 1 1 100%; }
-    .option-btn { background-color: #34495e; font-size: 1.1rem; flex: 1 1 100%; }
+    .system-btn { background-color: #455a64; flex: 1 1 100%; margin-top: 5px; }
+    .quiz-btn { background-color: #d32f2f; font-size: 1.2rem; padding: 15px; flex: 1 1 100%; }
+    .option-btn { background-color: #34495e; font-size: 1.05rem; flex: 1 1 100%; }
     .potion-btn { background-color: #fbc02d; color: #333; }
 
-    #inventory-modal { display: none; position: absolute; top: 10%; left: 5%; right: 5%; bottom: 10%; background: rgba(30, 40, 50, 0.95); border: 3px solid #f39c12; z-index: 200; border-radius: 15px; padding: 20px; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
+    #inventory-modal { display: none; position: absolute; top: 5%; left: 5%; right: 5%; bottom: 5%; background: rgba(30, 40, 50, 0.95); border: 3px solid #f39c12; z-index: 200; border-radius: 15px; padding: 20px; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); }
     .inv-item { display: flex; justify-content: space-between; align-items: center; background: #34495e; padding: 10px; margin-bottom: 10px; border-radius: 8px; text-align: left; }
     .inv-item-info { flex: 1; }
-    .inv-item-title { font-size: 1.2rem; color: #ffd700; margin-bottom: 5px; font-weight: bold; }
-    .inv-item-desc { font-size: 0.9rem; color: #bdc3c7; }
-    .use-btn { background-color: #e65100; padding: 10px; min-width: 80px; flex: none; margin-left: 10px; }
+    .inv-item-title { font-size: 1.1rem; color: #ffd700; margin-bottom: 5px; font-weight: bold; }
+    .inv-item-desc { font-size: 0.85rem; color: #bdc3c7; }
+    .use-btn { background-color: #e65100; padding: 10px; min-width: 70px; flex: none; margin-left: 10px; }
     
-    #log-box { height: 25%; background-color: #000; border-top: 2px solid #555; padding: 10px; overflow-y: auto; font-size: 1.1rem; line-height: 1.4; }
+    #log-box { flex: none; height: 22%; min-height: 120px; background-color: #000; border-top: 2px solid #555; padding: 10px; padding-bottom: calc(10px + var(--safe-bottom)); overflow-y: auto; font-size: 1.05rem; line-height: 1.4; box-sizing: border-box; }
     #log-box p { margin: 5px 0; }
+
+    /* 모바일 (아이폰 등) 전용 반응형 세팅 */
+    @media (max-width: 600px) {
+        .game-title { font-size: 2.5rem; }
+        .title-btn { padding: 15px; font-size: 1.3rem; }
+        .reward-card { flex: 1 1 100%; padding: 15px; }
+        #status-bar { font-size: 1rem; padding: 8px 10px; }
+        .stat-box { flex: 1 1 30%; }
+        #monster-image { width: 80px; height: 80px; font-size: 2rem; }
+        .study-header { font-size: 1.6rem; }
+        .category-header { font-size: 1.2rem; padding: 12px; }
+        .study-keyword { font-size: 1.1rem; padding: 12px; }
+    }
 </style>
 </head>
 <body>
@@ -131,7 +147,7 @@
     </div>
 
     <div id="reward-screen" class="screen-panel">
-        <h2 class="game-title" style="font-size: 2.2rem; margin-bottom: 30px;">🎁 층 클리어 보상 선택</h2>
+        <h2 class="game-title" style="font-size: 2rem; margin-bottom: 20px;">🎁 층 클리어 보상 선택</h2>
         <div id="reward-cards-container"></div>
     </div>
 
@@ -149,14 +165,14 @@
             <div class="stat-box" style="color:#ffb74d;">정화력: <span id="atk-ui">+0</span></div>
             <div class="stat-box" style="color:#81c784;">회피율: <span id="eva-ui">0</span>%</div>
             <div class="stat-box">회복제: <span id="potion-ui">3</span>개</div>
-            <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 1rem; margin-top: 5px; flex: 1 1 100%; text-align: center;" id="buff-ui">적용중인 특수 효과 없음</div>
+            <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.95rem; margin-top: 5px; flex: 1 1 100%; text-align: center;" id="buff-ui">적용중인 특수 효과 없음</div>
         </div>
 
         <div id="main-screen">
             <div id="monster-area">
-                <h2 id="monster-name">망각의 요괴</h2>
+                <h2 id="monster-name" style="margin-top: 0;">망각의 요괴</h2>
                 <div id="monster-image">👻</div>
-                <h3 class="hp-text">망각 에너지: <span id="monster-hp">50/50</span></h3>
+                <h3 class="hp-text" style="margin-bottom: 0;">망각 에너지: <span id="monster-hp">50/50</span></h3>
             </div>
 
             <div id="quiz-box"></div>
@@ -181,12 +197,6 @@
             </div>
 
             <div id="options-ui" class="button-group" style="display: none;"></div>
-
-            <div id="inventory-modal">
-                <h2 style="margin-top: 0; color: #fff;">🎒 내 가방</h2>
-                <div id="inventory-list" style="flex: 1; overflow-y: auto; margin-bottom: 20px;"></div>
-                <button class="back-btn" onclick="closeInventory()" style="flex: none;">닫기</button>
-            </div>
         </div>
 
         <div id="log-box"></div>
@@ -342,8 +352,6 @@
         document.getElementById('title-screen').style.display = 'flex';
     }
 
-    // --- 게임 시스템 및 아이템 ---
-    // baseAtk(기본 정화력), evasion(회피율) 스탯이 추가됨
     function getNewPlayerStat() { 
         return { hp: 100, maxHp: 100, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0 }; 
     }
@@ -356,11 +364,10 @@
         armorBreak: { name: "💥 파괴의 부적", desc: "2회 동안 요괴가 1.5배 피해를 입음" }
     };
 
-    // --- 🎁 층 클리어 카드 이벤트 목록 ---
     const REWARD_CARDS = [
         { id: 'heal', icon: '🛌', title: "휴식", desc: "지식 에너지를 40 회복합니다.", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("충분한 휴식으로 지식 에너지를 40 회복했습니다.", "#64b5f6"); } },
         { id: 'maxHp', icon: '🧠', title: "지식의 샘", desc: "최대 지식 에너지가 15 영구 증가합니다.", action: () => { player.maxHp += 15; player.hp += 15; addLog("새로운 깨달음! 최대 지식 에너지가 15 영구 증가했습니다.", "#ffeb3b"); } },
-        { id: 'atkUp', icon: '⚔️', title: "깨달음의 검", desc: "기본 정화력(공격력)이 영구적으로 5 상승합니다.", action: () => { player.baseAtk += 5; addLog("정화력이 영구적으로 5 상승했습니다!", "#ff8a65"); } },
+        { id: 'atkUp', icon: '⚔️', title: "깨달음의 검", desc: "기본 정화력이 영구적으로 5 상승합니다.", action: () => { player.baseAtk += 5; addLog("정화력이 영구적으로 5 상승했습니다!", "#ff8a65"); } },
         { id: 'evasionUp', icon: '💨', title: "날렵한 몸놀림", desc: "요괴의 공격을 피할 회피율이 영구적으로 5% 상승합니다.", action: () => { player.evasion += 5; addLog("회피율이 영구적으로 5% 상승했습니다!", "#81c784"); } },
         { id: 'gold', icon: '💰', title: "숨겨진 유물", desc: "연구 자금 40G를 획득합니다.", action: () => { player.gold += 40; addLog("유물을 발견하여 40G를 획득했습니다!", "#ffd700"); } },
         { id: 'buyItem', icon: '🎒', title: "비밀 상인", desc: "30G를 내고 무작위 물건 1개를 얻습니다.", action: () => { 
@@ -391,7 +398,6 @@
             
             player = savedData;
             if(!player.inventory) player.inventory = {}; 
-            // 구버전 세이브 호환성 유지 (공격력, 회피율이 없을 경우 0으로 세팅)
             if(player.baseAtk === undefined) player.baseAtk = 0;
             if(player.evasion === undefined) player.evasion = 0;
 
@@ -422,8 +428,6 @@
         document.getElementById('hp-ui').innerText = `${player.hp}/${player.maxHp}`;
         document.getElementById('gold-ui').innerText = player.gold;
         document.getElementById('potion-ui').innerText = player.potions;
-        
-        // 새로 추가된 공격력과 회피율 UI 업데이트
         document.getElementById('atk-ui').innerText = `+${player.baseAtk}`;
         document.getElementById('eva-ui').innerText = player.evasion;
 
@@ -513,11 +517,9 @@
         document.getElementById('hub-ui').style.display = 'none';
         document.getElementById('battle-ui').style.display = 'flex';
         document.getElementById('monster-area').style.display = 'flex';
-        
         let maxHp = 50 + (player.floor * 15); 
         monster = { name: "정예 망각의 대요괴", hp: maxHp, maxHp: maxHp, goldReward: 100, isBoss: true };
         document.getElementById('monster-image').innerText = "👹"; 
-        
         addLog(`[경고] 매우 위험한 정예 요괴가 등장했습니다!!`, "#ff5252"); updateUI();
     }
 
@@ -554,7 +556,6 @@
         document.getElementById('battle-ui').style.display = 'flex';
 
         if (isCorrect) {
-            // 정답 시 기본 데미지에 player.baseAtk(영구 증가치)를 더함
             let dmg = 25 + Math.floor(Math.random() * 10) + player.baseAtk;
             if(activeEffects.powerUp > 0) { dmg += 15; activeEffects.powerUp--; }
             if(activeEffects.armorBreak > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.armorBreak--; }
@@ -570,7 +571,6 @@
             setTimeout(winBattle, 800);
         } else {
             setTimeout(() => {
-                // 회피율 판정 (0 ~ 100 사이 난수가 내 회피율보다 낮으면 회피 성공)
                 if (player.evasion > 0 && (Math.random() * 100 < player.evasion)) {
                     addLog(`💨 날렵한 몸놀림! 요괴의 지식 흡수를 완벽하게 회피했습니다! (피해 0)`, "#81c784");
                 } else {
@@ -586,9 +586,8 @@
                     }
                 }
 
-                // 사망 처리 및 부활 깃털 로직 (1개 차감됨)
                 if (player.hp <= 0 && player.inventory['revive'] > 0) {
-                    player.inventory['revive']--; // 여기서 인벤토리 수량이 1개 깎입니다.
+                    player.inventory['revive']--;
                     player.hp = Math.floor(player.maxHp / 2);
                     addLog(`✨ 기억을 잃기 직전, 부활의 깃털이 빛나며 지식 에너지를 회복했습니다! (깃털 1개 소멸됨)`, "#ffeb3b");
                 }
