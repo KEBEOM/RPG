@@ -7,7 +7,6 @@
 <script src="quiz_data.js"></script>
 <script src="study_data.js"></script>
 <style>
-    /* CSS는 이전과 동일하게 유지되어 디바이스별 화면을 완벽히 지원합니다. */
     :root {
         --safe-left: env(safe-area-inset-left);
         --safe-right: env(safe-area-inset-right);
@@ -95,6 +94,18 @@
     .full-width { grid-column: 1 / -1; } 
     .option-btn { margin: 0 !important; font-size: 1rem; padding: 12px; background-color: #34495e; text-align: center; }
 
+    @keyframes hintPulse {
+        0% { box-shadow: 0 0 0px rgba(255, 215, 0, 0.5); border-color: #f39c12; }
+        50% { box-shadow: 0 0 15px rgba(255, 215, 0, 1); border-color: #ffd700; background-color: #4a4a1a;}
+        100% { box-shadow: 0 0 0px rgba(255, 215, 0, 0.5); border-color: #f39c12;}
+    }
+    .hint-btn {
+        border: 2px solid #ffd700 !important;
+        color: #ffd700 !important;
+        font-weight: bold;
+        animation: hintPulse 1.5s infinite;
+    }
+
     .lobby-btn { background-color: #7b1fa2; font-size: 1rem; }
     .bag-btn { background-color: #8d6e63; }
     .system-btn { background-color: #455a64; }
@@ -117,16 +128,26 @@
     .inv-item-desc { font-size: 0.8rem; color: #bdc3c7; line-height: 1.2;}
     .use-btn { background-color: #e65100; padding: 8px 12px; flex: none; margin-left: 10px; }
 
+    @keyframes fadeInPanel {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
     #tutorial-overlay {
-        display: none; position: absolute; left: 50%; transform: translateX(-50%);
-        width: 90%; max-width: 500px; background: rgba(30, 40, 50, 0.95);
+        display: none; position: absolute; z-index: 1000;
+        background: rgba(30, 40, 50, 0.95);
         border: 3px solid #00e676; border-radius: 15px; padding: 20px; box-sizing: border-box;
-        flex-direction: column; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        transition: top 0.3s ease, bottom 0.3s ease;
+        flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        animation: fadeInPanel 0.2s ease-out;
     }
     
-    #tutorial-overlay.pos-bottom { bottom: 20px; top: auto; }
-    #tutorial-overlay.pos-top { top: 75px; bottom: auto; } 
+    #tutorial-overlay.pos-bottom { 
+        bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; top: auto;
+    }
+    
+    #tutorial-overlay.pos-quiz { 
+        top: 60px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; bottom: auto;
+    } 
 
     #tutorial-text { font-size: 1.1rem; line-height: 1.5; color: #fff; margin-bottom: 15px; white-space: pre-line; word-break: keep-all; text-align: left; }
     .tut-btn-wrap { display: flex; justify-content: space-between; gap: 10px; }
@@ -150,11 +171,15 @@
         #reward-cards-container { flex-direction: row; justify-content: center; max-width: 100%; height: 100%; align-items: stretch; gap: 10px;}
         .reward-card { flex: 1; flex-direction: column; padding: 10px; text-align: center; }
         .reward-icon { margin-right: 0; margin-bottom: 5px; font-size: 2rem; }
-        #tutorial-overlay { padding: 15px; width: 80%; }
-        #tutorial-overlay.pos-bottom { bottom: 10px; }
-        #tutorial-overlay.pos-top { top: 10px; } 
-        #tutorial-text { font-size: 0.95rem; margin-bottom: 10px; }
-        .tut-btn { padding: 8px 15px; font-size: 0.9rem; }
+        
+        #tutorial-overlay { padding: 15px; }
+        #tutorial-overlay.pos-bottom { bottom: 5px; width: 70%; }
+        #tutorial-overlay.pos-quiz { 
+            top: 50%; left: 10px; transform: translateY(-50%); width: 40%; max-width: none;
+        } 
+        #tutorial-text { font-size: 0.85rem; margin-bottom: 10px; line-height: 1.3; }
+        .tut-btn { padding: 6px 10px; font-size: 0.85rem; }
+        .tut-btn-wrap { gap: 5px; }
     }
 
     @media (min-width: 600px) and (max-width: 900px) and (min-height: 501px) {
@@ -195,7 +220,12 @@
         .reward-icon { margin-right: 0; margin-bottom: 10px; font-size: 3.5rem; }
         .reward-title { font-size: 1.3rem; margin-bottom: 5px;}
         .reward-desc { font-size: 0.95rem; }
-        #tutorial-overlay { max-width: 600px; padding: 25px; }
+        
+        #tutorial-overlay { padding: 25px; }
+        #tutorial-overlay.pos-bottom { bottom: 30px; width: 600px; }
+        #tutorial-overlay.pos-quiz { 
+            top: 50%; left: 30px; transform: translateY(-50%); width: 35%; max-width: 400px;
+        }
         #tutorial-text { font-size: 1.2rem; }
     }
 </style>
@@ -321,7 +351,7 @@
 
 <script>
     // ==========================================
-    // 1. 기본 변수 및 데이터 설정
+    // 1. 기본 변수 및 몬스터/아이템 데이터 설정
     // ==========================================
     let quizBank = [];
     let studyBank = [];
@@ -337,7 +367,6 @@
     let savedHighScore = localStorage.getItem('historyTowerMaxFloor') || 1;
     document.getElementById('high-score-ui').innerText = savedHighScore;
 
-    // 아이템 설명 순화
     const ITEM_DB = {
         revive: { name: "🪶 부활 깃털", desc: "지식 고갈 시 절반 회복 후 깨어남 (자동)" },
         shield: { name: "🛡️ 절대 방패", desc: "다음 1회 요괴의 방해 무효화" },
@@ -345,6 +374,29 @@
         weaken: { name: "📉 평온 부적", desc: "2회 요괴의 방해력 반감" },
         armorBreak: { name: "💥 통찰 부적", desc: "2회 정답의 기운 1.5배 증폭" }
     };
+
+    // 🌟 새로운 몬스터 데이터 베이스
+    const NORMAL_MONSTERS = [
+        { name: "망각의 유령", icon: "👻" }, { name: "게으름 도깨비", icon: "👹" },
+        { name: "졸음 구미호", icon: "🦊" }, { name: "딴짓 슬라임", icon: "💧" },
+        { name: "혼란의 박쥐", icon: "🦇" }, { name: "핑계 늑대", icon: "🐺" },
+        { name: "잡념 거미", icon: "🕷️" }, { name: "오답 유도꾼", icon: "🤡" },
+        { name: "기억 도둑", icon: "🦹" }, { name: "무기력 좀비", icon: "🧟" }
+    ];
+
+    const BOSS_MONSTERS = [
+        { name: "나태의 수문장", icon: "🗿" }, { name: "스마트폰 마왕", icon: "📱" },
+        { name: "혼돈의 도깨비왕", icon: "👺" }, { name: "왜곡의 거울마귀", icon: "🪞" },
+        { name: "무지(無知)의 대악마", icon: "👿" }, { name: "역사의 파괴자", icon: "💥" },
+        { name: "시간의 포식자", icon: "🦖" }, { name: "망각의 심연", icon: "🌌" },
+        { name: "거짓의 군주", icon: "🎭" }, { name: "백지화의 화신", icon: "🌪️" }
+    ];
+
+    const ELITE_MONSTERS = [
+        { name: "벼락치기 악령", icon: "⚡" }, { name: "수면 마법사", icon: "🧙‍♂️" },
+        { name: "도파민 중독자", icon: "😵‍💫" }, { name: "숏폼(Shorts) 요정", icon: "🧚" },
+        { name: "집중력 파괴자", icon: "🔨" }
+    ];
 
     const REWARD_CARDS = [
         { id: 'heal', icon: '🛌', title: "휴식", desc: "지식 40 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("충분한 휴식으로 지식을 40 회복했습니다.", "#64b5f6"); } },
@@ -359,18 +411,18 @@
             } else { addLog("골드가 부족하여 지나쳤습니다...", "#ff5252"); }
         } },
         { id: 'potion', icon: '🧪', title: "회복제 조각", desc: "회복제 1개 획득", action: () => { player.potions++; addLog("회복제를 1개 획득했습니다.", "#a5d6a7"); } },
-        { id: 'boss', icon: '👿', title: "정예 조우", desc: "[위험] 강력한 정예 요괴 조우", action: () => { startBossBattle(); return 'boss'; } }
+        { id: 'elite', icon: '🔥', title: "정예 소환", desc: "[위험] 특별한 정예 요괴 조우", action: () => { startEliteBattle(); return 'boss'; } }
     ];
 
     // ==========================================
-    // 2. 튜토리얼 시스템 (턴제 설명 반영)
+    // 2. 튜토리얼 시스템 
     // ==========================================
     let tutorialStep = 0;
     const tutorialScripts = [
         "환영합니다! 🎓\n역사 타워 RPG에 오신 것을 환영합니다.\n이 게임은 '역사 지식'으로 요괴를 정화하며 탑을 오르는 게임입니다.",
         "먼저 화면 상단의 [상태창]을 볼까요?\n\n❤️ [지식]: 여러분의 체력입니다. 0이 되면 게임이 끝납니다.\n📔 [암기력]: 퀴즈를 맞혔을 때 요괴의 기운을 약화시키는 힘입니다.",
         "앗! 야생의 요괴가 나타났습니다! 👻\n전투가 어떻게 진행되는지 직접 체험해 볼까요?\n\n(아래 '다음' 버튼을 누르면 모의 퀴즈가 나옵니다.)",
-        "요괴를 정화하려면 역사 문제를 맞혀야 합니다.\n\n자, 화면에 나타난 모의 퀴즈를 읽고\n정답인 [1. 이성계]를 직접 클릭해 보세요!",
+        "요괴를 정화하려면 역사 문제를 맞혀야 합니다.\n\n자, 화면에 나타난 모의 퀴즈를 읽고\n노랗게 빛나는 정답 [1. 이성계]를 직접 클릭해 보세요!",
         "🎉 훌륭합니다! 정답을 맞히면 요괴의 기운을 약화시킵니다.\n\n⚠️ 주의! 내가 퀴즈를 푼 후에는 요괴의 차례가 되어 내 [지식]을 빼앗으려 시도합니다. (턴제 방식)",
         "요괴를 완전히 정화하면 다음 층으로 가기 전,\n보상 3개 중 하나를 골라 능력을 키울 수 있습니다. 🎁\n\n모은 골드로는 상점에서 유용한 부적도 살 수 있죠.",
         "튜토리얼 완료! ✨\n이제 기본 규칙을 모두 익히셨습니다.\n어려운 개념은 메인 화면의 [📖 공부하기] 탭을 활용하세요!\n\n그럼, 실전에서 만나요! 행운을 빕니다! 🍀"
@@ -386,7 +438,11 @@
         document.getElementById('global-help').style.display = 'none';
         
         player = { hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0 };
-        monster = { name: "튜토리얼 요괴", hp: 50, maxHp: 50, atk: 5 };
+        monster = { name: "튜토리얼 요괴", icon: "👻", hp: 50, maxHp: 50, atk: 5 };
+        
+        document.getElementById('monster-name').innerText = monster.name;
+        document.getElementById('monster-image').innerText = monster.icon;
+        document.getElementById('monster-hp').innerText = `50/50`;
         updateUI();
         
         document.getElementById('hub-ui').style.display = 'none';
@@ -406,17 +462,22 @@
         const nextBtn = document.getElementById('tutorial-next-btn');
         const overlay = document.getElementById('tutorial-overlay');
         
+        nextBtn.style.display = 'block';
+
         if (tutorialStep === 3) {
             overlay.classList.remove('pos-bottom');
-            overlay.classList.add('pos-top');
+            overlay.classList.add('pos-quiz');
         } else {
-            overlay.classList.remove('pos-top');
+            overlay.classList.remove('pos-quiz');
             overlay.classList.add('pos-bottom');
         }
         
+        overlay.style.animation = 'none';
+        overlay.offsetHeight; 
+        overlay.style.animation = 'fadeInPanel 0.2s ease-out';
+
         if (tutorialStep === 2) {
             document.getElementById('monster-area').style.display = 'flex';
-            nextBtn.style.display = 'block';
         } 
         else if (tutorialStep === 3) {
             document.getElementById('quiz-box').style.display = 'block';
@@ -431,6 +492,11 @@
                 let b = document.createElement("button");
                 b.className = "option-btn";
                 b.innerText = o;
+                
+                if (i === 0) {
+                    b.classList.add("hint-btn");
+                }
+
                 b.onclick = () => {
                     if (i === 0) {
                         monster.hp = 0;
@@ -444,15 +510,12 @@
                         tutorialStep++;
                         updateTutorialUI();
                     } else {
-                        alert("이건 연습입니다! 정답인 '1. 이성계'를 눌러보세요.");
+                        alert("이건 연습입니다! 반짝이는 정답인 '1. 이성계'를 눌러보세요.");
                     }
                 };
                 opt.appendChild(b);
             });
-            nextBtn.style.display = 'none';
-        } 
-        else if (tutorialStep === 4) {
-            nextBtn.style.display = 'block';
+            nextBtn.style.display = 'none'; 
         } 
         else if (tutorialStep === tutorialScripts.length) {
             exitTutorial(); 
@@ -470,7 +533,11 @@
 
     function exitTutorial() {
         isTutorialMode = false;
-        document.getElementById('tutorial-overlay').style.display = 'none';
+        const overlay = document.getElementById('tutorial-overlay');
+        overlay.style.display = 'none';
+        overlay.classList.remove('pos-quiz');
+        overlay.classList.add('pos-bottom');
+
         document.getElementById('game-container').style.display = 'none';
         document.getElementById('options-ui').innerHTML = ""; 
         document.getElementById('title-screen').style.display = 'flex';
@@ -588,24 +655,68 @@
     }
 
     // ==========================================
-    // 5. 턴제 전투 시스템 (정답 -> 요괴 방해)
+    // 5. 턴제 전투 시스템 (보스 & 일반몹 분기)
     // ==========================================
     function startBattle() {
         document.getElementById('hub-ui').style.display = 'none';
         document.getElementById('battle-ui').style.display = 'grid';
         document.getElementById('monster-area').style.display = 'flex';
         
+        let isBoss = (player.floor % 10 === 0);
         let mHp = 30 + (player.floor * 15);
+        let mAtk = 10 + (player.floor * 2);
+        let mName, mIcon;
+
+        // 💡 10층마다 보스 몬스터 조우
+        if (isBoss) {
+            let bossIdx = Math.min(Math.floor(player.floor / 10) - 1, BOSS_MONSTERS.length - 1);
+            mName = BOSS_MONSTERS[bossIdx].name;
+            mIcon = BOSS_MONSTERS[bossIdx].icon;
+            mHp = Math.floor(mHp * 2.5); // 보스 체력 2.5배
+            mAtk = Math.floor(mAtk * 1.5); // 보스 공격력 1.5배
+            addLog(`🚨 경고! 강력한 보스 [${player.floor}층: ${mName}]이(가) 나타났습니다!`, "#ff4081");
+        } else {
+            let rIdx = Math.floor(Math.random() * NORMAL_MONSTERS.length);
+            mName = `Lv.${player.floor} ` + NORMAL_MONSTERS[rIdx].name;
+            mIcon = NORMAL_MONSTERS[rIdx].icon;
+            addLog(`${mName}이(가) 길을 막아섰습니다.`, "#ff5252");
+        }
+        
         monster = {
-            name: `${player.floor}층 요괴`,
+            name: mName,
+            icon: mIcon,
             hp: mHp,
             maxHp: mHp,
-            atk: 10 + (player.floor * 2)
+            atk: mAtk
         };
         
         document.getElementById('monster-name').innerText = monster.name;
+        document.getElementById('monster-image').innerText = monster.icon;
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
-        addLog(`${monster.name}이(가) 나타났다!`, "#ff5252");
+    }
+
+    // 보상에서 선택 시 등장하는 '정예(엘리트) 몬스터'
+    function startEliteBattle() {
+        document.getElementById('hub-ui').style.display = 'none';
+        document.getElementById('battle-ui').style.display = 'grid';
+        document.getElementById('monster-area').style.display = 'flex';
+
+        let rIdx = Math.floor(Math.random() * ELITE_MONSTERS.length);
+        let mHp = 30 + (player.floor * 15);
+        let mAtk = 10 + (player.floor * 2);
+
+        monster = {
+            name: `🔥 정예: ` + ELITE_MONSTERS[rIdx].name,
+            icon: ELITE_MONSTERS[rIdx].icon,
+            hp: Math.floor(mHp * 1.5),
+            maxHp: Math.floor(mHp * 1.5),
+            atk: Math.floor(mAtk * 1.2)
+        };
+        
+        document.getElementById('monster-name').innerText = monster.name;
+        document.getElementById('monster-image').innerText = monster.icon;
+        document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
+        addLog(`⚠️ 숨어있던 정예 요괴 [${monster.name}]와 마주쳤습니다!`, "#ffeb3b");
     }
 
     function loadQuiz() {
@@ -640,24 +751,22 @@
         document.getElementById('quiz-box').style.display = 'none';
         document.getElementById('options-ui').style.display = 'none';
 
-        // [1] 플레이어의 턴
         if (isCorrect) {
             let damage = 15 + player.baseAtk;
             if (activeEffects.powerUp > 0) { damage = Math.floor(damage * 1.5); activeEffects.powerUp--; }
             if (activeEffects.armorBreak > 0) { damage = Math.floor(damage * 1.5); activeEffects.armorBreak--; }
             
             monster.hp -= damage;
-            addLog(`⭕ 정답! ${monster.name}의 기운을 ${damage}만큼 약화시켰습니다.`, "#00e676");
+            addLog(`⭕ 정답! [${monster.name}]의 기운을 ${damage}만큼 약화시켰습니다.`, "#00e676");
             
             if (monster.hp <= 0) {
                 winBattle();
-                return; // 요괴가 정화되었으므로 요괴의 턴 진행 생략
+                return; 
             }
         } else {
             addLog(`❌ 오답입니다! 정답의 기운을 전달하지 못했습니다.`, "#ffb74d");
         }
 
-        // [2] 요괴의 턴 (무조건 반격)
         if (Math.random() * 100 < player.evasion) {
             addLog("💨 맑은 정신으로 요괴의 혼란을 피했습니다!", "#81c784");
         } else if (activeEffects.shield > 0) {
@@ -668,7 +777,7 @@
             if (activeEffects.weaken > 0) { takenDamage = Math.floor(takenDamage / 2); activeEffects.weaken--; }
             
             player.hp -= takenDamage;
-            addLog(`💥 ${monster.name}의 방해! 지식을 ${takenDamage}만큼 빼앗겼습니다.`, "#ff5252");
+            addLog(`💥 [${monster.name}]의 방해! 지식을 ${takenDamage}만큼 빼앗겼습니다.`, "#ff5252");
             
             if (player.hp <= 0) {
                 checkDeath();
@@ -678,14 +787,12 @@
         
         document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`;
         updateUI();
-        
-        // 모든 턴이 종료된 후 행동 메뉴 활성화
         document.getElementById('battle-ui').style.display = 'grid';
     }
 
     function winBattle() {
         document.getElementById('monster-hp').innerText = `0/${monster.maxHp}`;
-        addLog(`🎉 ${monster.name}을(를) 완벽히 정화했습니다!`, "#ffd700");
+        addLog(`🎉 [${monster.name}]을(를) 완벽히 정화했습니다!`, "#ffd700");
         
         let earnedGold = 10 + Math.floor(Math.random() * 10) + player.floor;
         player.gold += earnedGold;
@@ -919,17 +1026,6 @@
             document.getElementById('title-screen').style.display = 'flex';
             document.getElementById('global-help').style.display = 'none';
         }
-    }
-
-    function startBossBattle() {
-        startBattle();
-        monster.name = `🔥 정예 ${player.floor}층 요괴`;
-        monster.hp = Math.floor(monster.maxHp * 1.5);
-        monster.maxHp = monster.hp;
-        monster.atk = Math.floor(monster.atk * 1.5);
-        document.getElementById('monster-name').innerText = monster.name;
-        document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
-        addLog(`경고! 강력한 정예 요괴가 등장했습니다!`, "#ffeb3b");
     }
 
     window.onload = () => { parseAllData(); };
