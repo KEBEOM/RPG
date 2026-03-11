@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>무한 역사 문제 풀이 RPG</title>
+<title>역사 타워 RPG</title>
 <script src="quiz_data.js"></script>
 <script src="study_data.js"></script>
 <style>
@@ -236,13 +236,13 @@
     <button id="global-help" class="help-btn" style="display:none;" onclick="showHelp()">?</button>
 
     <div id="title-screen" class="screen-panel">
-        <h1 class="game-title">풀어라!<br>역사 타워!</h1>
+        <h1 class="game-title">올라라!<br>역사 타워</h1>
         <div id="high-score-display">🏆 최고 도달 기록: <span id="high-score-ui">1</span>층</div>
         <div id="data-status">데이터를 불러오는 중...</div>
         <div class="title-btn-group">
             <button class="title-btn tutorial-btn" onclick="startTutorial()">🎓 튜토리얼 (초보자용)</button>
             <button class="title-btn study-btn" onclick="openStudyScreen()">📖 공부하기</button>
-            <button class="title-btn" onclick="openRangeScreen()">✏️ 탑 오르기</button>
+            <button class="title-btn" onclick="openRangeScreen()">⚔️ 탑 오르기</button>
             <button class="title-btn load-btn" onclick="loadGameFromTitle()">💾 이어하기</button>
         </div>
     </div>
@@ -258,7 +258,7 @@
     </div>
 
     <div id="reward-screen" class="screen-panel">
-        <h2 class="game-title">😄 클리어 보상</h2>
+        <h2 class="game-title">🎁 층 클리어 보상</h2>
         <div id="reward-cards-container"></div>
     </div>
 
@@ -274,7 +274,7 @@
             <div class="stat-box hp-text">지식: <span id="hp-ui">100/100</span></div>
             <div class="stat-box">골드: <span id="gold-ui">0</span>G</div>
             <div class="stat-box" style="color:#ffb74d;">암기력: <span id="atk-ui">+0</span></div>
-            <div class="stat-box" style="color:#81c784;">회피: <span id="eva-ui">0</span>%</div>
+            <div class="stat-box" style="color:#81c784;">딴짓회피: <span id="eva-ui">0</span>%</div>
             <div class="stat-box">초콜릿: <span id="potion-ui">3</span>개</div>
             <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
         </div>
@@ -283,9 +283,9 @@
             <div id="action-area">
                 <div id="left-panel">
                     <div id="monster-area">
-                        <h2 id="monster-name">도파민 요괴</h2>
+                        <h2 id="monster-name">도파민 괴물</h2>
                         <div id="monster-image">👻</div>
-                        <h3 class="hp-text" style="margin:0;">요괴의 기운: <span id="monster-hp">50/50</span></h3>
+                        <h3 class="hp-text" style="margin:0;">괴물의 기운: <span id="monster-hp">50/50</span></h3>
                     </div>
                 </div>
 
@@ -307,7 +307,7 @@
                         </button>
                         <button class="shop-btn" onclick="buyItem('shield')">
                             📘 철벽 백과사전 (50G)
-                            <span>요괴 방해 1회 무효화</span>
+                            <span>괴물 방해 1회 무효화</span>
                         </button>
                         <button class="shop-btn" onclick="buyItem('powerUp')">
                             💡 마법의 형광펜 (50G)
@@ -367,12 +367,11 @@
     let savedHighScore = localStorage.getItem('historyTowerMaxFloor') || 1;
     document.getElementById('high-score-ui').innerText = savedHighScore;
 
-    // 💡 학용품 테마로 아이템 교체
     const ITEM_DB = {
         revive: { name: "🧽 마법의 지우개", desc: "지식 고갈 시 절반 회복 후 다시 도전 (자동)" },
-        shield: { name: "📘 철벽 백과사전", desc: "다음 1회 요괴의 방해 무효화" },
+        shield: { name: "📘 철벽 백과사전", desc: "다음 1회 괴물의 방해 무효화" },
         powerUp: { name: "💡 형광펜", desc: "2회 정답의 힘 상승" },
-        weaken: { name: "🎧 노이즈캔슬링 귀마개", desc: "2회 요괴의 방해력 반감" },
+        weaken: { name: "🎧 노이즈캔슬링 귀마개", desc: "2회 괴물의 방해력 반감" },
         armorBreak: { name: "🖍️ 예리한 빨간펜", desc: "2회 정답의 기운 1.5배 증폭" }
     };
 
@@ -398,12 +397,11 @@
         { name: "집중력 파괴자", icon: "🔨" }
     ];
 
-    // 💡 보상 카드 학용품/간식 테마로 교체
     const REWARD_CARDS = [
         { id: 'heal', icon: '🛌', title: "짧은 낮잠", desc: "지식 40 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("꿀맛 같은 낮잠으로 지식을 40 회복했습니다.", "#64b5f6"); } },
         { id: 'maxHp', icon: '📚', title: "전공서적 정독", desc: "최대 지식 +15 영구 증가", action: () => { player.maxHp += 15; player.hp += 15; addLog("최대 지식이 15 영구 증가했습니다.", "#ffeb3b"); } },
         { id: 'atkUp', icon: '🖋️', title: "만점의 만년필", desc: "암기력 +5 영구 상승", action: () => { player.baseAtk += 5; addLog("암기력이 영구적으로 5 상승했습니다!", "#ff8a65"); } },
-        { id: 'evasionUp', icon: '🧘', title: "가벼운 스트레칭", desc: "회피율 +5% 영구 상승", action: () => { player.evasion += 5; addLog("회피율이 영구적으로 5% 상승했습니다!", "#81c784"); } },
+        { id: 'evasionUp', icon: '🧘', title: "가벼운 스트레칭", desc: "딴짓 회피율 +5% 영구 상승", action: () => { player.evasion += 5; addLog("딴짓 회피율이 영구적으로 5% 상승했습니다!", "#81c784"); } },
         { id: 'gold', icon: '💵', title: "깜짝 장학금", desc: "연구 자금 40G 획득", action: () => { player.gold += 40; addLog("40G 장학금을 획득했습니다!", "#ffd700"); } },
         { id: 'buyItem', icon: '🏪', title: "학교 매점", desc: "30G로 무작위 학용품 획득", action: () => { 
             if (player.gold >= 30) { 
@@ -412,7 +410,7 @@
             } else { addLog("골드가 부족하여 매점을 지나쳤습니다...", "#ff5252"); }
         } },
         { id: 'potion', icon: '🍫', title: "당충전 초콜릿", desc: "초콜릿 1개 획득", action: () => { player.potions++; addLog("초콜릿을 1개 획득했습니다.", "#a5d6a7"); } },
-        { id: 'elite', icon: '📝', title: "심화 문제집", desc: "[위험] 특별한 정예 요괴 조우", action: () => { startEliteBattle(); return 'boss'; } }
+        { id: 'elite', icon: '📝', title: "심화 문제집", desc: "[위험] 특별한 정예 괴물 조우", action: () => { startEliteBattle(); return 'boss'; } }
     ];
 
     // ==========================================
@@ -420,12 +418,12 @@
     // ==========================================
     let tutorialStep = 0;
     const tutorialScripts = [
-        "환영합니다! 🎓\n역사 타워 RPG에 오신 것을 환영합니다.\n이 게임은 '역사 지식'으로 요괴를 정화하며 탑을 오르는 게임입니다.",
-        "먼저 화면 상단의 [상태창]을 볼까요?\n\n❤️ [지식]: 여러분의 체력입니다. 0이 되면 게임이 끝납니다.\n📔 [암기력]: 퀴즈를 맞혔을 때 요괴의 기운을 약화시키는 힘입니다.",
-        "앗! 야생의 요괴가 나타났습니다! 👻\n전투가 어떻게 진행되는지 직접 체험해 볼까요?\n\n(아래 '다음' 버튼을 누르면 모의 퀴즈가 나옵니다.)",
-        "요괴를 정화하려면 역사 문제를 맞혀야 합니다.\n\n자, 화면에 나타난 모의 퀴즈를 읽고\n노랗게 빛나는 정답 [1. 이성계]를 직접 클릭해 보세요!",
-        "🎉 훌륭합니다! 정답을 맞히면 요괴의 기운을 약화시킵니다.\n\n⚠️ 주의! 내가 퀴즈를 푼 후에는 요괴의 차례가 되어 내 [지식]을 빼앗으려 시도합니다. (턴제 방식)",
-        "요괴를 완전히 정화하면 다음 층으로 가기 전,\n보상 3개 중 하나를 골라 능력을 키울 수 있습니다. 🎁\n\n모은 골드로는 상점에서 유용한 '학용품'도 살 수 있죠.",
+        "환영합니다! 🎓\n역사 타워 RPG에 오신 것을 환영합니다.\n이 게임은 '역사 지식'으로 괴물을 정화하며 탑을 오르는 게임입니다.",
+        "먼저 화면 상단의 [상태창]을 볼까요?\n\n❤️ [지식]: 여러분의 체력입니다. 0이 되면 게임이 끝납니다.\n📔 [암기력]: 퀴즈를 맞혔을 때 괴물의 기운을 약화시키는 힘입니다.",
+        "앗! 야생의 괴물이 나타났습니다! 👻\n전투가 어떻게 진행되는지 직접 체험해 볼까요?\n\n(아래 '다음' 버튼을 누르면 모의 퀴즈가 나옵니다.)",
+        "괴물을 정화하려면 역사 문제를 맞혀야 합니다.\n\n자, 화면에 나타난 모의 퀴즈를 읽고\n노랗게 빛나는 정답 [1. 이성계]를 직접 클릭해 보세요!",
+        "🎉 훌륭합니다! 정답을 맞히면 괴물의 기운을 약화시킵니다.\n\n⚠️ 주의! 내가 퀴즈를 푼 후에는 괴물의 차례가 되어 내 [지식]을 빼앗으려 시도합니다. (턴제 방식)",
+        "괴물을 완전히 정화하면 다음 층으로 가기 전,\n보상 3개 중 하나를 골라 능력을 키울 수 있습니다. 🎁\n\n모은 골드로는 상점에서 유용한 '학용품'도 살 수 있죠.",
         "튜토리얼 완료! ✨\n이제 기본 규칙을 모두 익히셨습니다.\n어려운 개념은 메인 화면의 [📖 공부하기] 탭을 활용하세요!\n\n그럼, 실전에서 만나요! 행운을 빕니다! 🍀"
     ];
 
@@ -440,7 +438,7 @@
         document.getElementById('global-help').style.display = 'none';
         
         player = { hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0 };
-        monster = { name: "튜토리얼 요괴", icon: "👻", hp: 50, maxHp: 50, atk: 5 };
+        monster = { name: "튜토리얼 괴물", icon: "👻", hp: 50, maxHp: 50, atk: 5 };
         
         document.getElementById('monster-name').innerText = monster.name;
         document.getElementById('monster-image').innerText = monster.icon;
@@ -503,8 +501,8 @@
                     if (i === 0) {
                         monster.hp = 0;
                         updateUI();
-                        addLog("⭕ 정답입니다! 요괴의 기운을 크게 약화시켰습니다!", "#00e676");
-                        addLog("👻 요괴가 지식을 빼앗으려 하지만, 연습 중이라 안전합니다.", "#81c784");
+                        addLog("⭕ 정답입니다! 괴물의 기운을 크게 약화시켰습니다!", "#00e676");
+                        addLog("👻 괴물이 지식을 빼앗으려 하지만, 연습 중이라 안전합니다.", "#81c784");
                         document.getElementById('quiz-box').style.display = 'none';
                         opt.style.display = 'none';
                         document.getElementById('monster-area').style.display = 'none';
@@ -550,7 +548,7 @@
     // 3. 초기 로딩 및 데이터 파싱
     // ==========================================
     function showHelp() {
-        alert("💡 [가이드]\n- 지식: 플레이어 체력\n- 암기력: 퀴즈를 맞췄을 때 정화하는 힘\n- 전투는 턴제로 진행됩니다. (내 차례 ➡️ 요괴 차례)\n- 오답 시 로그창에 정답이 표시됩니다.\n- 매점에서 산 학용품은 [내 가방]에서 꺼내 써야 발동됩니다.");
+        alert("💡 [가이드]\n- 지식(HP): 플레이어 체력\n- 암기력(ATK): 퀴즈를 맞췄을 때 정화하는 힘\n- 전투는 턴제로 진행됩니다. (내 차례 ➡️ 괴물 차례)\n- 오답 시 로그창에 정답이 표시됩니다.\n- 매점에서 산 학용품은 [내 가방]에서 꺼내 써야 발동됩니다.");
     }
 
     function parseAllData() {
@@ -720,7 +718,7 @@
         document.getElementById('monster-name').innerText = monster.name;
         document.getElementById('monster-image').innerText = monster.icon;
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
-        addLog(`⚠️ 심화 문제집에서 정예 요괴 [${monster.name}]가 튀어나왔습니다!`, "#ffeb3b");
+        addLog(`⚠️ 심화 문제집에서 정예 괴물 [${monster.name}]이(가) 튀어나왔습니다!`, "#ffeb3b");
     }
 
     function loadQuiz() {
@@ -773,9 +771,9 @@
         }
 
         if (Math.random() * 100 < player.evasion) {
-            addLog("💨 뛰어난 집중력으로 요괴의 혼란을 튕겨냈습니다!", "#81c784");
+            addLog("💨 뛰어난 집중력으로 괴물의 혼란을 튕겨냈습니다!", "#81c784");
         } else if (activeEffects.shield > 0) {
-            addLog("📘 철벽 백과사전이 요괴의 방해를 막아냈습니다!", "#4dd0e1");
+            addLog("📘 철벽 백과사전이 괴물의 방해를 막아냈습니다!", "#4dd0e1");
             activeEffects.shield--;
         } else {
             let takenDamage = monster.atk;
