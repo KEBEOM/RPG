@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>역사 타워 RPG</title>
+<title>무한 역사 문제 풀이 RPG</title>
 <script src="quiz_data.js"></script>
 <script src="study_data.js"></script>
 <style>
@@ -236,13 +236,13 @@
     <button id="global-help" class="help-btn" style="display:none;" onclick="showHelp()">?</button>
 
     <div id="title-screen" class="screen-panel">
-        <h1 class="game-title">올라라!<br>역사 타워</h1>
+        <h1 class="game-title">풀어라!<br>역사 타워!</h1>
         <div id="high-score-display">🏆 최고 도달 기록: <span id="high-score-ui">1</span>층</div>
         <div id="data-status">데이터를 불러오는 중...</div>
         <div class="title-btn-group">
             <button class="title-btn tutorial-btn" onclick="startTutorial()">🎓 튜토리얼 (초보자용)</button>
             <button class="title-btn study-btn" onclick="openStudyScreen()">📖 공부하기</button>
-            <button class="title-btn" onclick="openRangeScreen()">⚔️ 탑 오르기</button>
+            <button class="title-btn" onclick="openRangeScreen()">✏️ 탑 오르기</button>
             <button class="title-btn load-btn" onclick="loadGameFromTitle()">💾 이어하기</button>
         </div>
     </div>
@@ -258,7 +258,7 @@
     </div>
 
     <div id="reward-screen" class="screen-panel">
-        <h2 class="game-title">🎁 층 클리어 보상</h2>
+        <h2 class="game-title">😄 클리어 보상</h2>
         <div id="reward-cards-container"></div>
     </div>
 
@@ -274,7 +274,7 @@
             <div class="stat-box hp-text">지식: <span id="hp-ui">100/100</span></div>
             <div class="stat-box">골드: <span id="gold-ui">0</span>G</div>
             <div class="stat-box" style="color:#ffb74d;">암기력: <span id="atk-ui">+0</span></div>
-            <div class="stat-box" style="color:#81c784;">딴짓회피: <span id="eva-ui">0</span>%</div>
+            <div class="stat-box" style="color:#81c784;">회피: <span id="eva-ui">0</span>%</div>
             <div class="stat-box">초콜릿: <span id="potion-ui">3</span>개</div>
             <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
         </div>
@@ -403,7 +403,7 @@
         { id: 'heal', icon: '🛌', title: "짧은 낮잠", desc: "지식 40 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("꿀맛 같은 낮잠으로 지식을 40 회복했습니다.", "#64b5f6"); } },
         { id: 'maxHp', icon: '📚', title: "전공서적 정독", desc: "최대 지식 +15 영구 증가", action: () => { player.maxHp += 15; player.hp += 15; addLog("최대 지식이 15 영구 증가했습니다.", "#ffeb3b"); } },
         { id: 'atkUp', icon: '🖋️', title: "만점의 만년필", desc: "암기력 +5 영구 상승", action: () => { player.baseAtk += 5; addLog("암기력이 영구적으로 5 상승했습니다!", "#ff8a65"); } },
-        { id: 'evasionUp', icon: '🧘', title: "가벼운 스트레칭", desc: "딴짓 회피율 +5% 영구 상승", action: () => { player.evasion += 5; addLog("딴짓 회피율이 영구적으로 5% 상승했습니다!", "#81c784"); } },
+        { id: 'evasionUp', icon: '🧘', title: "가벼운 스트레칭", desc: "회피율 +5% 영구 상승", action: () => { player.evasion += 5; addLog("회피율이 영구적으로 5% 상승했습니다!", "#81c784"); } },
         { id: 'gold', icon: '💵', title: "깜짝 장학금", desc: "연구 자금 40G 획득", action: () => { player.gold += 40; addLog("40G 장학금을 획득했습니다!", "#ffd700"); } },
         { id: 'buyItem', icon: '🏪', title: "학교 매점", desc: "30G로 무작위 학용품 획득", action: () => { 
             if (player.gold >= 30) { 
@@ -550,7 +550,7 @@
     // 3. 초기 로딩 및 데이터 파싱
     // ==========================================
     function showHelp() {
-        alert("💡 [가이드]\n- 지식(HP): 플레이어 체력\n- 암기력(ATK): 퀴즈를 맞췄을 때 정화하는 힘\n- 전투는 턴제로 진행됩니다. (내 차례 ➡️ 요괴 차례)\n- 오답 시 로그창에 정답이 표시됩니다.\n- 매점에서 산 학용품은 [내 가방]에서 꺼내 써야 발동됩니다.");
+        alert("💡 [가이드]\n- 지식: 플레이어 체력\n- 암기력: 퀴즈를 맞췄을 때 정화하는 힘\n- 전투는 턴제로 진행됩니다. (내 차례 ➡️ 요괴 차례)\n- 오답 시 로그창에 정답이 표시됩니다.\n- 매점에서 산 학용품은 [내 가방]에서 꺼내 써야 발동됩니다.");
     }
 
     function parseAllData() {
