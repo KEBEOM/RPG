@@ -91,14 +91,12 @@
     #monster-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
     #monster-name { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0;}
     
-    /* 텍스트 크기 및 줄바꿈 최적화 적용 */
-    #monster-image { width: 90px; height: 90px; background-color: transparent; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; color: #ffb74d; text-align: center; line-height: 1.2; white-space: nowrap;}
+    #monster-image { width: 120px; height: 90px; background-color: transparent; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; color: #ffb74d; text-align: center; line-height: 1.2; white-space: nowrap;}
     
     #player-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
     #player-name-ui { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0; color: #4dd0e1;}
     
-    /* 텍스트 크기 및 줄바꿈 최적화 적용 */
-    #player-image-ui { width: 90px; height: 90px; background-color: #2c3e50; border: 3px solid #4dd0e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 5px; color: #fff; text-align: center; line-height: 1.2; white-space: nowrap;}
+    #player-image-ui { width: 120px; height: 90px; background-color: #2c3e50; border: 3px solid #4dd0e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; color: #fff; text-align: center; line-height: 1.2; white-space: nowrap;}
 
     #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 10px; width: 100%; font-size: 1rem; line-height: 1.4; word-break: keep-all; box-sizing: border-box; text-align: center; }
 
@@ -167,8 +165,7 @@
         #right-panel { width: 60%; justify-content: center; }
         #monster-area, #player-area { margin-bottom: 0; }
         
-        /* 텍스트 크기 최적화 적용 */
-        #monster-image, #player-image-ui { width: 60px; height: 60px; font-size: 0.8rem; }
+        #monster-image, #player-image-ui { width: 80px; height: 60px; font-size: 0.9rem; }
         
         #quiz-box { margin-bottom: 8px; padding: 10px; font-size: 0.95rem; }
         .grid-ui { gap: 6px; }
@@ -190,8 +187,7 @@
         #app-wrapper { max-width: 600px; height: 90vh; border-radius: 20px; }
         .game-title { font-size: 3.5rem; }
         
-        /* 텍스트 크기 최적화 적용 */
-        #monster-image, #player-image-ui { width: 110px; height: 110px; font-size: 1.3rem; }
+        #monster-image, #player-image-ui { width: 140px; height: 110px; font-size: 1.5rem; }
         
         #monster-name, #player-name-ui { font-size: 1.6rem; }
         #quiz-box { font-size: 1.2rem; padding: 20px; }
@@ -213,8 +209,7 @@
         #left-panel { width: 40%; border-right: 2px dashed #444; padding-right: 20px; justify-content: center; }
         #right-panel { width: 60%; padding-left: 10px; justify-content: center; display: flex; flex-direction: column; }
         
-        /* 텍스트 크기 최적화 적용 */
-        #monster-image, #player-image-ui { width: 130px; height: 130px; font-size: 1.6rem; margin-bottom: 10px;}
+        #monster-image, #player-image-ui { width: 170px; height: 120px; font-size: 1.6rem; margin-bottom: 10px;}
         
         #monster-name, #player-name-ui { font-size: 1.8rem; margin-bottom: 0;}
         .hp-text { font-size: 1.2rem; margin-top: 5px;}
@@ -310,6 +305,9 @@
                     <div id="quiz-box"></div>
                     
                     <div id="hub-ui" class="grid-ui">
+                        <div class="full-width" style="text-align: center; color: #a5d6a7; font-size: 1.1rem; margin-bottom: 5px; font-weight: bold; background-color: #2c3e50; padding: 10px; border-radius: 8px; border: 1.5px solid #4dd0e1;">
+                            [ 휴식 및 정비 공간 ]<br><span style="font-size:0.85rem; color:#bdc3c7; font-weight: normal;">다음 층으로 가기 전, 가방을 열거나 준비를 마치세요.</span>
+                        </div>
                         <button class="lobby-btn full-width" onclick="startBattle()">다음 층 테스트 (도전)</button>
                         <button class="char-btn full-width" onclick="openCharacterRoom()">[상점] 캐릭터 변경 및 구매</button>
                         <button class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">[상점] 학용품 구매</button>
@@ -374,7 +372,7 @@
 
 <script>
     // ==========================================
-    // 💡 1. 튜토리얼 스크립트 복구
+    // 💡 1. 튜토리얼 스크립트 복구 (휴식 공간 안내 추가)
     // ==========================================
     const tutorialScripts = [
         "환영합니다!\n역사 타워 RPG에 오신 것을 환영합니다.\n이 게임은 '역사 지식'으로 학습 방해꾼을 정화하며 탑을 오르는 게임입니다.",
@@ -382,12 +380,13 @@
         "앗! 학습 방해꾼이 나타났습니다! (꒪⌓꒪)\n테스트가 어떻게 진행되는지 직접 체험해 볼까요?\n\n(아래 '다음' 버튼을 누르면 모의 퀴즈가 나옵니다.)",
         "방해꾼의 유혹을 이겨내려면 역사 문제를 맞혀야 합니다.\n\n자, 화면에 나타난 모의 퀴즈를 읽고\n노랗게 빛나는 정답 [1. 이성계]를 직접 클릭해 보세요!",
         "훌륭합니다! 정답을 맞히면 방해꾼의 기운을 약화시킵니다.\n\n[주의!] 내가 퀴즈를 푼 후에는 방해꾼이 나의 [지식]을 흩트리려 시도합니다. (턴제 방식)",
-        "방해꾼을 완전히 정화하면 다음 층으로 가기 전,\n보상 3개 중 하나를 골라 능력을 키울 수 있습니다.\n\n모은 골드로는 캐릭터 옷장이나 상점을 이용할 수 있죠.",
+        "방해꾼을 완전히 정화하면 다음 층으로 가기 전,\n보상 3개 중 하나를 골라 능력을 키울 수 있습니다.",
+        "방해꾼을 물리치면 [휴식 및 정비 공간]으로 돌아옵니다.\n\n이곳에서는 모은 골드로 가방을 열어 아이템을 쓰거나, 상점에서 유용한 학용품과 새로운 내 모습(캐릭터 스킨)을 살 수 있습니다. 준비가 끝나면 다음 층에 도전하세요!",
         "튜토리얼 완료!\n이제 기본 규칙을 모두 익히셨습니다.\n어려운 개념은 메인 화면의 [공부하기] 탭을 활용하세요!\n\n그럼, 실전에서 만나요! 행운을 빕니다!"
     ];
 
     // ==========================================
-    // 💡 2. 아이템, 캐릭터, 몬스터 데이터
+    // 💡 2. 아이템, 캐릭터, 몬스터 데이터 (특수 BGM 설정 추가)
     // ==========================================
     const ITEM_DB = {
         revive: { name: "마법의 지우개", desc: "지식 고갈 시 절반 회복 후 다시 도전" },
@@ -411,13 +410,13 @@
         { id: "char_11", name: "수석 합격자", icon: ["(๑˃̵ᴗ˂̵)و", "(๑˃̵O˂̵)و"], price: 500, anim: "bounce" },
         { id: "char_12", name: "곰돌이 탈", icon: ["ʕ•ᴥ•ʔ", "ʕ•O•ʔ"], price: 600, anim: "swing" },
         { id: "char_13", name: "고양이 탈", icon: ["/ᐠ｡ꞈ｡ᐟ\\", "/ᐠ｡O｡ᐟ\\"], price: 600, anim: "swing" },
-        { id: "char_14", name: "외계인 유학생", icon: ["(V)(OᴥO)(V)", "(V)(O0O)(V)"], price: 700, anim: "bounce" },
+        { id: "char_14", name: "외계인 유학생", icon: ["(V)(OᴥO)(V)", "(V)(O0O)(V)"], price: 700, anim: "bounce", bgm: "hub_magic" },
         { id: "char_15", name: "안드로이드", icon: ["┌( ಠ_ಠ)┘", "┌( ಠoಠ)┘"], price: 700, anim: "arm" },
-        { id: "char_16", name: "마법사", icon: ["༼ つ ◕_◕ ༽つ", "༼ つ ◕o◕ ༽つ"], price: 800, anim: "bounce" },
+        { id: "char_16", name: "마법사", icon: ["༼ つ ◕_◕ ༽つ", "༼ つ ◕o◕ ༽つ"], price: 800, anim: "bounce", bgm: "hub_magic" },
         { id: "char_17", name: "무투가", icon: ["(ง'̀-'́)ง", "(ง'̀o'́)ง"], price: 800, anim: "arm" },
         { id: "char_18", name: "어둠의 암살자", icon: ["[  †  ]", "[  ‡  ]"], price: 900, anim: "eye" },
-        { id: "char_19", name: "전설의 용사", icon: ["[ ★_★ ]", "[ ★o★ ]"], price: 1000, anim: "bounce" },
-        { id: "char_20", name: "해탈한 자", icon: ["( ⚆ _ ⚆ )", "( ⚆ o ⚆ )"], price: 1500, anim: "eye" }
+        { id: "char_19", name: "전설의 용사", icon: ["[ ★_★ ]", "[ ★o★ ]"], price: 1000, anim: "bounce", bgm: "hub_legend" },
+        { id: "char_20", name: "해탈한 자", icon: ["( ⚆ _ ⚆ )", "( ⚆ o ⚆ )"], price: 1500, anim: "eye", bgm: "hub_magic" }
     ];
 
     const NORMAL_MONSTERS = [
@@ -518,7 +517,7 @@
     }, 500);
 
     // ==========================================
-    // 💡 4. 사운드 시스템
+    // 💡 4. 사운드 시스템 (신규 멜로디 추가)
     // ==========================================
     let audioCtx = null;
     let bgmInterval = null;
@@ -529,6 +528,8 @@
     const MELODIES = {
         title: { notes: [261.6, 293.7, 329.6, 261.6, 261.6, 293.7, 329.6, 261.6, 349.2, 392.0, 440.0, 349.2, 349.2, 392.0, 440.0, 349.2, 0, 0, 0], tempo: 360, vol: 0.04 },
         hub: { notes: [220.0, 261.6, 329.6, 261.6, 220.0, 261.6, 329.6, 261.6, 196.0, 246.9, 293.7, 261.6, 196.0, 246.9, 293.7, 261.6, 0, 0, 0], tempo: 400, vol: 0.04 },
+        hub_magic: { notes: [329.6, 440.0, 523.3, 659.3, 0, 523.3, 440.0, 0], tempo: 400, vol: 0.04 }, /* 특수 캐릭터용 몽환적 BGM */
+        hub_legend: { notes: [523.3, 0, 392.0, 0, 523.3, 0, 659.3, 0], tempo: 350, vol: 0.04 }, /* 전설의 용사용 웅장한 BGM */
         normal: { notes: [261.6, 0, 329.6, 0, 392.0, 0, 329.6, 0, 349.2, 0, 293.7, 0, 440.0, 0, 349.2, 0, 0, 0, 0, 0], tempo: 320, vol: 0.04 },
         elite: { notes: [293.7, 349.2, 440.0, 349.2, 293.7, 349.2, 440.0, 349.2, 329.6, 392.0, 493.9, 392.0, 329.6, 392.0, 493.9, 392.0, 0, 0, 0], tempo: 300, vol: 0.04 },
         boss: { notes: [130.8, 0, 130.8, 0, 155.6, 0, 155.6, 0, 196.0, 0, 196.0, 0, 155.6, 0, 155.6, 0, 0, 0], tempo: 400, vol: 0.05 },
@@ -582,7 +583,15 @@
         else if (monster && monster.isBoss) changeBgmMode('boss');
         else if (monster && monster.isElite) changeBgmMode('elite');
         else if (monster) changeBgmMode('normal');
-        else changeBgmMode('hub');
+        else {
+            // 특수 캐릭터 확인 후 BGM 적용
+            let charData = PLAYER_CHARS.find(c => c.id === player.currentChar);
+            if (charData && charData.bgm) {
+                changeBgmMode(charData.bgm);
+            } else {
+                changeBgmMode('hub');
+            }
+        }
     }
 
     function initAudio() {
@@ -719,7 +728,6 @@
         }
         
         initAudio();
-        changeBgmMode('hub'); 
         playBGM(); 
 
         document.getElementById('range-screen').style.display = 'none';
@@ -747,7 +755,6 @@
             activeQuizBank = quizBank; 
             
             initAudio();
-            changeBgmMode('hub'); 
             playBGM();
             
             document.getElementById('title-screen').style.display = 'none';
@@ -792,8 +799,10 @@
         document.getElementById('hub-ui').style.display = 'grid'; 
         
         updatePlayerAreaUI();
-        updateUI();
-        changeBgmMode('hub'); 
+        
+        // 💡 BGM 강제 갱신 로직 (타이틀/승리 브금에서 전환)
+        checkAndApplyBGM();
+        updateUI(); 
     }
 
     function updateUI() {
@@ -882,6 +891,9 @@
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
         updateMonsterImageUI(monster); 
         addLog(isBoss ? `[경고] 대왕 방해꾼 출현!` : `[도전] 학습 방해꾼이 나타났습니다.`, "#ff4081");
+        
+        // 💡 몬스터 조우 시 BGM 갱신 강제 실행
+        checkAndApplyBGM();
         updateUI(); 
     }
 
@@ -906,8 +918,8 @@
         updateMonsterImageUI(monster); 
         addLog(`[위험] 심화 방해꾼이 나타났습니다!`, "#ffeb3b");
         
-        changeBgmMode('elite'); 
-        
+        // 💡 심화 몹 조우 시 BGM 갱신 강제 실행
+        checkAndApplyBGM();
         updateUI();
     }
 
@@ -962,7 +974,7 @@
             let dmg = monster.atk;
             if (activeEffects.weaken > 0) { dmg = Math.floor(dmg / 2); activeEffects.weaken--; }
             player.hp -= dmg;
-            addLog(`[방해꾼의 유혹!] 지식을 ${dmg}만큼 잃어버렸습니다.`, "#ff5252");
+            addLog(`[혼란] 지식을 ${dmg}만큼 잃어버렸습니다.`, "#ff5252");
             if (player.hp <= 0) return checkDeath();
         }
         document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`;
@@ -1171,7 +1183,11 @@
             }
         }
         updatePlayerAreaUI(); 
+        
+        // 💡 캐릭터 장착 시 전용 BGM 갱신 강제 실행
+        checkAndApplyBGM();
         updateUI(); 
+        
         openCharacterRoom(); 
     }
     function closeCharacterRoom() { 
