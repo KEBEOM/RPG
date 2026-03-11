@@ -25,7 +25,7 @@
         width: 100%; height: 100%; max-width: 100%;
         position: relative; background-color: #1a1a1a; color: #fff;
         overflow: hidden; display: flex; flex-direction: column;
-        padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+        padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
         box-sizing: border-box;
     }
 
@@ -33,7 +33,7 @@
         #app-wrapper { max-width: 450px; height: 95vh; border-radius: 20px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
     }
 
-    .screen-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: 20px; box-sizing: border-box; }
+    .screen-panel { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #111; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; padding: calc(var(--safe-top) + 60px) 20px 20px 20px; box-sizing: border-box; }
     
     .game-title { font-size: 2.8rem; color: #ffd700; text-align: center; margin-bottom: 10px; text-shadow: 2px 2px 0px #d32f2f; flex: none; }
     #data-status { color: #a5d6a7; font-size: 1rem; margin-bottom: 15px; text-align: center; }
@@ -49,7 +49,7 @@
     button:active { transform: scale(0.95); }
     .back-btn { background-color: #616161; color: white; border: none; padding: 12px; font-size: 1rem; border-radius: 6px; cursor: pointer; flex: none; width: 100%; margin-top: 10px;}
 
-    #top-right-ui { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 500; align-items: center; }
+    #top-right-ui { position: absolute; top: calc(var(--safe-top) + 12px); right: calc(var(--safe-right) + 12px); display: flex; gap: 8px; z-index: 500; align-items: center; }
     .help-btn { background-color: #0277bd; border: 1.5px solid #fff; color: #fff; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; justify-content: center; }
     .sound-btn { background-color: #616161; border: 1.5px solid #fff; color: #fff; border-radius: 16px; padding: 0 10px; height: 32px; cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;}
     .dev-btn { background-color: #8e44ad; border: 1.5px solid #fff; color: #fff; border-radius: 16px; padding: 0 10px; height: 32px; cursor: pointer; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; }
@@ -75,9 +75,9 @@
     .study-keyword { padding: 12px; font-size: 1rem; color: #4dd0e1; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between;}
     .study-desc { display: none; padding: 12px; font-size: 0.9rem; color: #ecf0f1; background-color: #2c3e50; line-height: 1.4; }
 
-    #game-container { display: none; flex-direction: column; height: 100%; width: 100%; position: relative;}
+    #game-container { display: none; flex-direction: column; height: 100%; width: 100%; position: relative; padding-top: calc(var(--safe-top) + 55px);}
     
-    #status-bar { display: flex; justify-content: space-between; flex-wrap: wrap; background-color: #333; padding: 8px 12px; font-size: 0.9rem; border-bottom: 2px solid #555; gap: 5px; flex: none; z-index: 10; }
+    #status-bar { display: flex; justify-content: space-between; flex-wrap: wrap; background-color: #333; padding: 8px 12px; font-size: 0.9rem; border-top: 2px solid #555; border-bottom: 2px solid #555; gap: 5px; flex: none; z-index: 10; }
     .stat-box { flex: 1 1 45%; min-width: 80px; }
     .stat-box span { color: #ffd700; font-weight: bold; }
     .hp-text { color: #ff6b6b; }
@@ -125,8 +125,8 @@
     .quiz-btn { background-color: #d32f2f; font-size: 1.05rem; }
     .potion-btn { background-color: #fbc02d; color: #333; font-weight: bold;}
     
-    #log-box { flex: none; height: 100px; background-color: #000; border-top: 2px solid #555; padding: 8px; overflow-y: auto; font-size: 0.85rem; line-height: 1.3; box-sizing: border-box; }
-    #log-box p { margin: 3px 0; }
+    #log-box { flex: none; height: 120px; background-color: #000; border-top: 2px solid #555; padding: 8px; overflow-y: auto; font-size: 0.85rem; line-height: 1.3; box-sizing: border-box; }
+    #log-box p { margin: 4px 0; }
 
     .custom-modal { display: none; position: absolute; top: 5%; left: 5%; right: 5%; bottom: 5%; background: rgba(30, 40, 50, 0.98); border: 3px solid #f39c12; z-index: 600; border-radius: 15px; padding: 15px; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); max-width: 500px; margin: 0 auto;}
     .modal-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
@@ -137,9 +137,10 @@
     .list-item-text-wrap { display: flex; flex-direction: column; }
     .list-item-title { font-size: 0.95rem; color: #ffd700; font-weight: bold; margin-bottom: 3px;}
     .list-item-desc { font-size: 0.8rem; color: #bdc3c7; line-height: 1.2;}
-    .action-btn { background-color: #e65100; padding: 8px 12px; flex: none; margin-left: 10px; }
+    .action-btn { background-color: #e65100; padding: 8px 12px; flex: none; margin-left: 10px; font-size: 0.85rem;}
     .action-btn.equipped { background-color: #4CAF50; cursor: default; }
     .action-btn.buy { background-color: #0277bd; }
+    .hidden-condition { font-size: 0.75rem; color: #ff8a65; padding: 5px; text-align: right; line-height: 1.2; word-break: keep-all; }
 
     @keyframes fadeInPanel { from { opacity: 0; } to { opacity: 1; } }
 
@@ -278,10 +279,10 @@
     <div id="game-container">
         <div id="status-bar">
             <div class="stat-box" style="flex: 1 1 100%;">층수: <span id="floor-ui">1F</span></div>
-            <div class="stat-box" id="hp-container">지식: <span id="hp-ui" style="color: #ff6b6b; font-weight: bold;">100/100</span></div>
+            <div class="stat-box" id="hp-container">집중력: <span id="hp-ui" style="color: #ff6b6b; font-weight: bold;">100/100</span></div>
             <div class="stat-box">골드: <span id="gold-ui">0</span>G</div>
-            <div class="stat-box" style="color:#ffb74d;">암기력: <span id="atk-ui">+0</span></div>
-            <div class="stat-box" style="color:#81c784;">딴짓회피: <span id="eva-ui">0</span>%</div>
+            <div class="stat-box" style="color:#ffb74d;">기억력: <span id="atk-ui">+0</span></div>
+            <div class="stat-box" style="color:#81c784;">딴짓 피하기: <span id="eva-ui">0</span>%</div>
             <div class="stat-box">초콜릿: <span id="potion-ui">3</span>개</div>
             <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
         </div>
@@ -292,10 +293,10 @@
                     <div id="monster-area">
                         <h2 id="monster-name">도파민 유혹</h2>
                         <div id="monster-image" data-is-text="true">(꒪⌓꒪)</div>
-                        <h3 class="hp-text" style="margin:0;">방해꾼의 기운: <span id="monster-hp">50/50</span></h3>
+                        <h3 class="hp-text" style="margin:0;">남은 방해 에너지: <span id="monster-hp">50/50</span></h3>
                     </div>
                     <div id="player-area">
-                        <h2 id="player-name-ui">기본 학생</h2>
+                        <h2 id="player-name-ui">일반학생</h2>
                         <div id="player-image-ui">(・_・)</div>
                         <h3 style="margin:0; color:#bdc3c7; font-size: 1rem;">현재 내 모습</h3>
                     </div>
@@ -308,7 +309,7 @@
                         <div class="full-width" style="text-align: center; color: #a5d6a7; font-size: 1.1rem; margin-bottom: 5px; font-weight: bold; background-color: #2c3e50; padding: 10px; border-radius: 8px; border: 1.5px solid #4dd0e1;">
                             [ 휴식 및 정비 공간 ]<br><span style="font-size:0.85rem; color:#bdc3c7; font-weight: normal;">다음 층으로 가기 전, 가방을 열거나 준비를 마치세요.</span>
                         </div>
-                        <button class="lobby-btn full-width" onclick="startBattle()">다음 층 테스트 (도전)</button>
+                        <button class="lobby-btn full-width" onclick="startBattle()">다음 층 올라가기</button>
                         <button class="char-btn full-width" onclick="openCharacterRoom()">[상점] 캐릭터 변경 및 구매</button>
                         <button class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">[상점] 학용품 구매</button>
                         <button class="bag-btn" onclick="openInventory()">내 가방</button>
@@ -317,17 +318,17 @@
                     </div>
                     
                     <div id="shop-ui" class="grid-ui">
-                        <button class="shop-btn" onclick="buyItem('potion')">[아이템] 당충전 초콜릿 (30G)<span>지식 40 회복</span></button>
+                        <button class="shop-btn" onclick="buyItem('potion')">[아이템] 당충전 초콜릿 (30G)<span>집중력 40 회복</span></button>
                         <button class="shop-btn" onclick="buyItem('shield')">[아이템] 철벽 백과사전 (50G)<span>방해꾼의 훼방 무효화</span></button>
-                        <button class="shop-btn" onclick="buyItem('powerUp')">[아이템] 마법의 형광펜 (50G)<span>2회 정답의 힘 상승</span></button>
-                        <button class="shop-btn" onclick="buyItem('maxhp')">[성장] 전공서적 (100G)<span>최대 지식 증가</span></button>
+                        <button class="shop-btn" onclick="buyItem('powerUp')">[아이템] 마법의 형광펜 (50G)<span>다음 2번 정답의 힘 상승</span></button>
+                        <button class="shop-btn" onclick="buyItem('maxhp')">[성장] 만점 비법 노트 (100G)<span>최대 집중력 증가</span></button>
                         <button class="back-btn full-width" style="margin-top:0;" onclick="closeShop()">상점 닫기</button>
                     </div>
                     
                     <div id="battle-ui" class="grid-ui">
-                        <button class="quiz-btn full-width" onclick="loadQuiz()">개념 일깨우기 (정화)</button>
-                        <button class="potion-btn" onclick="usePotion()">초콜릿 먹기</button>
-                        <button class="bag-btn" onclick="openInventory()">내 가방 열기</button>
+                        <button class="quiz-btn full-width" onclick="loadQuiz()">역사 문제 풀기 (물리치기)</button>
+                        <button class="potion-btn" onclick="usePotion()">초콜릿 먹기 (회복)</button>
+                        <button class="bag-btn" onclick="openInventory()">내 가방 열기 (아이템)</button>
                     </div>
                     
                     <div id="options-ui" class="grid-ui" style="grid-template-columns: 1fr;"></div>
@@ -363,7 +364,7 @@
         <div class="modal-list" style="justify-content: center;">
             <button class="title-btn" style="background-color: #f1c40f; color:#000;" onclick="cheatAction('gold')">골드 +10,000 획득</button>
             <button class="title-btn" style="background-color: #e67e22; color:#fff;" onclick="cheatAction('chars')">모든 캐릭터 스킨 해금</button>
-            <button class="title-btn" style="background-color: #e74c3c; color:#fff;" onclick="cheatAction('stats')">집중력/암기력 대폭 상승</button>
+            <button class="title-btn" style="background-color: #e74c3c; color:#fff;" onclick="cheatAction('stats')">집중력/기억력 대폭 상승</button>
             <button class="title-btn" style="background-color: #9b59b6; color:#fff;" onclick="cheatAction('floor')">10층 강제 점프 돌파</button>
         </div>
         <button class="back-btn" onclick="closeCheatModal()" style="flex: none; margin-top:15px;">창 닫기</button>
@@ -372,51 +373,58 @@
 
 <script>
     // ==========================================
-    // 💡 1. 튜토리얼 스크립트 복구 (휴식 공간 안내 추가)
+    // 💡 1. 튜토리얼 스크립트
     // ==========================================
     const tutorialScripts = [
-        "환영합니다!\n역사 타워 RPG에 오신 것을 환영합니다.\n이 게임은 '역사 지식'으로 학습 방해꾼을 정화하며 탑을 오르는 게임입니다.",
-        "먼저 화면 상단의 [상태창]을 볼까요?\n\n[지식]: 여러분의 집중력입니다. 0이 되면 도전을 멈추어야 합니다.\n[암기력]: 퀴즈를 맞혔을 때 방해꾼을 약화시키는 힘입니다.",
-        "앗! 학습 방해꾼이 나타났습니다! (꒪⌓꒪)\n테스트가 어떻게 진행되는지 직접 체험해 볼까요?\n\n(아래 '다음' 버튼을 누르면 모의 퀴즈가 나옵니다.)",
+        "환영합니다!\n역사 타워 RPG에 오신 것을 환영합니다.\n이 게임은 '역사 지식'으로 학습 방해꾼을 물리치며 탑을 오르는 게임입니다.",
+        "먼저 화면 상단의 [상태창]을 볼까요?\n\n[집중력]: 여러분이 버틸 수 있는 체력입니다. 0이 되면 잠시 쉬어야 합니다.\n[기억력]: 퀴즈를 맞혔을 때 방해꾼을 약화시키는 힘입니다.",
+        "앗! 학습 방해꾼이 나타났습니다! (꒪⌓꒪)\n도전이 어떻게 진행되는지 직접 체험해 볼까요?\n\n(아래 '다음' 버튼을 누르면 모의 퀴즈가 나옵니다.)",
         "방해꾼의 유혹을 이겨내려면 역사 문제를 맞혀야 합니다.\n\n자, 화면에 나타난 모의 퀴즈를 읽고\n노랗게 빛나는 정답 [1. 이성계]를 직접 클릭해 보세요!",
-        "훌륭합니다! 정답을 맞히면 방해꾼의 기운을 약화시킵니다.\n\n[주의!] 내가 퀴즈를 푼 후에는 방해꾼이 나의 [지식]을 흩트리려 시도합니다. (턴제 방식)",
-        "방해꾼을 완전히 정화하면 다음 층으로 가기 전,\n보상 3개 중 하나를 골라 능력을 키울 수 있습니다.",
-        "방해꾼을 물리치면 [휴식 및 정비 공간]으로 돌아옵니다.\n\n이곳에서는 모은 골드로 가방을 열어 아이템을 쓰거나, 상점에서 유용한 학용품과 새로운 내 모습(캐릭터 스킨)을 살 수 있습니다. 준비가 끝나면 다음 층에 도전하세요!",
-        "튜토리얼 완료!\n이제 기본 규칙을 모두 익히셨습니다.\n어려운 개념은 메인 화면의 [공부하기] 탭을 활용하세요!\n\n그럼, 실전에서 만나요! 행운을 빕니다!"
+        "훌륭합니다! 정답을 맞히면 방해꾼의 에너지가 깎입니다.\n\n[주의!] 내가 퀴즈를 푼 후에는 방해꾼이 나의 [집중력]을 흩트리려 시도합니다. (턴제 방식)",
+        "방해꾼을 완전히 물리치면 다음 층으로 가기 전,\n보상 3개 중 하나를 골라 능력을 키울 수 있습니다.",
+        "방해꾼을 물리치면 [휴식 및 정비 공간]으로 돌아옵니다.\n\n이곳에서는 모은 골드로 가방을 열어 아이템을 쓰거나, 상점에서 유용한 학용품과 새로운 내 모습(캐릭터 스킨)을 살 수 있습니다. 준비가 끝나면 다음 층에 올라가세요!",
+        "튜토리얼 완료!\n이제 기본 규칙을 모두 익히셨습니다.\n어려운 개념은 메인 화면의 [공부하기] 탭을 활용하세요!\n\n그럼, 실전에서 만나요! 파이팅!"
     ];
 
     // ==========================================
-    // 💡 2. 아이템, 캐릭터, 몬스터 데이터 (특수 BGM 설정 추가)
+    // 💡 2. 아이템, 캐릭터, 몬스터 데이터 
     // ==========================================
     const ITEM_DB = {
-        revive: { name: "마법의 지우개", desc: "지식 고갈 시 절반 회복 후 다시 도전" },
-        shield: { name: "철벽 백과사전", desc: "다음 1회 방해꾼의 훼방 무효화" },
-        powerUp: { name: "형광펜", desc: "2회 정답의 힘 상승" },
-        weaken: { name: "노이즈캔슬링 귀마개", desc: "2회 방해꾼의 훼방 반감" },
-        armorBreak: { name: "예리한 빨간펜", desc: "2회 정답의 기운 1.5배 증폭" }
+        revive: { name: "마법의 지우개", desc: "집중력 바닥날 때 절반 회복 후 부활" },
+        shield: { name: "철벽 백과사전", desc: "다음 1회 방해꾼의 훼방 막아냄" },
+        powerUp: { name: "마법의 형광펜", desc: "다음 2번 정답의 힘 상승" },
+        weaken: { name: "초집중 귀마개", desc: "다음 2번 방해꾼의 방해를 절반으로 줄임" },
+        armorBreak: { name: "족집게 빨간펜", desc: "다음 2번 정답의 힘 1.5배 상승" }
     };
 
     const PLAYER_CHARS = [
-        { id: "char_01", name: "기본 학생", icon: ["(・_・)", "(・o・)"], price: 0, anim: "eye" },
+        { id: "char_01", name: "일반학생", icon: ["(・_・)", "(・o・)"], price: 0, anim: "eye" },
         { id: "char_02", name: "모범생", icon: ["(⌐■_■)", "(⌐■-■)"], price: 50, anim: "bounce" },
-        { id: "char_03", name: "열혈 수험생", icon: ["(ง •̀_•́)ง", "(ง'̀-'́)ง"], price: 100, anim: "arm" },
-        { id: "char_04", name: "피곤한 학생", icon: ["(－‸ლ)", "(－.ლ)"], price: 100, anim: "eye" },
-        { id: "char_05", name: "해맑은 신입생", icon: ["(❁´◡`❁)", "(❁´▽`❁)"], price: 150, anim: "bounce" },
-        { id: "char_06", name: "분노의 재수생", icon: ["(ꐦ ಠ皿ಠ )", "(ꐦ ಠoಠ )"], price: 200, anim: "arm" },
-        { id: "char_07", name: "벼락치기 마스터", icon: ["٩(ˊᗜˋ*)و", "٩(ˊOˋ*)و"], price: 250, anim: "bounce" },
-        { id: "char_08", name: "힙스터", icon: ["[ -_ - ]y", "[ -o - ]y"], price: 300, anim: "eye" },
-        { id: "char_09", name: "수면 부족", icon: ["(*´﹃｀*)", "(*´O｀*)"], price: 300, anim: "eye" },
-        { id: "char_10", name: "각성한 전사", icon: ["ᕙ(⇀‸↼‶)ᕗ", "ᕙ(⇀O↼‶)ᕗ"], price: 400, anim: "arm" },
-        { id: "char_11", name: "수석 합격자", icon: ["(๑˃̵ᴗ˂̵)و", "(๑˃̵O˂̵)و"], price: 500, anim: "bounce" },
-        { id: "char_12", name: "곰돌이 탈", icon: ["ʕ•ᴥ•ʔ", "ʕ•O•ʔ"], price: 600, anim: "swing" },
-        { id: "char_13", name: "고양이 탈", icon: ["/ᐠ｡ꞈ｡ᐟ\\", "/ᐠ｡O｡ᐟ\\"], price: 600, anim: "swing" },
-        { id: "char_14", name: "외계인 유학생", icon: ["(V)(OᴥO)(V)", "(V)(O0O)(V)"], price: 700, anim: "bounce", bgm: "hub_magic" },
-        { id: "char_15", name: "안드로이드", icon: ["┌( ಠ_ಠ)┘", "┌( ಠoಠ)┘"], price: 700, anim: "arm" },
+        { id: "char_03", name: "열공러", icon: ["(ง •̀_•́)ง", "(ง'̀-'́)ง"], price: 100, anim: "arm" },
+        { id: "char_04", name: "만성피로", icon: ["(－‸ლ)", "(－.ლ)"], price: 100, anim: "eye" },
+        { id: "char_05", name: "신입생", icon: ["(❁´◡`❁)", "(❁´▽`❁)"], price: 150, anim: "bounce" },
+        { id: "char_06", name: "도전자", icon: ["(ꐦ ಠ皿ಠ )", "(ꐦ ಠoಠ )"], price: 200, anim: "arm" }, 
+        { id: "char_07", name: "벼락치기", icon: ["٩(ˊᗜˋ*)و", "٩(ˊOˋ*)و"], price: 250, anim: "bounce" },
+        { id: "char_08", name: "인싸", icon: ["[ -_ - ]y", "[ -o - ]y"], price: 300, anim: "eye" },
+        { id: "char_09", name: "밤샘러", icon: ["(*´﹃｀*)", "(*´O｀*)"], price: 300, anim: "eye" },
+        { id: "char_10", name: "각성자", icon: ["ᕙ(⇀‸↼‶)ᕗ", "ᕙ(⇀O↼‶)ᕗ"], price: 400, anim: "arm" },
+        { id: "char_11", name: "전교 1등", icon: ["(๑˃̵ᴗ˂̵)و", "(๑˃̵O˂̵)و"], price: 500, anim: "bounce" },
+        { id: "char_12", name: "곰돌이", icon: ["ʕ•ᴥ•ʔ", "ʕ•O•ʔ"], price: 600, anim: "swing" },
+        { id: "char_13", name: "고양이", icon: ["/ᐠ｡ꞈ｡ᐟ\\", "/ᐠ｡O｡ᐟ\\"], price: 600, anim: "swing" },
+        { id: "char_14", name: "외계인", icon: ["(V)(OᴥO)(V)", "(V)(O0O)(V)"], price: 700, anim: "bounce", bgm: "hub_alien" },
+        { id: "char_15", name: "로봇", icon: ["┌( ಠ_ಠ)┘", "┌( ಠoಠ)┘"], price: 700, anim: "arm" },
         { id: "char_16", name: "마법사", icon: ["༼ つ ◕_◕ ༽つ", "༼ つ ◕o◕ ༽つ"], price: 800, anim: "bounce", bgm: "hub_magic" },
         { id: "char_17", name: "무투가", icon: ["(ง'̀-'́)ง", "(ง'̀o'́)ง"], price: 800, anim: "arm" },
-        { id: "char_18", name: "어둠의 암살자", icon: ["[  †  ]", "[  ‡  ]"], price: 900, anim: "eye" },
-        { id: "char_19", name: "전설의 용사", icon: ["[ ★_★ ]", "[ ★o★ ]"], price: 1000, anim: "bounce", bgm: "hub_legend" },
-        { id: "char_20", name: "해탈한 자", icon: ["( ⚆ _ ⚆ )", "( ⚆ o ⚆ )"], price: 1500, anim: "eye", bgm: "hub_magic" }
+        { id: "char_18", name: "올빼미", icon: ["[ ☾_☽ ]", "[ ☾o☽ ]"], price: 900, anim: "eye", bgm: "hub_ninja" }, 
+        { id: "char_19", name: "용사", icon: ["[ ★_★ ]", "[ ★o★ ]"], price: 1000, anim: "bounce", bgm: "hub_legend" },
+        { id: "char_20", name: "해탈자", icon: ["( ⚆ _ ⚆ )", "( ⚆ o ⚆ )"], price: 1500, anim: "eye", bgm: "hub_zen" },
+        
+        /* 💡 추가된 특수 히든 캐릭터 5종 (이모지 제거, 텍스트 아트 적용) */
+        { id: "hidden_01", name: "정복자", icon: ["[ =W= ]", "[ =w= ]"], price: -1, anim: "bounce", bgm: "hub_master", unlockDesc: "최고 기록 20층 도달 시 해금" },
+        { id: "hidden_02", name: "갑부", icon: ["( $_$ )", "( $O$ )"], price: -1, anim: "bounce", bgm: "hub_rich", unlockDesc: "누적 특별 용돈 1,000G 획득 시 해금" },
+        { id: "hidden_03", name: "초코덕후", icon: ["[ #_# ]", "[ #O# ]"], price: -1, anim: "bounce", bgm: "hub_sweet", unlockDesc: "초콜릿 누적 10회 냠냠 시 해금" },
+        { id: "hidden_04", name: "오답달인", icon: ["( /_/ )", "( /O/ )"], price: -1, anim: "bounce", bgm: "hub_study", unlockDesc: "문제 누적 10회 오답 시 해금" },
+        { id: "hidden_05", name: "방랑자", icon: ["( ~_~ )", "( ~O~ )"], price: -1, anim: "swing", bgm: "hub_wind", unlockDesc: "방해꾼의 공격 누적 10회 피할 시 해금" }
     ];
 
     const NORMAL_MONSTERS = [
@@ -454,16 +462,16 @@
     ];
 
     const REWARD_CARDS = [
-        { id: 'heal', icon: 'HP', title: "짧은 낮잠", desc: "지식 40 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("[보상] 꿀맛 같은 낮잠으로 지식을 40 회복했습니다.", "#64b5f6"); updateUI(); } },
-        { id: 'maxHp', icon: 'MAX', title: "전공서적 정독", desc: "최대 지식 +15 영구 증가", action: () => { player.maxHp += 15; player.hp += 15; addLog("[보상] 최대 지식이 15 영구 증가했습니다.", "#ffeb3b"); updateUI(); } },
-        { id: 'atkUp', icon: 'ATK', title: "만점의 만년필", desc: "암기력 +5 영구 상승", action: () => { player.baseAtk += 5; addLog("[보상] 암기력이 영구적으로 5 상승했습니다!", "#ff8a65"); updateUI(); } },
-        { id: 'evasionUp', icon: 'DODGE', title: "가벼운 스트레칭", desc: "딴짓 회피율 +5% 영구 상승", action: () => { player.evasion += 5; addLog("[보상] 딴짓 회피율이 영구적으로 5% 상승했습니다!", "#81c784"); updateUI(); } },
-        { id: 'gold', icon: 'GOLD', title: "깜짝 장학금", desc: "연구 자금 40G 획득", action: () => { player.gold += 40; addLog("[보상] 40G 장학금을 획득했습니다!", "#ffd700"); updateUI(); } },
+        { id: 'heal', icon: 'HP', title: "짧은 낮잠", desc: "집중력 40 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("[보상] 꿀맛 같은 낮잠으로 집중력을 40 회복했습니다.", "#64b5f6"); updateUI(); } },
+        { id: 'maxHp', icon: 'MAX', title: "만점 비법 노트", desc: "최대 집중력 +15 영구 증가", action: () => { player.maxHp += 15; player.hp += 15; addLog("[보상] 최대 집중력이 15 영구 증가했습니다.", "#ffeb3b"); updateUI(); } },
+        { id: 'atkUp', icon: 'ATK', title: "만점의 만년필", desc: "기억력 +5 영구 상승", action: () => { player.baseAtk += 5; addLog("[보상] 기억력이 영구적으로 5 상승했습니다!", "#ff8a65"); updateUI(); } },
+        { id: 'evasionUp', icon: 'DODGE', title: "가벼운 스트레칭", desc: "딴짓 피하기 +5% 영구 상승", action: () => { player.evasion += 5; addLog("[보상] 딴짓 피하기 능력이 영구적으로 5% 상승했습니다!", "#81c784"); updateUI(); } },
+        { id: 'gold', icon: 'GOLD', title: "깜짝 장학금", desc: "특별 용돈 40G 획득", action: () => { player.gold += 40; player.totalGoldEarned += 40; addLog("[보상] 특별 용돈 40G를 획득했습니다!", "#ffd700"); checkHiddenUnlocks(); updateUI(); } },
         { id: 'buyItem', icon: 'SHOP', title: "학교 매점", desc: "30G로 무작위 학용품 획득", action: () => { 
             if (player.gold >= 30) { 
                 player.gold -= 30; let keys = Object.keys(ITEM_DB); let drop = keys[Math.floor(Math.random() * keys.length)];
                 player.inventory[drop] = (player.inventory[drop] || 0) + 1; addLog(`[보상] 매점에서 ${ITEM_DB[drop].name}을(를) 얻었습니다!`, "#e040fb");
-            } else { addLog("[안내] 골드가 부족하여 매점을 지나쳤습니다...", "#ff5252"); }
+            } else { addLog("[안내] 특별 용돈이 부족하여 매점을 지나쳤습니다...", "#ff5252"); }
             updateUI();
         } },
         { id: 'potion', icon: 'ITEM', title: "당충전 초콜릿", desc: "초콜릿 1개 획득", action: () => { player.potions++; addLog("[보상] 초콜릿을 1개 획득했습니다.", "#a5d6a7"); updateUI(); } },
@@ -478,7 +486,7 @@
     let categoryList = [];
     let activeQuizBank = [];
     
-    let player = { currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, gold: 0, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, potions: 3 };
+    let player = { currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, gold: 0, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, potions: 3, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
     let monster = null;
     let activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
     let savedHighScore = 1;
@@ -517,7 +525,7 @@
     }, 500);
 
     // ==========================================
-    // 💡 4. 사운드 시스템 (신규 멜로디 추가)
+    // 💡 4. 사운드 시스템 (히든 BGM 템포 완화)
     // ==========================================
     let audioCtx = null;
     let bgmInterval = null;
@@ -528,8 +536,19 @@
     const MELODIES = {
         title: { notes: [261.6, 293.7, 329.6, 261.6, 261.6, 293.7, 329.6, 261.6, 349.2, 392.0, 440.0, 349.2, 349.2, 392.0, 440.0, 349.2, 0, 0, 0], tempo: 360, vol: 0.04 },
         hub: { notes: [220.0, 261.6, 329.6, 261.6, 220.0, 261.6, 329.6, 261.6, 196.0, 246.9, 293.7, 261.6, 196.0, 246.9, 293.7, 261.6, 0, 0, 0], tempo: 400, vol: 0.04 },
-        hub_magic: { notes: [329.6, 440.0, 523.3, 659.3, 0, 523.3, 440.0, 0], tempo: 400, vol: 0.04 }, /* 특수 캐릭터용 몽환적 BGM */
-        hub_legend: { notes: [523.3, 0, 392.0, 0, 523.3, 0, 659.3, 0], tempo: 350, vol: 0.04 }, /* 전설의 용사용 웅장한 BGM */
+        hub_alien: { notes: [349.2, 466.2, 349.2, 233.1, 0, 466.2, 233.1, 0], tempo: 250, vol: 0.04 }, 
+        hub_magic: { notes: [329.6, 440.0, 523.3, 659.3, 0, 523.3, 440.0, 0], tempo: 400, vol: 0.04 }, 
+        hub_ninja: { notes: [440.0, 0, 415.3, 0, 440.0, 0, 329.6, 0], tempo: 300, vol: 0.04 }, 
+        hub_legend: { notes: [523.3, 0, 392.0, 0, 523.3, 0, 659.3, 0], tempo: 350, vol: 0.04 }, 
+        hub_zen: { notes: [261.6, 293.7, 329.6, 392.0, 440.0, 0, 0, 0], tempo: 600, vol: 0.04 }, 
+        
+        /* 💡 템포를 늦추고 쉬는 구간을 넣은 히든 캐릭터 브금 */
+        hub_master: { notes: [523.3, 0, 659.3, 0, 784.0, 0, 1046.5, 0], tempo: 500, vol: 0.04 },
+        hub_rich: { notes: [392.0, 0, 493.9, 0, 587.3, 0, 784.0, 0], tempo: 450, vol: 0.04 },
+        hub_sweet: { notes: [523.3, 0, 587.3, 0, 659.3, 0, 0, 0], tempo: 500, vol: 0.04 },
+        hub_study: { notes: [329.6, 0, 0, 0, 440.0, 0, 0, 0], tempo: 600, vol: 0.04 },
+        hub_wind: { notes: [659.3, 0, 0, 0, 587.3, 0, 0, 0], tempo: 550, vol: 0.04 },
+
         normal: { notes: [261.6, 0, 329.6, 0, 392.0, 0, 329.6, 0, 349.2, 0, 293.7, 0, 440.0, 0, 349.2, 0, 0, 0, 0, 0], tempo: 320, vol: 0.04 },
         elite: { notes: [293.7, 349.2, 440.0, 349.2, 293.7, 349.2, 440.0, 349.2, 329.6, 392.0, 493.9, 392.0, 329.6, 392.0, 493.9, 392.0, 0, 0, 0], tempo: 300, vol: 0.04 },
         boss: { notes: [130.8, 0, 130.8, 0, 155.6, 0, 155.6, 0, 196.0, 0, 196.0, 0, 155.6, 0, 155.6, 0, 0, 0], tempo: 400, vol: 0.05 },
@@ -584,7 +603,6 @@
         else if (monster && monster.isElite) changeBgmMode('elite');
         else if (monster) changeBgmMode('normal');
         else {
-            // 특수 캐릭터 확인 후 BGM 적용
             let charData = PLAYER_CHARS.find(c => c.id === player.currentChar);
             if (charData && charData.bgm) {
                 changeBgmMode(charData.bgm);
@@ -617,7 +635,7 @@
     }
 
     // ==========================================
-    // 💡 5. 데이터 초기화 및 보조 기능 (에러 방지)
+    // 💡 5. 데이터 초기화 및 보조 기능
     // ==========================================
     function getSafeStorage(key, fallback) {
         try { 
@@ -650,7 +668,10 @@
 
     function openRangeScreen() { document.getElementById('title-screen').style.display = 'none'; document.getElementById('range-screen').style.display = 'flex'; }
     function closeRangeScreen() { document.getElementById('range-screen').style.display = 'none'; document.getElementById('title-screen').style.display = 'flex'; }
-    function showHelp() { alert("[역사 타워 가이드]\n1. 역사 문제를 풀어 학습 방해꾼을 이겨내세요.\n2. 정답 시 방해꾼의 기운이 약해지고, 오답 시 내 지식이 소진됩니다.\n3. 매 10층마다 핵심 개념(대왕 방해꾼)이 등장합니다.\n4. 골드를 모아 매점에서 아이템을 사거나 옷장에서 새로운 스킨을 구매하세요!"); }
+    
+    function showHelp() { 
+        alert("[ 🏰 역사 타워 초보자 가이드 ]\n\n⚔️ 배틀 방법:\n역사 문제를 맞히면 방해꾼의 '에너지'를 깎을 수 있어요!\n반대로 틀리면 내 '집중력(체력)'이 떨어지니 조심하세요.\n\n💡 내 상태 설명:\n- 집중력 : 나의 체력이에요. 0이 되면 게임이 끝나요.\n- 기억력 : 퀴즈를 맞혔을 때 방해꾼의 에너지를 더 많이 깎는 힘이에요!\n- 딴짓 피하기 : 방해꾼의 훼방(공격)을 요리조리 피할 확률이에요.\n\n🎁 꿀팁:\n모은 '특별 용돈'으로 상점에서 아이템과 스킨을 살 수 있어요. 매 10층마다 등장하는 대왕 방해꾼을 조심하세요!"); 
+    }
 
     function addLog(msg, color="#fff") {
         const box = document.getElementById('log-box');
@@ -710,8 +731,18 @@
     }
 
     // ==========================================
-    // 💡 6. 메인 게임 흐름 제어 
+    // 💡 6. 메인 게임 흐름 제어
     // ==========================================
+    function checkHiddenUnlocks() {
+        let newUnlocks = false;
+        if (savedHighScore >= 20 && !player.ownedChars.includes('hidden_01')) { player.ownedChars.push('hidden_01'); addLog("[해금] 히든 캐릭터 '정복자'를 얻었습니다!", "#ffd700"); newUnlocks = true; }
+        if (player.totalGoldEarned >= 1000 && !player.ownedChars.includes('hidden_02')) { player.ownedChars.push('hidden_02'); addLog("[해금] 히든 캐릭터 '갑부'를 얻었습니다!", "#ffd700"); newUnlocks = true; }
+        if (player.totalPotionsUsed >= 10 && !player.ownedChars.includes('hidden_03')) { player.ownedChars.push('hidden_03'); addLog("[해금] 히든 캐릭터 '초코덕후'를 얻었습니다!", "#ffd700"); newUnlocks = true; }
+        if (player.totalWrongAnswers >= 10 && !player.ownedChars.includes('hidden_04')) { player.ownedChars.push('hidden_04'); addLog("[해금] 히든 캐릭터 '오답달인'을 얻었습니다!", "#ffd700"); newUnlocks = true; }
+        if (player.totalEvasions >= 10 && !player.ownedChars.includes('hidden_05')) { player.ownedChars.push('hidden_05'); addLog("[해금] 히든 캐릭터 '방랑자'를 얻었습니다!", "#ffd700"); newUnlocks = true; }
+        if (newUnlocks) saveGame();
+    }
+
     function startCustomGame() {
         const sEl = document.getElementById('start-category');
         const eEl = document.getElementById('end-category');
@@ -735,7 +766,7 @@
         document.getElementById('main-screen').style.display = 'flex'; 
         
         const saved = getSavedCharacters();
-        player = { hp: 100, maxHp: 100, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: saved.current, ownedChars: saved.owned };
+        player = { hp: 100, maxHp: 100, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: saved.current, ownedChars: saved.owned, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
         
         const logBox = document.getElementById('log-box');
         if(logBox) logBox.innerHTML = ""; 
@@ -750,7 +781,7 @@
         
         try {
             let data = JSON.parse(saved);
-            player = Object.assign({ hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: "char_01", ownedChars: ["char_01"] }, data.player);
+            player = Object.assign({ hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: "char_01", ownedChars: ["char_01"], totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 }, data.player);
             activeEffects = data.effects || { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
             activeQuizBank = quizBank; 
             
@@ -800,7 +831,6 @@
         
         updatePlayerAreaUI();
         
-        // 💡 BGM 강제 갱신 로직 (타이틀/승리 브금에서 전환)
         checkAndApplyBGM();
         updateUI(); 
     }
@@ -816,7 +846,8 @@
             else hpBox.classList.remove('hp-danger');
         }
 
-        const uiGold = document.getElementById('gold-ui'); if (uiGold) uiGold.innerText = player.gold + "G"; 
+        /* 💡 골드 중복 표기 방지 (HTML에 이미 G가 있으므로 숫자만 렌더링) */
+        const uiGold = document.getElementById('gold-ui'); if (uiGold) uiGold.innerText = player.gold; 
         const uiPotion = document.getElementById('potion-ui'); if (uiPotion) uiPotion.innerText = player.potions;
         const uiAtk = document.getElementById('atk-ui'); if (uiAtk) uiAtk.innerText = "+" + player.baseAtk;
         const uiEva = document.getElementById('eva-ui'); if (uiEva) uiEva.innerText = player.evasion + "%";
@@ -864,7 +895,7 @@
     }
 
     // ==========================================
-    // 💡 7. 전투 시스템
+    // 💡 7. 전투 시스템 (안내 텍스트 순서 변경 적용)
     // ==========================================
     function startBattle() {
         document.getElementById('hub-ui').style.display = 'none';
@@ -890,9 +921,11 @@
         document.getElementById('monster-name').innerText = monster.name;
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
         updateMonsterImageUI(monster); 
-        addLog(isBoss ? `[경고] 대왕 방해꾼 출현!` : `[도전] 학습 방해꾼이 나타났습니다.`, "#ff4081");
         
-        // 💡 몬스터 조우 시 BGM 갱신 강제 실행
+        /* 💡 텍스트 출력 순서 조정 (도전 -> 안내) */
+        addLog(isBoss ? `[경고] 대왕 방해꾼 출현!` : `[도전] 학습 방해꾼이 나타났습니다.`, "#ff4081");
+        addLog("[안내] 집중력이 다 떨어지면 공부를 할 수 없으니 조심하자!", "#b2ebf2");
+        
         checkAndApplyBGM();
         updateUI(); 
     }
@@ -916,9 +949,11 @@
         document.getElementById('monster-name').innerText = monster.name;
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
         updateMonsterImageUI(monster); 
-        addLog(`[위험] 심화 방해꾼이 나타났습니다!`, "#ffeb3b");
         
-        // 💡 심화 몹 조우 시 BGM 갱신 강제 실행
+        /* 💡 텍스트 출력 순서 조정 (도전 -> 안내) */
+        addLog(`[위험] 심화 방해꾼이 나타났습니다!`, "#ffeb3b");
+        addLog("[안내] 집중력이 다 떨어지면 공부를 할 수 없으니 조심하자!", "#b2ebf2");
+        
         checkAndApplyBGM();
         updateUI();
     }
@@ -933,6 +968,8 @@
         document.getElementById('battle-ui').style.display = 'none';
         document.getElementById('quiz-box').style.display = 'block';
         document.getElementById('options-ui').style.display = 'grid';
+
+        addLog("▶ <b>[나의 턴]</b> 어서 방해꾼을 몰아내자!", "#4dd0e1");
 
         let rIdx = Math.floor(Math.random() * activeQuizBank.length);
         let currentQuiz = activeQuizBank[rIdx];
@@ -959,14 +996,20 @@
             if (activeEffects.powerUp > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.powerUp--; }
             if (activeEffects.armorBreak > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.armorBreak--; }
             monster.hp -= dmg;
-            addLog(`[정답] 방해꾼을 ${dmg}만큼 약화시켰습니다!`, "#00e676");
+            addLog(`[정답] 방해꾼의 에너지를 ${dmg}만큼 깎았습니다!`, "#00e676");
             if (monster.hp <= 0) return winBattle();
         } else {
             addLog(`[오답] 정답은 '${ansStr}' 입니다.`, "#ff7043");
+            player.totalWrongAnswers++;
+            checkHiddenUnlocks();
         }
+
+        addLog("▶ <b>[방해꾼의 턴]</b>", "#ff6b6b");
 
         if (Math.random() * 100 < player.evasion) {
             addLog(`[집중] 방해꾼의 훼방을 완벽히 차단했습니다!`, "#81c784");
+            player.totalEvasions++;
+            checkHiddenUnlocks();
         } else if (activeEffects.shield > 0) {
             addLog(`[방어] 훼방을 성공적으로 막아냈습니다!`, "#4dd0e1");
             activeEffects.shield--;
@@ -974,7 +1017,7 @@
             let dmg = monster.atk;
             if (activeEffects.weaken > 0) { dmg = Math.floor(dmg / 2); activeEffects.weaken--; }
             player.hp -= dmg;
-            addLog(`[혼란] 지식을 ${dmg}만큼 잃어버렸습니다.`, "#ff5252");
+            addLog(`[방해받음] 아차! 집중력이 ${dmg} 떨어졌습니다.`, "#ff5252");
             if (player.hp <= 0) return checkDeath();
         }
         document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`;
@@ -984,10 +1027,11 @@
 
     function winBattle() {
         document.getElementById('monster-hp').innerText = `0/${monster.maxHp}`;
-        addLog(`[성공] 방해꾼을 완벽히 극복했습니다!`, "#ffd700");
+        addLog(`[성공] 방해꾼을 완벽히 물리쳤습니다!`, "#ffd700");
         
         let gold = 10 + Math.floor(Math.random() * 10) + player.floor;
         player.gold += gold;
+        player.totalGoldEarned += gold;
         player.floor++;
         
         if (player.floor > savedHighScore) {
@@ -996,6 +1040,8 @@
             const hsUi = document.getElementById('high-score-ui');
             if(hsUi) hsUi.innerText = savedHighScore;
         }
+        
+        checkHiddenUnlocks();
         setTimeout(showRewardScreen, 1000);
     }
 
@@ -1008,7 +1054,7 @@
             updateUI(); 
             document.getElementById('battle-ui').style.display = 'grid';
         } else {
-            addLog("[휴식] 지식을 모두 소진했습니다.", "#c62828");
+            addLog("[휴식] 집중력을 모두 사용했습니다.", "#c62828");
             monster = null;
             changeBgmMode('gameover'); 
             alert(`도전 종료!\n도달 층수: ${player.floor}층\n수고하셨습니다. 잠시 휴식을 취해보세요!`);
@@ -1066,14 +1112,14 @@
         const prices = { potion: 30, shield: 50, powerUp: 50, maxhp: 100 };
         if (player.gold >= prices[type]) {
             player.gold -= prices[type];
-            if (type === 'potion') player.potions++;
+            if (type === 'potion') { player.potions++; }
             else if (type === 'maxhp') { player.maxHp += 20; player.hp += 20; }
             else player.inventory[type] = (player.inventory[type] || 0) + 1;
             
             addLog(`[상점] 아이템 구매 완료!`, "#a5d6a7"); 
             updateUI();
         } else {
-            alert("골드가 부족합니다.");
+            alert("특별 용돈이 부족합니다.");
         }
     }
 
@@ -1082,6 +1128,10 @@
             if (player.hp >= player.maxHp) return alert("집중력이 이미 가득 차 있습니다.");
             player.potions--; 
             player.hp = Math.min(player.maxHp, player.hp + 40);
+            
+            player.totalPotionsUsed++;
+            checkHiddenUnlocks();
+            
             addLog("[회복] 달콤한 초콜릿을 먹었습니다.", "#a5d6a7"); 
             updateUI();
         } else {
@@ -1151,15 +1201,22 @@
             } else if (isOwned) {
                 btn = `<button class="action-btn" onclick="buyOrEquipChar('${c.id}')">장착</button>`;
             } else {
-                btn = `<button class="action-btn" style="background:#0277bd;" onclick="buyOrEquipChar('${c.id}')">${c.price}G 구매</button>`;
+                if (c.price === -1) {
+                    btn = `<div class="hidden-condition">[히든]<br>${c.unlockDesc}</div>`;
+                } else {
+                    btn = `<button class="action-btn" style="background:#0277bd;" onclick="buyOrEquipChar('${c.id}')">${c.price}G 구매</button>`;
+                }
             }
+            
+            let displayName = (c.price === -1 && !isOwned) ? "???" : c.name;
+            let displayIcon = (c.price === -1 && !isOwned) ? "[ ?_? ]" : c.icon[0];
             
             let div = document.createElement('div'); 
             div.className = "list-item";
             div.innerHTML = `
                 <div class="list-item-info">
-                    <div class="list-item-icon" style="color:#4dd0e1; font-size: 1.2rem;">${c.icon[0]}</div>
-                    <div style="margin-left:10px; color:${isOwned ? '#ffd700' : '#ccc'}">${c.name}</div>
+                    <div class="list-item-icon" style="color:#4dd0e1; font-size: 1.2rem;">${displayIcon}</div>
+                    <div style="margin-left:10px; color:${isOwned ? '#ffd700' : '#ccc'}">${displayName}</div>
                 </div>
                 ${btn}
             `;
@@ -1173,21 +1230,18 @@
             player.currentChar = id; 
             addLog(`[옷장] ${char.name} 스킨을 장착했습니다!`, "#4dd0e1");
         } else {
-            if (player.gold >= char.price) {
+            if (char.price !== -1 && player.gold >= char.price) {
                 player.gold -= char.price; 
                 player.ownedChars.push(id); 
                 player.currentChar = id;
                 addLog(`[구매] ${char.name} 스킨을 획득했습니다!`, "#a5d6a7");
-            } else {
-                return alert("골드가 부족합니다.");
+            } else if (char.price !== -1) {
+                return alert("특별 용돈이 부족합니다.");
             }
         }
         updatePlayerAreaUI(); 
-        
-        // 💡 캐릭터 장착 시 전용 BGM 갱신 강제 실행
         checkAndApplyBGM();
         updateUI(); 
-        
         openCharacterRoom(); 
     }
     function closeCharacterRoom() { 
@@ -1213,7 +1267,8 @@
         
         if (t === 'gold') {
             player.gold += 10000;
-            addLog("[치트] 골드 +10000", "#e040fb");
+            player.totalGoldEarned += 10000;
+            addLog("[치트] 용돈 +10000", "#e040fb");
         } else if (t === 'chars') {
             player.ownedChars = PLAYER_CHARS.map(c => c.id);
             addLog("[치트] 모든 스킨 해금 완료", "#e040fb");
@@ -1221,7 +1276,7 @@
             player.maxHp += 1000; 
             player.hp = player.maxHp; 
             player.baseAtk += 100;
-            addLog("[치트] 집중력/암기력 대폭 상승", "#e040fb");
+            addLog("[치트] 집중력/기억력 대폭 상승", "#e040fb");
         } else if (t === 'floor') {
             player.floor += 10;
             addLog("[치트] 10층 강제 등반", "#e040fb");
@@ -1232,6 +1287,7 @@
             }
         }
         
+        checkHiddenUnlocks();
         updateUI(); 
         updatePlayerAreaUI(); 
         closeCheatModal(); 
@@ -1296,6 +1352,9 @@
             
             document.getElementById('quiz-box').style.display = 'block';
             document.getElementById('quiz-box').innerText = "[모의 문제]\n조선을 건국한 왕은?";
+            
+            addLog("▶ <b>[나의 턴]</b> 어서 방해꾼을 몰아내자!", "#4dd0e1");
+
             const opt = document.getElementById('options-ui'); 
             
             if(opt) {
@@ -1312,6 +1371,7 @@
                         if (i === 0) {
                             monster.hp = 0; 
                             updateUI();
+                            
                             addLog("[정답] 튜토리얼 방해꾼을 정화했습니다!", "#00e676");
                             
                             document.getElementById('quiz-box').style.display = 'none';
