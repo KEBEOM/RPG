@@ -325,31 +325,38 @@
     let currentBgmMode = 'title';
     let noteIndex = 0;
 
-    // 💡 6가지 상황별 다중 화음(Chord) 및 템포 설정 (피로감 없는 sine/triangle 파형 사용)
     const MELODIES = {
-        title: { // 평화롭고 동화같은 C Maj9 -> F Maj9
+        title: { 
             chords: [ [261.63, 329.63, 392.00, 493.88], [174.61, 261.63, 329.63, 440.00] ], 
             tempo: 1600, type: 'sine', vol: 0.15
         },
-        hub: { // 잔잔하고 휴식되는 Am7 -> Em7
+        hub: { 
             chords: [ [220.00, 261.63, 329.63, 392.00], [164.81, 196.00, 246.94, 293.66] ], 
             tempo: 1600, type: 'sine', vol: 0.15
         },
-        normal: { // 밝고 경쾌한 모험 C -> F -> G -> C
+        normal: { 
             chords: [ [261.63, 329.63, 392.00], [174.61, 261.63, 349.23], [196.00, 293.66, 392.00], [261.63, 329.63, 392.00] ], 
             tempo: 1000, type: 'triangle', vol: 0.12
         },
-        elite: { // 신비로운 긴장감 Dm -> Am -> E -> Am
+        elite: { 
             chords: [ [146.83, 220.00, 349.23], [220.00, 261.63, 440.00], [164.81, 246.94, 329.63], [220.00, 261.63, 440.00] ], 
             tempo: 900, type: 'triangle', vol: 0.12
         },
-        boss: { // 웅장하지만 귀가 아프지 않은 저음 Fm -> Cm -> Db -> Eb
+        boss: { 
             chords: [ [174.61, 207.65, 261.63], [130.81, 155.56, 196.00], [138.59, 174.61, 207.65], [155.56, 196.00, 233.08] ], 
             tempo: 1200, type: 'triangle', vol: 0.14
         },
-        danger: { // 위급하지만 신경을 긁지 않는 사이렌 펄스 Edim -> Dm
+        danger: { 
             chords: [ [164.81, 233.08, 293.66], [146.83, 220.00, 293.66] ], 
             tempo: 600, type: 'sine', vol: 0.15
+        },
+        victory: { // 💡 통통 튀고 신나는 승전보 (빠르고 밝은 아르페지오)
+            chords: [ [392.00, 493.88, 587.33], [440.00, 523.25, 659.25], [523.25, 659.25, 783.99], [587.33, 739.99, 880.00] ],
+            tempo: 200, type: 'triangle', vol: 0.10
+        },
+        gameover: { // 💡 우울하고 아쉬운 패배음 (느린 하행 마이너 화음)
+            chords: [ [329.63, 261.63, 220.00], [311.13, 246.94, 207.65], [293.66, 233.08, 196.00], [261.63, 207.65, 174.61] ],
+            tempo: 1500, type: 'sine', vol: 0.15
         }
     };
 
@@ -360,7 +367,6 @@
         const modeData = MELODIES[currentBgmMode];
         const currentChord = modeData.chords[noteIndex];
         
-        // 💡 여러 개의 주파수를 동시에 재생하여 화음(Chord) 생성
         currentChord.forEach((freq, idx) => {
             const osc = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
@@ -368,17 +374,16 @@
             osc.type = modeData.type;
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-            // 화음이 겹칠 때 볼륨 폭발 방지
             const maxVol = modeData.vol / currentChord.length; 
             
-            // 💡 오르골/하프처럼 소리가 촤르륵 퍼지는(Arpeggiated) 부드러운 Envelope 효과
             gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            const attackTime = audioCtx.currentTime + 0.05 + (idx * 0.08); // 0.08초 간격으로 시간차 어택
+            // 승전보(victory)는 음이 빠르게 끊어져야 통통 튀는 느낌이 살아남
+            const attackTime = currentBgmMode === 'victory' ? audioCtx.currentTime + 0.02 : audioCtx.currentTime + 0.05 + (idx * 0.08); 
             gainNode.gain.exponentialRampToValueAtTime(maxVol, attackTime); 
             
             const duration = modeData.tempo / 1000;
-            // 템포 길이보다 살짝 길게 여운(Release)을 남겨 편안한 소리 완성
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration * 1.2);
+            const releaseTime = currentBgmMode === 'victory' ? 0.8 : 1.2; // 승전보는 잔향을 짧게
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration * releaseTime);
 
             osc.connect(gainNode);
             gainNode.connect(audioCtx.destination);
@@ -407,11 +412,9 @@
             return;
         }
         
-        // 💡 1순위: 체력 위험 상태
         if (player && player.hp > 0 && player.hp <= player.maxHp * 0.3) {
             changeBgmMode('danger');
         } 
-        // 💡 2순위: 몬스터 등급
         else if (monster.isBoss) {
             changeBgmMode('boss');
         } else if (monster.isElite) {
@@ -827,7 +830,10 @@
         
         document.getElementById('buff-ui').innerText = buffText.length > 0 ? buffText.join(" / ") : "적용 효과 없음";
 
-        updateBattleBgm(); 
+        // 보상, 메뉴 등 다른 BGM이 강제 설정된 상태가 아니면 배틀 BGM 업데이트
+        if (currentBgmMode !== 'victory' && currentBgmMode !== 'gameover' && currentBgmMode !== 'hub' && currentBgmMode !== 'title') {
+            updateBattleBgm(); 
+        }
     }
 
     function addLog(msg, color = "#fff") {
@@ -882,6 +888,7 @@
         document.getElementById('monster-name').innerText = monster.name;
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
         updateMonsterImageUI(monster); 
+        updateBattleBgm(); 
         updateUI(); 
     }
 
@@ -909,6 +916,7 @@
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
         updateMonsterImageUI(monster); 
         addLog(`⚠️ 심화 문제집에서 정예 괴물 [${monster.name}]이(가) 튀어나왔습니다!`, "#ffeb3b");
+        updateBattleBgm(); 
         updateUI();
     }
 
@@ -1013,7 +1021,8 @@
         } else {
             addLog("💀 지식이 고갈되어 쓰러졌습니다... 다시 공부해야 합니다.", "#c62828");
             monster = null;
-            changeBgmMode('title'); 
+            changeBgmMode('gameover'); // 💡 패배 시 슬픈 게임오버 BGM 출력
+            
             alert(`도전 종료!\n도달한 층수: ${player.floor}층`);
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('title-screen').style.display = 'flex';
@@ -1029,7 +1038,7 @@
         document.getElementById('battle-ui').style.display = 'none';
         document.getElementById('reward-screen').style.display = 'flex';
         
-        changeBgmMode('hub'); 
+        changeBgmMode('victory'); // 💡 층 클리어 보상 시 통통 튀는 승전보 재생
 
         const container = document.getElementById('reward-cards-container');
         container.innerHTML = "";
