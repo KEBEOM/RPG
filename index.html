@@ -89,14 +89,19 @@
     #left-panel, #right-panel { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; }
 
     #monster-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
-    #monster-name { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0;}
+    #monster-name { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0; transition: color 0.3s, text-shadow 0.3s;}
     
-    #monster-image { width: 120px; height: 90px; background-color: transparent; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; color: #ffb74d; text-align: center; line-height: 1.2; white-space: nowrap;}
+    /* 몬스터 이름 색상용 CSS 클래스 추가 */
+    .name-normal { color: #ffffff; text-shadow: none; }
+    .name-elite { color: #e6b3ff !important; text-shadow: 0 0 8px rgba(230, 179, 255, 0.6); } /* 파스텔 분홍보라 */
+    .name-boss { color: #f4ffb3 !important; text-shadow: 0 0 8px rgba(244, 255, 179, 0.6); } /* 파스텔 연두노랑 */
+
+    #monster-image { width: auto; min-width: 120px; padding: 0 15px; height: 90px; background-color: transparent; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; color: #ffb74d; text-align: center; line-height: 1.2; white-space: nowrap;}
     
     #player-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
-    #player-name-ui { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0; color: #4dd0e1;}
+    #player-name-ui { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0; color: #bdc3c7; transition: color 0.3s;}
     
-    #player-image-ui { width: 120px; height: 90px; background-color: #2c3e50; border: 3px solid #4dd0e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; color: #fff; text-align: center; line-height: 1.2; white-space: nowrap;}
+    #player-image-ui { width: auto; min-width: 120px; padding: 0 15px; height: 90px; background-color: #2c3e50; border: 3px solid #bdc3c7; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 5px; color: #fff; text-align: center; line-height: 1.2; white-space: nowrap; transition: border-color 0.3s;}
 
     #quiz-box { display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; border: 2px solid #f39c12; margin-bottom: 10px; width: 100%; font-size: 1rem; line-height: 1.4; word-break: keep-all; box-sizing: border-box; text-align: center; }
 
@@ -128,8 +133,8 @@
     #log-box { flex: none; height: 120px; background-color: #000; border-top: 2px solid #555; padding: 8px; overflow-y: auto; font-size: 0.85rem; line-height: 1.3; box-sizing: border-box; }
     #log-box p { margin: 4px 0; }
 
-    /* 모달창 */
-    .custom-modal { display: none; position: absolute; top: 15%; left: 5%; right: 5%; bottom: 15%; background: rgba(30, 40, 50, 0.98); border: 3px solid #f39c12; z-index: 600; border-radius: 15px; padding: 15px; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); max-width: 500px; margin: 0 auto;}
+    /* 모달창 여백 최적화 (가림 방지) */
+    .custom-modal { display: none; position: absolute; top: 10%; left: 5%; right: 5%; bottom: 10%; background: rgba(30, 40, 50, 0.98); border: 3px solid #f39c12; z-index: 600; border-radius: 15px; padding: 15px; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); max-width: 500px; margin: 0 auto;}
     .modal-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
     
     .list-item { display: flex; justify-content: space-between; align-items: center; background: #34495e; padding: 10px; border-radius: 8px; }
@@ -155,7 +160,6 @@
     #tutorial-overlay.pos-top { top: calc(var(--safe-top) + 20px); bottom: auto; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; } 
     #tutorial-overlay.pos-quiz { top: 60px; bottom: auto; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; } 
 
-    /* 가독성을 위한 하이라이트 글자 색상 클래스 */
     .hlt { color: #ffd700; font-weight: bold; }
     .hlt-cyan { color: #4dd0e1; font-weight: bold; }
 
@@ -172,7 +176,7 @@
         #left-panel { width: 35%; justify-content: center; }
         #right-panel { width: 60%; justify-content: center; }
         #monster-area, #player-area { margin-bottom: 0; }
-        #monster-image, #player-image-ui { width: 80px; height: 60px; font-size: 0.9rem; }
+        #monster-image, #player-image-ui { height: 60px; font-size: 0.9rem; }
         #quiz-box { margin-bottom: 8px; padding: 10px; font-size: 0.95rem; }
         .grid-ui { gap: 6px; }
         button { padding: 8px; font-size: 0.85rem; }
@@ -193,7 +197,7 @@
     @media (min-width: 600px) and (max-width: 900px) and (min-height: 501px) {
         #app-wrapper { max-width: 600px; height: 90vh; border-radius: 20px; }
         .game-title { font-size: 3.5rem; }
-        #monster-image, #player-image-ui { width: 140px; height: 110px; font-size: 1.5rem; }
+        #monster-image, #player-image-ui { height: 110px; font-size: 1.5rem; }
         #monster-name, #player-name-ui { font-size: 1.6rem; }
         #quiz-box { font-size: 1.2rem; padding: 20px; }
         button { padding: 15px; font-size: 1.1rem; }
@@ -214,7 +218,7 @@
         #action-area { flex-direction: row; align-items: stretch; padding: 15px 30px; gap: 30px; }
         #left-panel { width: 40%; border-right: 2px dashed #444; padding-right: 20px; justify-content: center; }
         #right-panel { width: 60%; padding-left: 10px; justify-content: center; display: flex; flex-direction: column; }
-        #monster-image, #player-image-ui { width: 170px; height: 120px; font-size: 1.6rem; margin-bottom: 10px;}
+        #monster-image, #player-image-ui { height: 120px; font-size: 1.6rem; margin-bottom: 10px; min-width: 170px;}
         #monster-name, #player-name-ui { font-size: 1.8rem; margin-bottom: 0;}
         .hp-text { font-size: 1.2rem; margin-top: 5px;}
         #quiz-box { font-size: 1.1rem; padding: 15px; margin-bottom: 15px; flex: none; }
@@ -292,11 +296,11 @@
 
     <div id="game-container">
         <div id="status-bar">
-            <div class="stat-box" style="flex: 1 1 100%;">층수: <span id="floor-ui">1F</span></div>
+            <div class="stat-box" style="flex: 1 1 100%;">층수: <span id="floor-ui">1F</span> <span id="diff-badge" style="font-size:0.8rem; margin-left: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold;"></span></div>
             <div class="stat-box" id="hp-container">집중력: <span id="hp-ui" style="color: #ff6b6b; font-weight: bold;">100/100</span></div>
             <div class="stat-box">골드: <span id="gold-ui">0</span>G</div>
-            <div class="stat-box" style="color:#ffb74d;">기억력: <span id="atk-ui">+0</span></div>
-            <div class="stat-box" style="color:#81c784;">딴짓 피하기: <span id="eva-ui">0</span>%</div>
+            <div class="stat-box" style="color:#ffb74d;">기억력: <span id="atk-ui">15</span></div>
+            <div class="stat-box" style="color:#81c784;">딴짓 피하기: <span id="eva-ui">0%</span></div>
             <div class="stat-box">초콜릿: <span id="potion-ui">3</span>개</div>
             <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
         </div>
@@ -305,7 +309,7 @@
             <div id="action-area">
                 <div id="left-panel">
                     <div id="monster-area">
-                        <h2 id="monster-name">도파민 유혹</h2>
+                        <h2 id="monster-name" class="name-normal">도파민 유혹</h2>
                         <div id="monster-image" data-is-text="true">(꒪⌓꒪)</div>
                         <h3 class="hp-text" style="margin:0;">남은 방해 에너지: <span id="monster-hp">50/50</span></h3>
                     </div>
@@ -327,7 +331,7 @@
                         <button id="hub-btn-char" class="char-btn full-width" onclick="openCharacterRoom()">[상점] 캐릭터 변경 및 구매</button>
                         <button id="hub-btn-shop" class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">[상점] 아이템 구매</button>
                         <button id="hub-btn-bag" class="bag-btn" onclick="openInventory()">내 가방 (아이템)</button>
-                        <button class="system-btn" onclick="saveGame()">저장하기</button>
+                        <button class="system-btn" onclick="saveGame(true)">저장하기</button>
                         <button class="quit-btn" onclick="confirmReturnToTitle()">나가기</button>
                     </div>
                     
@@ -367,11 +371,11 @@
     <div id="cheat-modal" class="custom-modal">
         <h2 style="margin-top: 0; color: #fff; text-align: center;">개발자 치트 메뉴</h2>
         <p style="font-size:0.9rem; color:#bdc3c7; text-align: center;">게임 진행 중에만 사용 가능합니다.</p>
-        <div class="modal-list" style="justify-content: center;">
-            <button class="title-btn" style="background-color: #f1c40f; color:#000;" onclick="cheatAction('gold')">골드 +10,000 획득</button>
+        <div class="modal-list"> <button class="title-btn" style="background-color: #f1c40f; color:#000;" onclick="cheatAction('gold')">골드 +10,000 획득</button>
             <button class="title-btn" style="background-color: #e67e22; color:#fff;" onclick="cheatAction('chars')">모든 캐릭터 스킨 해금</button>
+            <button class="title-btn" style="background-color: #3498db; color:#fff;" onclick="cheatAction('items')">모든 아이템 1개씩 획득</button> 
             <button class="title-btn" style="background-color: #e74c3c; color:#fff;" onclick="cheatAction('stats')">집중력/기억력 대폭 상승</button>
-            <button class="title-btn" style="background-color: #9b59b6; color:#fff;" onclick="cheatAction('floor')">10층 강제 점프 돌파</button>
+            <button class="title-btn" style="background-color: #9b59b6; color:#fff;" onclick="cheatAction('floor')">보스 바로 만나기 (다음 10층)</button>
         </div>
         <button class="back-btn" onclick="closeCheatModal()" style="flex: none; margin-top:15px;">창 닫기</button>
     </div>
@@ -408,43 +412,72 @@
     ];
 
     // ==========================================
-    // 💡 2. 아이템, 캐릭터, 몬스터 데이터 
+    // 💡 2. 아이템 및 5단계 등급(Tier) 캐릭터 데이터 
     // ==========================================
     const ITEM_DB = {
-        revive: { name: "마법의 지우개", desc: "집중력 바닥날 때 절반 회복 후 부활" },
-        shield: { name: "철벽 백과사전", desc: "다음 1회 방해꾼의 훼방 막아냄" },
-        powerUp: { name: "마법의 형광펜", desc: "다음 2번 정답의 힘 상승" },
-        weaken: { name: "초집중 귀마개", desc: "다음 2번 방해꾼의 방해를 절반으로 줄임" },
-        armorBreak: { name: "족집게 빨간펜", desc: "다음 2번 정답의 힘 1.5배 상승" }
+        revive: { name: "마법의 지우개", desc: "집중력 바닥날 때 절반 회복 후 부활", isPassive: false },
+        shield: { name: "철벽 백과사전", desc: "다음 1회 방해꾼의 훼방 막아냄", isPassive: false },
+        powerUp: { name: "마법의 형광펜", desc: "다음 2번 정답의 힘 상승", isPassive: false },
+        weaken: { name: "초집중 귀마개", desc: "다음 2번 방해꾼의 방해를 절반으로 줄임", isPassive: false },
+        armorBreak: { name: "족집게 빨간펜", desc: "다음 2번 정답의 힘 1.5배 상승", isPassive: false },
+        
+        boss_art_1: { name: "전설의 금동대향로", desc: "매 층 클리어 시 체력 15 자동 회복 (소지 효과)", isPassive: true },
+        boss_art_2: { name: "성웅의 난중일기", desc: "기억력 +25 영구 상승 (소지 효과)", isPassive: true },
+        boss_art_3: { name: "수호자의 방패", desc: "딴짓 피하기 확률 +15% 영구 상승 (소지 효과)", isPassive: true },
+        boss_art_4: { name: "왕의 어보", desc: "매 층 클리어 시 추가 용돈 20G 획득 (소지 효과)", isPassive: true }
+    };
+
+    const TIER_COLORS = {
+        normal: "#bdc3c7",   // 회색
+        rare: "#4fc3f7",     // 파란색
+        unique: "#ce93d8",   // 보라색
+        hidden: "#ffb74d",   // 주황색
+        legend: "#ff1744"    // 강렬한 빨간색
+    };
+
+    const TIER_NAMES = {
+        normal: "[노멀]", rare: "[레어]", unique: "[유니크]", hidden: "[히든]", legend: "[전설]"
     };
 
     const PLAYER_CHARS = [
-        { id: "char_01", name: "일반학생", icon: ["(・_・)", "(・o・)"], price: 0, anim: "eye" },
-        { id: "char_02", name: "모범생", icon: ["(⌐■_■)", "(⌐■-■)"], price: 50, anim: "bounce" },
-        { id: "char_03", name: "열공!열공!", icon: ["(ง •̀_•́)ง", "(ง'̀-'́)ง"], price: 100, anim: "arm" },
-        { id: "char_04", name: "감기걸림", icon: ["(－‸ლ)", "(－.ლ)"], price: 100, anim: "eye" },
-        { id: "char_05", name: "신입생", icon: ["(❁´◡`❁)", "(❁´▽`❁)"], price: 150, anim: "bounce" },
-        { id: "char_06", name: "배탈난학생", icon: ["(ꐦ ಠ皿ಠ )", "(ꐦ ಠoಠ )"], price: 200, anim: "arm" }, 
-        { id: "char_07", name: "벼락치기", icon: ["٩(ˊᗜˋ*)و", "٩(ˊOˋ*)و"], price: 250, anim: "bounce" },
-        { id: "char_08", name: "헤이헤이", icon: ["[ -_ - ]y", "[ -o - ]y"], price: 300, anim: "eye" },
-        { id: "char_09", name: "졸려요", icon: ["(*´﹃｀*)", "(*´O｀*)"], price: 300, anim: "eye" },
-        { id: "char_10", name: "급식전문가", icon: ["ᕙ(⇀‸↼‶)ᕗ", "ᕙ(⇀O↼‶)ᕗ"], price: 400, anim: "arm" },
-        { id: "char_11", name: "전교 1등", icon: ["(๑˃̵ᴗ˂̵)و", "(๑˃̵O˂̵)و"], price: 500, anim: "bounce" },
-        { id: "char_12", name: "곰돌이", icon: ["ʕ•ᴥ•ʔ", "ʕ•O•ʔ"], price: 600, anim: "swing" },
-        { id: "char_13", name: "고양이", icon: ["/ᐠ｡ꞈ｡ᐟ\\", "/ᐠ｡O｡ᐟ\\"], price: 600, anim: "swing" },
-        { id: "char_14", name: "외계인", icon: ["(V)(OᴥO)(V)", "(V)(O0O)(V)"], price: 700, anim: "bounce", bgm: "hub_alien" },
-        { id: "char_15", name: "로봇", icon: ["┌( ಠ_ಠ)┘", "┌( ಠoಠ)┘"], price: 700, anim: "arm" },
-        { id: "char_16", name: "마법사", icon: ["༼ つ ◕_◕ ༽つ", "༼ つ ◕o◕ ༽つ"], price: 800, anim: "bounce", bgm: "hub_magic" },
-        { id: "char_17", name: "유도부", icon: ["(ง'̀-'́)ง", "(ง'̀o'́)ง"], price: 800, anim: "arm" },
-        { id: "char_18", name: "올빼미", icon: ["[ ☾_☽ ]", "[ ☾o☽ ]"], price: 900, anim: "eye", bgm: "hub_ninja" }, 
-        { id: "char_19", name: "용사", icon: ["[ ★_★ ]", "[ ★ o ★ ]"], price: 1000, anim: "bounce", bgm: "hub_legend" },
-        { id: "char_20", name: "맑눈광", icon: ["( ⚆ _ ⚆ )", "( ⚆ o ⚆ )"], price: 1500, anim: "eye", bgm: "hub_zen" },
+        { id: "char_01", name: "일반학생", tier: "normal", icon: ["(・_・)", "(・o・)"], price: 0, anim: "eye" },
+        { id: "char_02", name: "모범생", tier: "normal", icon: ["(⌐■_■)", "(⌐■-■)"], price: 50, anim: "bounce" },
+        { id: "char_03", name: "열공!열공!", tier: "normal", icon: ["(ง •̀_•́)ง", "(ง'̀-'́)ง"], price: 100, anim: "arm" },
+        { id: "char_04", name: "감기걸림", tier: "normal", icon: ["(－‸ლ)", "(－.ლ)"], price: 100, anim: "eye" },
+        { id: "char_05", name: "신입생", tier: "normal", icon: ["(❁´◡`❁)", "(❁´▽`❁)"], price: 150, anim: "bounce" },
+        { id: "char_06", name: "배탈난학생", tier: "normal", icon: ["(ꐦ ಠ皿ಠ )", "(ꐦ ಠoಠ )"], price: 200, anim: "arm" }, 
         
-        { id: "hidden_01", name: "정복자", icon: ["[ = W = ]", "[ =w= ]"], price: -1, anim: "bounce", bgm: "hub_master", unlockDesc: "최고 기록 20층 도달 시 해금" },
-        { id: "hidden_02", name: "갑부", icon: ["( $_$ )", "( $ u $ )"], price: -1, anim: "bounce", bgm: "hub_rich", unlockDesc: "누적 특별 용돈 1,000G 획득 시 해금" },
-        { id: "hidden_03", name: "초코덕후", icon: ["[ #_# ]", "[ # O # ]"], price: -1, anim: "bounce", bgm: "hub_sweet", unlockDesc: "초콜릿 누적 10회 냠냠 시 해금" },
-        { id: "hidden_04", name: "오답달인", icon: ["ㄴ( - _ - )ㄱ", "ㄴ( ' O ' )ㄱ"], price: -1, anim: "bounce", bgm: "hub_study", unlockDesc: "문제 누적 10회 오답 시 해금" },
-        { id: "hidden_05", name: "방랑자", icon: ["ㄴ( ~ _ ~ )!", "!( ~O~ )ㄱ"], price: -1, anim: "swing", bgm: "hub_wind", unlockDesc: "방해꾼의 공격 누적 10회 피할 시 해금" }
+        { id: "char_07", name: "벼락치기", tier: "rare", icon: ["٩(ˊᗜˋ*)و", "٩(ˊOˋ*)و"], price: 250, anim: "bounce" },
+        { id: "char_08", name: "헤이헤이", tier: "rare", icon: ["[ -_ - ]y", "[ -o - ]y"], price: 300, anim: "eye" },
+        { id: "char_09", name: "졸려요", tier: "rare", icon: ["(*´﹃｀*)", "(*´O｀*)"], price: 300, anim: "eye" },
+        { id: "char_10", name: "급식전문가", tier: "rare", icon: ["ᕙ(⇀‸↼‶)ᕗ", "ᕙ(⇀O↼‶)ᕗ"], price: 400, anim: "arm" },
+        { id: "char_11", name: "전교 1등", tier: "rare", icon: ["(๑˃̵ᴗ˂̵)و", "(๑˃̵O˂̵)و"], price: 500, anim: "bounce" },
+        
+        { id: "char_12", name: "곰돌이", tier: "unique", icon: ["ʕ•ᴥ•ʔ", "ʕ•O•ʔ"], price: 600, anim: "swing" },
+        { id: "char_13", name: "고양이", tier: "unique", icon: ["/ᐠ｡ꞈ｡ᐟ\\", "/ᐠ｡O｡ᐟ\\"], price: 600, anim: "swing" },
+        { id: "char_14", name: "외계인", tier: "unique", icon: ["(V)(OᴥO)(V)", "(V)(O0O)(V)"], price: 700, anim: "bounce", bgm: "hub_alien" },
+        { id: "char_15", name: "로봇", tier: "unique", icon: ["┌( ಠ_ಠ)┘", "┌( ಠoಠ)┘"], price: 700, anim: "arm" },
+        { id: "char_16", name: "마법사", tier: "unique", icon: ["༼ つ ◕_◕ ༽つ", "༼ つ ◕o◕ ༽つ"], price: 800, anim: "bounce", bgm: "hub_magic" },
+        { id: "char_17", name: "유도부", tier: "unique", icon: ["(ง'̀-'́)ง", "(ง'̀o'́)ง"], price: 800, anim: "arm" },
+        { id: "char_18", name: "올빼미", tier: "unique", icon: ["[ ☾_☽ ]", "[ ☾o☽ ]"], price: 900, anim: "eye", bgm: "hub_ninja" }, 
+        { id: "char_19", name: "용사", tier: "unique", icon: ["[ ★_★ ]", "[ ★ o ★ ]"], price: 1000, anim: "bounce", bgm: "hub_legend" },
+        { id: "char_20", name: "맑눈광", tier: "unique", icon: ["( ⚆ _ ⚆ )", "( ⚆ o ⚆ )"], price: 1500, anim: "eye", bgm: "hub_zen" },
+        
+        { id: "hidden_01", name: "정복자", tier: "hidden", icon: ["▶━[ 炎_炎 ]━◀", "▷━[ 炎O炎 ]━◁"], price: -1, anim: "bounce", bgm: "hub_master", unlockDesc: "최고 기록 20층 도달 시 해금" },
+        { id: "hidden_02", name: "갑부", tier: "hidden", icon: ["$$ [ ₩_₩ ] $$", "￦￦ [ $O$ ] ￦￦"], price: -1, anim: "bounce", bgm: "hub_rich", unlockDesc: "누적 특별 용돈 1,000G 획득 시 해금" },
+        { id: "hidden_03", name: "초코덕후", tier: "hidden", icon: ["■■ ( ´﹃｀)", "□■ ( º﹃ º)"], price: -1, anim: "bounce", bgm: "hub_sweet", unlockDesc: "초콜릿 누적 10회 냠냠 시 해금" },
+        { id: "hidden_04", name: "오답달인", tier: "hidden", icon: ["✘_✘ [ ?_? ] ✘_✘", "✖_✖ [ !O! ] ✖_✖"], price: -1, anim: "bounce", bgm: "hub_study", unlockDesc: "문제 누적 10회 오답 시 해금" },
+        { id: "hidden_05", name: "방랑자", tier: "hidden", icon: ["彡 ≈(-_-)≈ 彡", "彡 ~~(0_0)~~ 彡"], price: -1, anim: "swing", bgm: "hub_wind", unlockDesc: "방해꾼의 공격 누적 10회 피할 시 해금" },
+
+        { id: "hard_01", name: "불굴의 도전자", tier: "hidden", icon: ["炎 ᕙ( Ò﹏Ó)ᕗ 炎", "焱 ᕙ( Ò0Ó)ᕗ 焱"], price: -1, anim: "bounce", bgm: "hub_hard_1", unlockDesc: "하드 모드 10층 도달 시 해금" },
+        { id: "hard_02", name: "고독한 현자", tier: "hidden", icon: ["✦ ꧁( ఠ_ఠ )꧂ ✦", "✧ ꧁( ఠoఠ )꧂ ✧"], price: -1, anim: "eye", bgm: "hub_hard_2", unlockDesc: "하드 모드 15층 도달 시 해금" },
+        { id: "hard_03", name: "심연의 지배자", tier: "hidden", icon: ["▼ ◤( ◣_◢ )◥ ▼", "▲ ◣( ◣0◢ )◢ ▲"], price: -1, anim: "swing", bgm: "hub_hard_3", unlockDesc: "하드 모드 20층 도달 시 해금" },
+        { id: "hard_04", name: "역사 마스터", tier: "hidden", icon: ["[≡] ✧( ⊡_⊡ )✧ [≡]", "(=) ✦( ⊡O⊡ )✦ (=)"], price: -1, anim: "bounce", bgm: "hub_hard_4", unlockDesc: "하드 모드 25층 도달 시 해금" },
+        { id: "hard_05", name: "타워의 전설", tier: "hidden", icon: ["[★] ꧁( ✪_✪ )꧂ [★]", "[☆] ꧁( ✪O✪ )꧂ [☆]"], price: -1, anim: "bounce", bgm: "hub_hard_5", unlockDesc: "하드 모드 30층 도달 시 해금" },
+
+        { id: "legend_01", name: "컬렉터 마스터", tier: "legend", icon: ["[★] ✧( ♛_♛ )✧ [★]", "[☆] ✦( ♛O♛ )✦ [☆]"], price: -1, anim: "bounce", bgm: "hub_leg_all", unlockDesc: "모든 일반/히든 스킨 수집 시 해금" },
+        { id: "legend_02", name: "타워 정복자", tier: "legend", icon: ["[♖] ꧁( ⏣_⏣ )꧂ [♜]", "[♜] ꧁( ⏣O⏣ )꧂ [♖]"], price: -1, anim: "bounce", bgm: "hub_leg_nm", unlockDesc: "보통 모드 100층 도달 시 해금" },
+        { id: "legend_03", name: "불멸의 신", tier: "legend", icon: ["[❂] ◤( 炎O炎 )◥ [❂]", "[♨] ◣( 炎_炎 )◢ [♨]"], price: -1, anim: "swing", bgm: "hub_leg_hd", unlockDesc: "하드 모드 100층 도달 시 해금" }
     ];
 
     const NORMAL_MONSTERS = [
@@ -461,16 +494,16 @@
     ];
 
     const BOSS_MONSTERS = [
-        { name: "나태의 장벽", icon: ["[ ■ _ ■ ]", "[ ■ o ■ ]"] },
-        { name: "스마트폰 유혹", icon: ["[=□_□=]", "[=□o□=]"] },
-        { name: "혼돈의 폭풍", icon: ["( ╬ Ò ‸ Ó)", "( ╬ Ò 0 Ó)"] },
-        { name: "왜곡의 거울", icon: ["|˚–˚|", "|˚O˚|"] },
-        { name: "무지의 안개", icon: ["( ╰ _ ╯ )", "( ╰ o ╯ )"] },
-        { name: "역사 지우개", icon: ["( 炎 _ 炎 )", "( 炎 o 炎 )"] },
-        { name: "시간 낭비꾼", icon: ["( ﾟДﾟ;)", "( ﾟOﾟ;)"] },
-        { name: "망각의 늪", icon: ["[  ∞  ]", "[  8  ]"] },
-        { name: "거짓말쟁이 피노키오", icon: ["( 눈 _ 눈 )", "( 눈 o 눈 )"] },
-        { name: "백지화 현상", icon: ["( ꒪o꒪ )", "( ꒪0꒪ )"] }
+        { name: "[보스] 나태의 장벽", icon: ["[ ■ _ ■ ]", "[ ■ o ■ ]"] },
+        { name: "[보스] 스마트폰 유혹", icon: ["[=□_□=]", "[=□o□=]"] },
+        { name: "[보스] 혼돈의 폭풍", icon: ["( ╬ Ò ‸ Ó)", "( ╬ Ò 0 Ó)"] },
+        { name: "[보스] 왜곡의 거울", icon: ["|˚–˚|", "|˚O˚|"] },
+        { name: "[보스] 무지의 안개", icon: ["( ╰ _ ╯ )", "( ╰ o ╯ )"] },
+        { name: "[보스] 역사 지우개", icon: ["( 炎 _ 炎 )", "( 炎 o 炎 )"] },
+        { name: "[보스] 시간 낭비꾼", icon: ["( ﾟДﾟ;)", "( ﾟOﾟ;)"] },
+        { name: "[보스] 망각의 늪", icon: ["[  ∞  ]", "[  8  ]"] },
+        { name: "[보스] 거짓말쟁이 피노키오", icon: ["( 눈 _ 눈 )", "( 눈 o 눈 )"] },
+        { name: "[보스] 백지화 현상", icon: ["( ꒪o꒪ )", "( ꒪0꒪ )"] }
     ];
 
     const ELITE_MONSTERS = [
@@ -481,7 +514,7 @@
         { name: "집중력 브레이커", icon: ["( ╯°□°)╯", "( ╯°O°)╯"] }
     ];
 
-    const REWARD_CARDS = [
+    const NORMAL_REWARD_CARDS = [
         { id: 'heal', icon: 'HP', title: "짧은 낮잠", desc: "집중력 40 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 40); addLog("[보상] 꿀맛 같은 낮잠으로 집중력을 40 회복했습니다.", "#64b5f6"); updateUI(); } },
         { id: 'maxHp', icon: 'MAX', title: "만점 비법 노트", desc: "최대 집중력 +15 영구 증가", action: () => { player.maxHp += 15; player.hp += 15; addLog("[보상] 최대 집중력이 15 영구 증가했습니다.", "#ffeb3b"); updateUI(); } },
         { id: 'atkUp', icon: 'ATK', title: "만점의 만년필", desc: "기억력 +5 영구 상승", action: () => { player.baseAtk += 5; addLog("[보상] 기억력이 영구적으로 5 상승했습니다!", "#ff8a65"); updateUI(); } },
@@ -489,13 +522,45 @@
         { id: 'gold', icon: 'GOLD', title: "깜짝 장학금", desc: "특별 용돈 40G 획득", action: () => { player.gold += 40; player.totalGoldEarned += 40; addLog("[보상] 특별 용돈 40G를 획득했습니다!", "#ffd700"); checkHiddenUnlocks(); updateUI(); } },
         { id: 'buyItem', icon: 'SHOP', title: "학교 매점", desc: "30G로 무작위 아이템 획득", action: () => { 
             if (player.gold >= 30) { 
-                player.gold -= 30; let keys = Object.keys(ITEM_DB); let drop = keys[Math.floor(Math.random() * keys.length)];
+                player.gold -= 30; let validKeys = Object.keys(ITEM_DB).filter(k => !ITEM_DB[k].isPassive); let drop = validKeys[Math.floor(Math.random() * validKeys.length)];
                 player.inventory[drop] = (player.inventory[drop] || 0) + 1; addLog(`[보상] 매점에서 ${ITEM_DB[drop].name}을(를) 얻었습니다!`, "#e040fb");
             } else { addLog("[안내] 특별 용돈이 부족하여 매점을 지나쳤습니다...", "#ff5252"); }
             updateUI();
         } },
         { id: 'potion', icon: 'ITEM', title: "당충전 초콜릿", desc: "초콜릿 1개 획득", action: () => { player.potions++; addLog("[보상] 초콜릿을 1개 획득했습니다.", "#a5d6a7"); updateUI(); } },
         { id: 'elite', icon: 'BOSS', title: "심화 문제집", desc: "[위험] 심화 방해꾼 조우", action: () => { startEliteBattle(); return 'boss'; } }
+    ];
+
+    const ELITE_REWARD_CARDS = [
+        { id: 'heal_elite', icon: 'HP+', title: "달콤한 휴식", desc: "집중력 100 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 100); addLog("[엘리트 보상] 집중력을 100 회복했습니다.", "#64b5f6"); updateUI(); } },
+        { id: 'maxHp_elite', icon: 'MAX+', title: "수석의 노트", desc: "최대 집중력 +30 영구 증가", action: () => { player.maxHp += 30; player.hp += 30; addLog("[엘리트 보상] 최대 집중력이 30 영구 증가했습니다.", "#ffeb3b"); updateUI(); } },
+        { id: 'atkUp_elite', icon: 'ATK+', title: "장인의 만년필", desc: "기억력 +15 영구 상승", action: () => { player.baseAtk += 15; addLog("[엘리트 보상] 기억력이 영구적으로 15 상승했습니다!", "#ff8a65"); updateUI(); } },
+        { id: 'evasionUp_elite', icon: 'DODGE+', title: "유연한 몸놀림", desc: "딴짓 피하기 +10% 영구 상승", action: () => { player.evasion += 10; addLog("[엘리트 보상] 딴짓 피하기 능력이 영구적으로 10% 상승했습니다!", "#81c784"); updateUI(); } },
+        { id: 'gold_elite', icon: 'GOLD+', title: "두둑한 장학금", desc: "특별 용돈 100G 획득", action: () => { player.gold += 100; player.totalGoldEarned += 100; addLog("[엘리트 보상] 특별 용돈 100G를 획득했습니다!", "#ffd700"); checkHiddenUnlocks(); updateUI(); } },
+        { id: 'potion_elite', icon: 'ITEM+', title: "고급 초콜릿 세트", desc: "초콜릿 3개 획득", action: () => { player.potions += 3; addLog("[엘리트 보상] 초콜릿 3개를 획득했습니다.", "#a5d6a7"); updateUI(); } }
+    ];
+
+    const BOSS_REWARD_CARDS = [
+        { id: 'boss_art_1', icon: '★', title: "전설의 금동대향로", desc: "최대 집중력 +50 & 매층 15 회복", action: () => { 
+            player.maxHp += 50; player.hp = player.maxHp; 
+            player.inventory['boss_art_1'] = (player.inventory['boss_art_1'] || 0) + 1;
+            addLog("[보스 보상] 금동대향로 획득! 최대 체력이 오르고 매층 체력을 회복합니다.", "#ff4081"); updateUI(); 
+        } },
+        { id: 'boss_art_2', icon: '📜', title: "성웅의 난중일기", desc: "기억력 +25 영구 상승", action: () => { 
+            player.baseAtk += 25; 
+            player.inventory['boss_art_2'] = (player.inventory['boss_art_2'] || 0) + 1;
+            addLog("[보스 보상] 난중일기를 읽고 기억력이 25 상승했습니다!", "#ff4081"); updateUI(); 
+        } },
+        { id: 'boss_art_3', icon: '🛡️', title: "수호자의 방패", desc: "회피율 +15% & 백과사전 3개", action: () => { 
+            player.evasion += 15; player.inventory['shield'] = (player.inventory['shield'] || 0) + 3; 
+            player.inventory['boss_art_3'] = (player.inventory['boss_art_3'] || 0) + 1;
+            addLog("[보스 보상] 수호자의 방패로 회피율이 오르고 백과사전을 얻었습니다!", "#ff4081"); updateUI(); 
+        } },
+        { id: 'boss_art_4', icon: '💰', title: "왕의 어보", desc: "300G 즉시 획득 & 매층 20G 추가", action: () => { 
+            player.gold += 300; player.totalGoldEarned += 300; player.potions += 5; 
+            player.inventory['boss_art_4'] = (player.inventory['boss_art_4'] || 0) + 1;
+            addLog("[보스 보상] 왕의 어보 획득! 엄청난 자원과 매층 추가 용돈을 받습니다.", "#ff4081"); checkHiddenUnlocks(); updateUI(); 
+        } }
     ];
 
     // ==========================================
@@ -506,9 +571,9 @@
     let categoryList = [];
     let activeQuizBank = [];
     
-    let player = { currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, gold: 0, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, potions: 3, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
+    let player = { currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, gold: 0, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, potions: 3, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
     let monster = null;
-    let activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
+    let activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0, revive: 0 };
     let savedHighScore = 1;
     let isTutorialMode = false;
     let tutorialStep = 0;
@@ -556,23 +621,33 @@
     let noteIndex = 0;
 
     const MELODIES = {
-        title: { notes: [261.6, 293.7, 329.6, 261.6, 261.6, 293.7, 329.6, 261.6, 349.2, 392.0, 440.0, 349.2, 349.2, 392.0, 440.0, 349.2, 0, 0, 0], tempo: 360, vol: 0.04 },
-        hub: { notes: [220.0, 261.6, 329.6, 261.6, 220.0, 261.6, 329.6, 261.6, 196.0, 246.9, 293.7, 261.6, 196.0, 246.9, 293.7, 261.6, 0, 0, 0], tempo: 400, vol: 0.04 },
-        hub_alien: { notes: [349.2, 466.2, 349.2, 233.1, 0, 466.2, 233.1, 0], tempo: 250, vol: 0.04 }, 
-        hub_magic: { notes: [329.6, 440.0, 523.3, 659.3, 0, 523.3, 440.0, 0], tempo: 400, vol: 0.04 }, 
-        hub_ninja: { notes: [440.0, 0, 415.3, 0, 440.0, 0, 329.6, 0], tempo: 300, vol: 0.04 }, 
-        hub_legend: { notes: [523.3, 0, 392.0, 0, 523.3, 0, 659.3, 0], tempo: 350, vol: 0.04 }, 
-        hub_zen: { notes: [261.6, 293.7, 329.6, 392.0, 440.0, 0, 0, 0], tempo: 600, vol: 0.04 }, 
+        title: { notes: [261.6, 293.7, 329.6, 261.6, 261.6, 293.7, 329.6, 261.6, 349.2, 392.0, 440.0, 349.2, 349.2, 392.0, 440.0, 349.2, 0, 0, 0, 0], tempo: 360, vol: 0.04 },
+        hub: { notes: [220.0, 261.6, 329.6, 261.6, 220.0, 261.6, 329.6, 261.6, 196.0, 246.9, 293.7, 261.6, 196.0, 246.9, 293.7, 261.6, 0, 0, 0, 0], tempo: 400, vol: 0.04 },
+        hub_alien: { notes: [349.2, 466.2, 349.2, 233.1, 0, 466.2, 233.1, 0, 0, 0], tempo: 250, vol: 0.04 }, 
+        hub_magic: { notes: [329.6, 440.0, 523.3, 659.3, 0, 523.3, 440.0, 0, 0, 0], tempo: 400, vol: 0.04 }, 
+        hub_ninja: { notes: [440.0, 0, 415.3, 0, 440.0, 0, 329.6, 0, 0, 0], tempo: 300, vol: 0.04 }, 
+        hub_legend: { notes: [523.3, 0, 392.0, 0, 523.3, 0, 659.3, 0, 0, 0], tempo: 350, vol: 0.04 }, 
+        hub_zen: { notes: [261.6, 293.7, 329.6, 392.0, 440.0, 0, 0, 0, 0, 0], tempo: 600, vol: 0.04 }, 
         
-        hub_master: { notes: [523.3, 0, 659.3, 0, 784.0, 0, 1046.5, 0], tempo: 500, vol: 0.04 },
-        hub_rich: { notes: [392.0, 0, 493.9, 0, 587.3, 0, 784.0, 0], tempo: 450, vol: 0.04 },
-        hub_sweet: { notes: [523.3, 0, 587.3, 0, 659.3, 0, 0, 0], tempo: 500, vol: 0.04 },
-        hub_study: { notes: [329.6, 0, 0, 0, 440.0, 0, 0, 0], tempo: 600, vol: 0.04 },
-        hub_wind: { notes: [659.3, 0, 0, 0, 587.3, 0, 0, 0], tempo: 550, vol: 0.04 },
+        hub_master: { notes: [523.3, 0, 659.3, 0, 784.0, 0, 1046.5, 0, 0, 0, 0], tempo: 500, vol: 0.04 },
+        hub_rich: { notes: [392.0, 0, 493.9, 0, 587.3, 0, 784.0, 0, 0, 0, 0], tempo: 450, vol: 0.04 },
+        hub_sweet: { notes: [523.3, 0, 587.3, 0, 659.3, 0, 0, 0, 0, 0], tempo: 500, vol: 0.04 },
+        hub_study: { notes: [329.6, 0, 0, 0, 440.0, 0, 0, 0, 0, 0], tempo: 600, vol: 0.04 },
+        hub_wind: { notes: [659.3, 0, 0, 0, 587.3, 0, 0, 0, 0, 0], tempo: 550, vol: 0.04 },
+
+        hub_hard_1: { notes: [293.7, 329.6, 349.2, 0, 392.0, 0, 349.2, 0, 0, 0, 0], tempo: 300, vol: 0.04 },
+        hub_hard_2: { notes: [220.0, 0, 261.6, 0, 329.6, 0, 440.0, 0, 0, 0, 0], tempo: 400, vol: 0.04 },
+        hub_hard_3: { notes: [196.0, 220.0, 246.9, 0, 261.6, 0, 246.9, 0, 0, 0, 0], tempo: 250, vol: 0.04 },
+        hub_hard_4: { notes: [523.3, 392.0, 440.0, 349.2, 0, 0, 0, 0, 0, 0], tempo: 350, vol: 0.04 },
+        hub_hard_5: { notes: [659.3, 0, 523.3, 0, 784.0, 0, 1046.5, 0, 0, 0, 0], tempo: 450, vol: 0.04 },
+
+        hub_leg_all: { notes: [523.3, 659.3, 784.0, 1046.5, 784.0, 659.3, 523.3, 0, 0, 0, 0], tempo: 250, vol: 0.05 },
+        hub_leg_nm: { notes: [440.0, 523.3, 659.3, 880.0, 0, 0, 0, 0, 0], tempo: 300, vol: 0.05 },
+        hub_leg_hd: { notes: [349.2, 466.2, 523.3, 698.4, 0, 0, 0, 0, 0], tempo: 350, vol: 0.05 },
 
         normal: { notes: [261.6, 0, 329.6, 0, 392.0, 0, 329.6, 0, 349.2, 0, 293.7, 0, 440.0, 0, 349.2, 0, 0, 0, 0, 0], tempo: 320, vol: 0.04 },
-        elite: { notes: [293.7, 349.2, 440.0, 349.2, 293.7, 349.2, 440.0, 349.2, 329.6, 392.0, 493.9, 392.0, 329.6, 392.0, 493.9, 392.0, 0, 0, 0], tempo: 300, vol: 0.04 },
-        boss: { notes: [130.8, 0, 130.8, 0, 155.6, 0, 155.6, 0, 196.0, 0, 196.0, 0, 155.6, 0, 155.6, 0, 0, 0], tempo: 400, vol: 0.05 },
+        elite: { notes: [293.7, 349.2, 440.0, 349.2, 293.7, 349.2, 440.0, 349.2, 329.6, 392.0, 493.9, 392.0, 329.6, 392.0, 493.9, 392.0, 0, 0, 0, 0], tempo: 300, vol: 0.04 },
+        boss: { notes: [130.8, 0, 130.8, 0, 155.6, 0, 155.6, 0, 196.0, 0, 196.0, 0, 155.6, 0, 155.6, 0, 0, 0, 0], tempo: 400, vol: 0.05 },
         danger: { notes: [329.6, 0, 0, 0, 311.1, 0, 0, 0, 329.6, 0, 0, 0, 311.1, 0, 0, 0, 0, 0, 0], tempo: 280, vol: 0.04 },
         victory: { notes: [261.6, 329.6, 392.0, 523.3, 0, 0, 0, 0], tempo: 300, vol: 0.05 },
         gameover: { notes: [392.0, 329.6, 261.6, 196.0, 0, 0, 0, 0], tempo: 600, vol: 0.05 }
@@ -656,7 +731,7 @@
     }
 
     // ==========================================
-    // 💡 5. 데이터 초기화 및 제어 함수 (순서 변경 적용)
+    // 💡 5. 데이터 초기화 및 보조 기능
     // ==========================================
     function getSafeStorage(key, fallback) {
         try { 
@@ -687,7 +762,6 @@
         }
     }
 
-    // 💡 변경된 화면 전환 로직: 출제 범위 선택 -> 난이도 선택
     function openCategoryScreen() {
         document.getElementById('title-screen').style.display = 'none';
         document.getElementById('range-screen').style.display = 'flex';
@@ -786,16 +860,40 @@
     }
 
     // ==========================================
-    // 💡 6. 메인 게임 흐름 제어 
+    // 💡 6. 메인 게임 흐름 제어
     // ==========================================
     function checkHiddenUnlocks() {
         let newUnlocks = false;
-        if (savedHighScore >= 20 && !player.ownedChars.includes('hidden_01')) { player.ownedChars.push('hidden_01'); addLog("[해금] 히든 캐릭터 '정복자'를 얻었습니다!", "#ffd700"); newUnlocks = true; }
-        if (player.totalGoldEarned >= 1000 && !player.ownedChars.includes('hidden_02')) { player.ownedChars.push('hidden_02'); addLog("[해금] 히든 캐릭터 '갑부'를 얻었습니다!", "#ffd700"); newUnlocks = true; }
-        if (player.totalPotionsUsed >= 10 && !player.ownedChars.includes('hidden_03')) { player.ownedChars.push('hidden_03'); addLog("[해금] 히든 캐릭터 '초코덕후'를 얻었습니다!", "#ffd700"); newUnlocks = true; }
-        if (player.totalWrongAnswers >= 10 && !player.ownedChars.includes('hidden_04')) { player.ownedChars.push('hidden_04'); addLog("[해금] 히든 캐릭터 '오답달인'을 얻었습니다!", "#ffd700"); newUnlocks = true; }
-        if (player.totalEvasions >= 10 && !player.ownedChars.includes('hidden_05')) { player.ownedChars.push('hidden_05'); addLog("[해금] 히든 캐릭터 '방랑자'를 얻었습니다!", "#ffd700"); newUnlocks = true; }
-        if (newUnlocks) saveGame();
+        
+        if (savedHighScore >= 20 && !player.ownedChars.includes('hidden_01')) { player.ownedChars.push('hidden_01'); addLog("[해금] 히든 스킨 '정복자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        if (player.totalGoldEarned >= 1000 && !player.ownedChars.includes('hidden_02')) { player.ownedChars.push('hidden_02'); addLog("[해금] 히든 스킨 '갑부' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        if (player.totalPotionsUsed >= 10 && !player.ownedChars.includes('hidden_03')) { player.ownedChars.push('hidden_03'); addLog("[해금] 히든 스킨 '초코덕후' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        if (player.totalWrongAnswers >= 10 && !player.ownedChars.includes('hidden_04')) { player.ownedChars.push('hidden_04'); addLog("[해금] 히든 스킨 '오답달인' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        if (player.totalEvasions >= 10 && !player.ownedChars.includes('hidden_05')) { player.ownedChars.push('hidden_05'); addLog("[해금] 히든 스킨 '방랑자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        
+        if (currentDifficulty === 'hard') {
+            if (player.floor >= 10 && !player.ownedChars.includes('hard_01')) { player.ownedChars.push('hard_01'); addLog("[해금] 하드 전용 스킨 '불굴의 도전자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+            if (player.floor >= 15 && !player.ownedChars.includes('hard_02')) { player.ownedChars.push('hard_02'); addLog("[해금] 하드 전용 스킨 '고독한 현자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+            if (player.floor >= 20 && !player.ownedChars.includes('hard_03')) { player.ownedChars.push('hard_03'); addLog("[해금] 하드 전용 스킨 '심연의 지배자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+            if (player.floor >= 25 && !player.ownedChars.includes('hard_04')) { player.ownedChars.push('hard_04'); addLog("[해금] 하드 전용 스킨 '역사 마스터' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+            if (player.floor >= 30 && !player.ownedChars.includes('hard_05')) { player.ownedChars.push('hard_05'); addLog("[해금] 하드 전용 스킨 '타워의 전설' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        }
+
+        if (currentDifficulty === 'normal' && player.floor >= 100 && !player.ownedChars.includes('legend_02')) {
+            player.ownedChars.push('legend_02'); addLog("[해금] 전설 스킨 '타워 정복자' 획득!", TIER_COLORS.legend); newUnlocks = true;
+        }
+
+        if (currentDifficulty === 'hard' && player.floor >= 100 && !player.ownedChars.includes('legend_03')) {
+            player.ownedChars.push('legend_03'); addLog("[해금] 전설 스킨 '불멸의 신' 획득!", TIER_COLORS.legend); newUnlocks = true;
+        }
+
+        let nonLegendIds = PLAYER_CHARS.filter(c => c.tier !== 'legend').map(c => c.id);
+        let hasAllNonLegends = nonLegendIds.every(id => player.ownedChars.includes(id));
+        if (hasAllNonLegends && !player.ownedChars.includes('legend_01')) {
+            player.ownedChars.push('legend_01'); addLog("[해금] 전설 스킨 '컬렉터 마스터' 획득!", TIER_COLORS.legend); newUnlocks = true;
+        }
+
+        if (newUnlocks) saveGame(false);
     }
 
     function startCustomGame() {
@@ -822,15 +920,16 @@
         const saved = getSavedCharacters();
         
         let startHp = 100;
-        let startAtk = 0;
+        let startAtk = 15; // 기본 대미지는 모든 모드에서 15로 통일합니다.
+        
         if (currentDifficulty === 'easy') {
             startHp = 150;
-            startAtk = 5;
         } else if (currentDifficulty === 'hard') {
-            startHp = 80;
+            startHp = 80;  
         }
 
         player = { hp: startHp, maxHp: startHp, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: startAtk, evasion: 0, currentChar: saved.current, ownedChars: saved.owned, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
+        activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0, revive: 0 };
         
         const logBox = document.getElementById('log-box');
         if(logBox) logBox.innerHTML = ""; 
@@ -847,8 +946,13 @@
         
         try {
             let data = JSON.parse(saved);
-            player = Object.assign({ hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: "char_01", ownedChars: ["char_01"], totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 }, data.player);
-            activeEffects = data.effects || { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
+            player = Object.assign({ hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, currentChar: "char_01", ownedChars: ["char_01"], totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 }, data.player);
+            
+            if (player.baseAtk < 15) player.baseAtk = 15; // 불러올 때도 15 이하는 보정
+            
+            activeEffects = data.effects || { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0, revive: 0 };
+            if(activeEffects.revive === undefined) activeEffects.revive = 0;
+
             activeQuizBank = quizBank; 
             
             initAudio();
@@ -868,11 +972,19 @@
         }
     }
 
-    function saveGame() {
-        if (isTutorialMode) return addLog("[안내] 튜토리얼 중에는 저장할 수 없습니다.", "#ffeb3b");
+    function saveGame(isManual = false) {
+        if (isTutorialMode) {
+            if (isManual) addLog("[안내] 튜토리얼 중에는 저장할 수 없습니다.", "#ffeb3b");
+            return;
+        }
         setSafeStorage('historyTowerSave', JSON.stringify({ player: player, effects: activeEffects }));
-        addLog("게임이 성공적으로 저장되었습니다.");
-        alert("현재 진행 상황이 저장되었습니다.");
+        
+        if (isManual) {
+            addLog("게임이 성공적으로 저장되었습니다.", "#a5d6a7");
+            alert("현재 진행 상황이 저장되었습니다.");
+        } else {
+            addLog("[시스템] 진행 상황이 자동 저장되었습니다.", "#7f8c8d");
+        }
     }
 
     function confirmReturnToTitle() {
@@ -910,6 +1022,19 @@
         const uiFloor = document.getElementById('floor-ui'); if (uiFloor) uiFloor.innerText = player.floor + "F"; 
         const uiHp = document.getElementById('hp-ui'); if (uiHp) uiHp.innerText = player.hp + "/" + player.maxHp;
         
+        const diffBadge = document.getElementById('diff-badge');
+        if (diffBadge) {
+            const diffInfo = {
+                'easy': { text: "[쉬움]", color: "#4caf50" },
+                'normal': { text: "[보통]", color: "#f39c12" },
+                'hard': { text: "[어려움]", color: "#ff5252" },
+                'tutorial': { text: "[튜토리얼]", color: "#00e676" }
+            };
+            const info = diffInfo[currentDifficulty] || diffInfo['normal'];
+            diffBadge.innerText = info.text;
+            diffBadge.style.color = info.color;
+        }
+
         const hpBox = document.getElementById('hp-container');
         if (hpBox) {
             if (player.hp > 0 && player.hp <= player.maxHp * 0.3) hpBox.classList.add('hp-danger');
@@ -918,14 +1043,15 @@
 
         const uiGold = document.getElementById('gold-ui'); if (uiGold) uiGold.innerText = player.gold; 
         const uiPotion = document.getElementById('potion-ui'); if (uiPotion) uiPotion.innerText = player.potions;
-        const uiAtk = document.getElementById('atk-ui'); if (uiAtk) uiAtk.innerText = "+" + player.baseAtk;
+        const uiAtk = document.getElementById('atk-ui'); if (uiAtk) uiAtk.innerText = player.baseAtk; 
         const uiEva = document.getElementById('eva-ui'); if (uiEva) uiEva.innerText = player.evasion + "%";
         
         let buffText = [];
-        if (activeEffects.shield > 0) buffText.push(`방어(${activeEffects.shield})`);
-        if (activeEffects.powerUp > 0) buffText.push(`형광펜(${activeEffects.powerUp})`);
-        if (activeEffects.weaken > 0) buffText.push(`귀마개(${activeEffects.weaken})`);
-        if (activeEffects.armorBreak > 0) buffText.push(`빨간펜(${activeEffects.armorBreak})`);
+        if (activeEffects.shield > 0) buffText.push(`백과사전(${activeEffects.shield}회)`);
+        if (activeEffects.powerUp > 0) buffText.push(`형광펜(${activeEffects.powerUp}회)`);
+        if (activeEffects.weaken > 0) buffText.push(`귀마개(${activeEffects.weaken}회)`);
+        if (activeEffects.armorBreak > 0) buffText.push(`빨간펜(${activeEffects.armorBreak}회)`);
+        if (activeEffects.revive > 0) buffText.push(`지우개(${activeEffects.revive}개)`);
         
         const uiBuff = document.getElementById('buff-ui');
         if (uiBuff) uiBuff.innerText = buffText.length > 0 ? buffText.join(" / ") : "적용 효과 없음";
@@ -936,8 +1062,18 @@
     function updatePlayerAreaUI() {
         if(!player || !player.currentChar) return;
         let charData = PLAYER_CHARS.find(c => c.id === player.currentChar) || PLAYER_CHARS[0];
-        const uiName = document.getElementById('player-name-ui'); if(uiName) uiName.innerText = charData.name;
-        const uiImg = document.getElementById('player-image-ui'); if(uiImg) uiImg.innerText = Array.isArray(charData.icon) ? charData.icon[0] : charData.icon;
+        
+        const uiName = document.getElementById('player-name-ui'); 
+        if(uiName) {
+            uiName.innerText = charData.name;
+            uiName.style.color = TIER_COLORS[charData.tier] || "#bdc3c7";
+        }
+
+        const uiImg = document.getElementById('player-image-ui'); 
+        if(uiImg) {
+            uiImg.innerText = Array.isArray(charData.icon) ? charData.icon[0] : charData.icon;
+            uiImg.style.borderColor = TIER_COLORS[charData.tier] || "#bdc3c7";
+        }
     }
 
     function updateMonsterImageUI(mData) {
@@ -975,33 +1111,51 @@
         document.getElementById('monster-area').style.display = 'flex';
         
         let isBoss = (player.floor % 10 === 0);
-        let mHp = 30 + (player.floor * 10);
+        
+        // 몬스터 체력 계산 (보통 기준 1/4로 줄임)
+        let baseHp = Math.floor((30 + (player.floor * 10)) / 4);
+        let mHp = Math.max(10, baseHp); 
         let mAtk = 5 + Math.floor(player.floor / 2); 
         
         if (currentDifficulty === 'easy') {
             mAtk = Math.max(1, Math.floor(mAtk * 0.7)); 
         } else if (currentDifficulty === 'hard') {
-            mHp = Math.floor(mHp * 1.2);  
+            mHp = Math.floor(mHp * 1.2); 
             mAtk = Math.floor(mAtk * 1.5); 
         }
 
         let baseM = isBoss ? BOSS_MONSTERS[Math.min(Math.floor(player.floor/10)-1, 9)] : NORMAL_MONSTERS[Math.floor(Math.random() * NORMAL_MONSTERS.length)];
         
+        if (isBoss) {
+            mHp = Math.floor(mHp * 2.5);
+            mAtk = Math.floor(mAtk * 1.5);
+        }
+
         monster = {
             name: isBoss ? baseM.name : `Lv.${player.floor} ${baseM.name}`,
             icon: baseM.icon, image: baseM.image,
-            hp: isBoss ? Math.floor(mHp*2.5) : mHp,
-            maxHp: isBoss ? Math.floor(mHp*2.5) : mHp,
-            atk: isBoss ? Math.floor(mAtk*1.5) : mAtk,
+            hp: mHp,
+            maxHp: mHp,
+            atk: mAtk,
             isBoss: isBoss, isElite: false
         };
         
-        document.getElementById('monster-name').innerText = monster.name;
+        const mNameEl = document.getElementById('monster-name');
+        mNameEl.innerText = monster.name;
+
+        // 등급에 따른 클래스 적용 (보스/일반)
+        mNameEl.classList.remove('name-normal', 'name-elite', 'name-boss');
+        if (isBoss) {
+            mNameEl.classList.add('name-boss');
+        } else {
+            mNameEl.classList.add('name-normal');
+        }
+
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
         updateMonsterImageUI(monster); 
         
         addLog("------------------------------------", "#7f8c8d");
-        addLog(isBoss ? `[경고] 대왕 방해꾼 출현!` : `[도전] 학습 방해꾼이 나타났습니다.`, "#ff4081");
+        addLog(isBoss ? `[경고] 대왕 방해꾼 출현!` : `[도전] 학습 방해꾼이 나타났습니다.`, isBoss ? "#e2ffb0" : "#ff4081");
         addLog("[안내] 집중력이 다 떨어지면 공부를 할 수 없으니 조심하자!", "#ffd700");
         
         checkAndApplyBGM();
@@ -1015,28 +1169,36 @@
         document.getElementById('monster-area').style.display = 'flex';
 
         let baseM = ELITE_MONSTERS[Math.floor(Math.random() * ELITE_MONSTERS.length)];
-        let mHp = 30 + (player.floor * 10);
+        
+        let baseHp = Math.floor((30 + (player.floor * 10)) / 4);
+        let mHp = Math.max(10, baseHp);
         let mAtk = 5 + Math.floor(player.floor / 2);
 
         if (currentDifficulty === 'easy') {
             mAtk = Math.max(1, Math.floor(mAtk * 0.7));
         } else if (currentDifficulty === 'hard') {
-            mHp = Math.floor(mHp * 1.2);
+            mHp = Math.floor(mHp * 1.2); 
             mAtk = Math.floor(mAtk * 1.5);
         }
         
         monster = {
-            name: `정예: ${baseM.name}`, icon: baseM.icon, image: baseM.image,
+            name: `[정예] ${baseM.name}`, icon: baseM.icon, image: baseM.image,
             hp: Math.floor(mHp * 1.5), maxHp: Math.floor(mHp * 1.5), atk: Math.floor(mAtk * 1.2),
             isBoss: false, isElite: true 
         };
         
-        document.getElementById('monster-name').innerText = monster.name;
+        const mNameEl = document.getElementById('monster-name');
+        mNameEl.innerText = monster.name;
+
+        // 정예 클래스 적용
+        mNameEl.classList.remove('name-normal', 'name-elite', 'name-boss');
+        mNameEl.classList.add('name-elite');
+
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
         updateMonsterImageUI(monster); 
         
         addLog("------------------------------------", "#7f8c8d");
-        addLog(`[위험] 심화 방해꾼이 나타났습니다!`, "#ffeb3b");
+        addLog(`[위험] 심화 방해꾼이 나타났습니다!`, "#e6b3ff");
         addLog("[안내] 집중력이 다 떨어지면 공부를 할 수 없으니 조심하자!", "#b2ebf2");
         
         checkAndApplyBGM();
@@ -1063,11 +1225,17 @@
         
         const opt = document.getElementById('options-ui');
         opt.innerHTML = "";
-        currentQuiz.options.forEach((o, i) => {
+        
+        let shuffledOptions = currentQuiz.options.map((o, i) => {
+            return { text: o, isCorrect: i === currentQuiz.answer };
+        });
+        shuffledOptions.sort(() => Math.random() - 0.5);
+
+        shuffledOptions.forEach((obj) => {
             let b = document.createElement('button');
             b.className = "option-btn"; 
-            b.innerText = o;
-            b.onclick = () => checkAnswer(i === currentQuiz.answer, currentQuiz.options[currentQuiz.answer]);
+            b.innerText = obj.text;
+            b.onclick = () => checkAnswer(obj.isCorrect, currentQuiz.options[currentQuiz.answer]);
             opt.appendChild(b);
         });
     }
@@ -1077,7 +1245,7 @@
         document.getElementById('options-ui').style.display = 'none';
 
         if (isCorrect) {
-            let dmg = 15 + player.baseAtk;
+            let dmg = player.baseAtk; 
             if (activeEffects.powerUp > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.powerUp--; }
             if (activeEffects.armorBreak > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.armorBreak--; }
             monster.hp -= dmg;
@@ -1093,41 +1261,61 @@
             updateUI();
         }
 
-        addLog("▶ <b>[방해꾼의턴]</b>", "#ff6b6b");
-        
         setTimeout(() => {
-            if (Math.random() * 100 < player.evasion) {
-                addLog(`[집중] 방해꾼의 훼방을 완벽히 차단했습니다!`, "#81c784");
-                player.totalEvasions++;
-                checkHiddenUnlocks();
-            } else if (activeEffects.shield > 0) {
-                addLog(`[방어] 훼방을 성공적으로 막아냈습니다!`, "#4dd0e1");
-                activeEffects.shield--;
-            } else {
-                let dmg = monster.atk;
-                if (activeEffects.weaken > 0) { dmg = Math.floor(dmg / 2); activeEffects.weaken--; }
-                player.hp -= dmg;
-                addLog(`[방해받음] 아차! 집중력이 ${dmg} 떨어졌습니다.`, "#ff5252");
-                if (player.hp <= 0) {
-                    updateUI();
-                    return checkDeath();
+            addLog("▶ <b>[방해꾼의 턴]</b>", "#ff6b6b");
+            
+            setTimeout(() => {
+                if (Math.random() * 100 < player.evasion) {
+                    addLog(`[집중] 방해꾼의 훼방을 완벽히 차단했습니다!`, "#81c784");
+                    player.totalEvasions++;
+                    checkHiddenUnlocks();
+                } else if (activeEffects.shield > 0) {
+                    addLog(`[방어] 훼방을 성공적으로 막아냈습니다!`, "#4dd0e1");
+                    activeEffects.shield--;
+                } else {
+                    let dmg = monster.atk;
+                    if (activeEffects.weaken > 0) { dmg = Math.floor(dmg / 2); activeEffects.weaken--; }
+                    player.hp -= dmg;
+                    addLog(`[방해받음] 아차! 집중력이 ${dmg} 떨어졌습니다.`, "#ff5252");
+                    if (player.hp <= 0) {
+                        updateUI();
+                        return checkDeath();
+                    }
                 }
-            }
-            document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`;
-            updateUI(); 
-            document.getElementById('battle-ui').style.display = 'grid'; 
-        }, 1000);
+                document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`;
+                updateUI(); 
+                document.getElementById('battle-ui').style.display = 'grid'; 
+            }, 1000); 
+        }, 1000); 
     }
 
     function winBattle() {
         document.getElementById('monster-hp').innerText = `0/${monster.maxHp}`;
         addLog(`[성공] 방해꾼을 완벽히 물리쳤습니다!`, "#ffd700");
         
+        if (monster && monster.isBoss) {
+            player.hp = player.maxHp;
+            addLog(`[보스 처치] 집중력을 모두 회복했습니다!`, "#64b5f6");
+        }
+
+        if (player.inventory['boss_art_1']) {
+            player.hp = Math.min(player.maxHp, player.hp + 15);
+            addLog(`[패시브] 금동대향로의 기운으로 체력 15 회복!`, "#ff4081");
+        }
+
         let gold = 10 + Math.floor(Math.random() * 10) + player.floor;
+        
+        if (player.inventory['boss_art_4']) {
+            gold += 20;
+            addLog(`[패시브] 왕의 어보 효과로 추가 용돈 20G 획득!`, "#ff4081");
+        }
+
         player.gold += gold;
         player.totalGoldEarned += gold;
         player.floor++;
         
+        updateUI();
+
         if (player.floor > savedHighScore) {
             savedHighScore = player.floor;
             setSafeStorage('historyTowerMaxFloor', savedHighScore);
@@ -1141,10 +1329,16 @@
 
     function checkDeath() {
         updateUI();
-        if (player.inventory['revive'] > 0) {
+        if (activeEffects.revive > 0) {
+            activeEffects.revive--;
+            player.hp = Math.floor(player.maxHp / 2);
+            addLog("[부활] 적용해둔 마법의 지우개로 집중력을 회복했습니다!", "#ffd700");
+            updateUI(); 
+            document.getElementById('battle-ui').style.display = 'grid';
+        } else if (player.inventory['revive'] > 0) {
             player.inventory['revive']--;
             player.hp = Math.floor(player.maxHp / 2);
-            addLog("[재도전] 마법의 지우개로 집중력을 회복했습니다!", "#ffd700");
+            addLog("[부활] 가방 속 마법의 지우개로 집중력을 회복했습니다!", "#ffd700");
             updateUI(); 
             document.getElementById('battle-ui').style.display = 'grid';
         } else {
@@ -1170,14 +1364,28 @@
         const container = document.getElementById('reward-cards-container');
         container.innerHTML = "";
         
-        let shuffled = REWARD_CARDS.sort(() => 0.5 - Math.random()).slice(0, 3);
+        let pool = NORMAL_REWARD_CARDS;
+        let borderCol = '#f39c12';
+        
+        if (monster.isBoss) {
+            pool = BOSS_REWARD_CARDS;
+            borderCol = '#ff4081'; 
+        } else if (monster.isElite) {
+            pool = ELITE_REWARD_CARDS;
+            borderCol = '#b388ff'; 
+        } else if (player.floor % 10 === 0) {
+            pool = NORMAL_REWARD_CARDS.filter(r => r.id !== 'elite');
+        }
+
+        let shuffled = pool.sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffled.forEach(r => {
             let card = document.createElement('div');
             card.className = "reward-card";
+            card.style.border = `3px solid ${borderCol}`; 
             card.innerHTML = `
                 <div class="reward-icon">${r.icon}</div>
                 <div class="reward-text-wrap">
-                    <div class="reward-title">${r.title}</div>
+                    <div class="reward-title" style="color:${borderCol};">${r.title}</div>
                     <div class="reward-desc">${r.desc}</div>
                 </div>
             `;
@@ -1226,7 +1434,7 @@
             else if (type === 'maxhp') { player.maxHp += 20; player.hp += 20; }
             else player.inventory[type] = (player.inventory[type] || 0) + 1;
             
-            addLog(`[상점] 아이템 구매 완료!`, "#a5d6a7"); 
+            addLog(`[상점] ${ITEM_DB[type] ? ITEM_DB[type].name : '아이템'} 구매 완료! (가방에서 사용해주세요)`, "#a5d6a7"); 
             updateUI();
 
             if(isTutorialMode && tutorialStep === 8 && type === 'shield') {
@@ -1270,6 +1478,12 @@
             if (player.inventory[k] > 0) {
                 hasItem = true;
                 let item = ITEM_DB[k];
+                if (!item) continue; 
+                
+                let btnHtml = item.isPassive 
+                    ? `<button class="action-btn equipped" style="background-color:#7f8c8d; cursor:default;">영구적용</button>` 
+                    : `<button class="action-btn" onclick="useInventoryItem('${k}')">사용</button>`;
+
                 let div = document.createElement('div'); 
                 div.className = "list-item";
                 div.innerHTML = `
@@ -1279,7 +1493,7 @@
                             <div class="list-item-desc">${item.desc}</div>
                         </div>
                     </div>
-                    <button class="action-btn" onclick="useInventoryItem('${k}')">사용</button>
+                    ${btnHtml}
                 `;
                 list.appendChild(div);
             }
@@ -1296,7 +1510,7 @@
     }
     
     function closeInventory() { 
-        if (isTutorialMode && tutorialStep !== 12) return addLog("[안내] 지금은 닫을 수 없습니다! 안내창을 확인해주세요.", "#ffeb3b");
+        if (isTutorialMode && tutorialStep < 12) return; 
         
         document.getElementById('inventory-modal').style.display = 'none'; 
         if(isTutorialMode && tutorialStep === 12) {
@@ -1306,7 +1520,7 @@
     }
     
     function useInventoryItem(key) {
-        if (isTutorialMode) return addLog("[안내] 튜토리얼 중에는 아이템을 쓸 수 없습니다.", "#ffeb3b");
+        if (isTutorialMode) return addLog("[안내] 튜토리얼 중에는 아이템을 눈으로 확인만 해주세요!", "#ffeb3b");
 
         if (player.inventory[key] > 0) {
             player.inventory[key]--;
@@ -1314,6 +1528,7 @@
             else if (key === 'powerUp') activeEffects.powerUp += 2;
             else if (key === 'weaken') activeEffects.weaken += 2;
             else if (key === 'armorBreak') activeEffects.armorBreak += 2;
+            else if (key === 'revive') activeEffects.revive++; 
             
             addLog(`[사용] ${ITEM_DB[key].name} 적용 완료!`, "#e65100");
             updateUI(); 
@@ -1345,15 +1560,17 @@
                 }
             }
             
-            let displayName = (c.price === -1 && !isOwned) ? "???" : c.name;
+            let displayName = (c.price === -1 && !isOwned) ? "???" : `${TIER_NAMES[c.tier]} ${c.name}`;
             let displayIcon = (c.price === -1 && !isOwned) ? "[ ?_? ]" : c.icon[0];
             
+            let nameStyleColor = isOwned ? (TIER_COLORS[c.tier] || '#bdc3c7') : '#ccc';
+
             let div = document.createElement('div'); 
             div.className = "list-item";
             div.innerHTML = `
                 <div class="list-item-info">
-                    <div class="list-item-icon" style="color:#4dd0e1; font-size: 1.2rem;">${displayIcon}</div>
-                    <div style="margin-left:10px; color:${isOwned ? '#ffd700' : '#ccc'}">${displayName}</div>
+                    <div class="list-item-icon" style="color:${nameStyleColor}; font-size: 1.1rem; border: 1px solid ${nameStyleColor}55;">${displayIcon}</div>
+                    <div style="margin-left:10px; color:${nameStyleColor}; font-weight:bold; font-size: 0.9rem;">${displayName}</div>
                 </div>
                 ${btn}
             `;
@@ -1388,6 +1605,7 @@
                 player.ownedChars.push(id); 
                 player.currentChar = id;
                 addLog(`[구매] ${char.name} 스킨을 획득했습니다!`, "#a5d6a7");
+                checkHiddenUnlocks(); 
             } else if (char.price !== -1) {
                 return alert("특별 용돈이 부족합니다.");
             }
@@ -1437,18 +1655,34 @@
         } else if (t === 'chars') {
             player.ownedChars = PLAYER_CHARS.map(c => c.id);
             addLog("[치트] 모든 스킨 해금 완료", "#e040fb");
+        } else if (t === 'items') {
+            for (let k in ITEM_DB) {
+                if (!ITEM_DB[k].isPassive) { 
+                    player.inventory[k] = (player.inventory[k] || 0) + 1;
+                }
+            }
+            player.potions += 1;
+            addLog("[치트] 초콜릿 포함 모든 사용 아이템 1개씩 획득!", "#3498db");
         } else if (t === 'stats') {
             player.maxHp += 1000; 
             player.hp = player.maxHp; 
             player.baseAtk += 100;
             addLog("[치트] 집중력/기억력 대폭 상승", "#e040fb");
         } else if (t === 'floor') {
-            player.floor += 10;
-            addLog("[치트] 10층 강제 등반", "#e040fb");
-            if (monster && document.getElementById('battle-ui').style.display !== 'none') {
-                monster.hp = 0; 
+            let nextBossFloor = Math.floor((player.floor - 1) / 10) * 10 + 10;
+            
+            let inBattle = document.getElementById('monster-area').style.display !== 'none';
+            if (inBattle) {
+                player.floor = nextBossFloor - 1;
+                addLog(`[치트] ${nextBossFloor}층 보스 앞으로 이동!`, "#e040fb");
+                monster.hp = 0;
+                document.getElementById('quiz-box').style.display = 'none';
+                document.getElementById('options-ui').style.display = 'none';
                 closeCheatModal(); 
                 return winBattle();
+            } else {
+                player.floor = nextBossFloor;
+                addLog(`[치트] ${nextBossFloor}층 보스 앞으로 이동!`, "#e040fb");
             }
         }
         
@@ -1474,9 +1708,13 @@
         document.getElementById('main-screen').style.display = 'flex';
         
         let charData = getSavedCharacters();
-        player = { hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: charData.current, ownedChars: charData.owned };
+        
+        player = { hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, currentChar: charData.current, ownedChars: charData.owned };
         monster = { name: "튜토리얼 방해꾼", icon: ["(꒪⌓꒪)", "(꒪0꒪)"], hp: 50, maxHp: 50, atk: 5, isBoss: false };
         
+        document.getElementById('diff-badge').innerText = "[튜토리얼]";
+        document.getElementById('diff-badge').style.color = "#00e676";
+
         document.getElementById('monster-name').innerText = monster.name;
         document.getElementById('monster-hp').innerText = `50/50`;
         updateMonsterImageUI(monster);
@@ -1499,7 +1737,11 @@
         addLog("------------------------------------", "#7f8c8d");
         addLog("[안내] 튜토리얼을 시작합니다.", "#b2ebf2");
 
+        const oldDiff = currentDifficulty;
+        currentDifficulty = 'tutorial'; 
         updateUI(); 
+        currentDifficulty = oldDiff; 
+
         updateTutorialUI();
     }
 
@@ -1540,8 +1782,14 @@
                         if (i === 0) {
                             document.getElementById('quiz-box').style.display = 'none';
                             document.getElementById('options-ui').style.display = 'none';
-                            monster.hp = 0; updateUI();
-                            addLog(`[정답] 튜토리 방해꾼의 에너지를 깎았습니다!`, "#00e676");
+                            monster.hp = 0; 
+                            
+                            const oldDiff = currentDifficulty;
+                            currentDifficulty = 'tutorial'; 
+                            updateUI(); 
+                            currentDifficulty = oldDiff;
+
+                            addLog(`[정답] 튜토리얼 방해꾼의 에너지를 깎았습니다!`, "#00e676");
                             addLog("[성공] 방해꾼을 물리쳤습니다!", "#ffd700");
                             tutorialStep++; updateTutorialUI();
                         } else {
@@ -1563,10 +1811,10 @@
 
             const container = document.getElementById('reward-cards-container');
             container.innerHTML = `
-                <div class="reward-card" id="tut-reward-card" style="animation: ${tutorialStep === 6 ? 'hintPulse 1.5s infinite' : 'none'}; z-index:1001; cursor:${tutorialStep === 6 ? 'pointer' : 'default'};">
+                <div class="reward-card" id="tut-reward-card" style="animation: ${tutorialStep === 6 ? 'hintPulse 1.5s infinite' : 'none'}; z-index:1001; cursor:${tutorialStep === 6 ? 'pointer' : 'default'}; border: 3px solid #f39c12;">
                     <div class="reward-icon">GOLD</div>
                     <div class="reward-text-wrap">
-                        <div class="reward-title">깜짝 장학금</div>
+                        <div class="reward-title" style="color:#f39c12;">깜짝 장학금</div>
                         <div class="reward-desc">특별 용돈 50G 획득 ${tutorialStep === 6 ? '(클릭하세요!)' : ''}</div>
                     </div>
                 </div>
@@ -1579,7 +1827,12 @@
                 if(nextBtn) nextBtn.style.display = 'none'; 
                 document.getElementById('tut-reward-card').onclick = () => {
                     addLog("[보상] 특별 용돈 50G를 획득했습니다!", "#ffd700");
-                    player.gold += 50; updateUI();
+                    player.gold += 50; 
+                    const oldDiff = currentDifficulty;
+                    currentDifficulty = 'tutorial'; 
+                    updateUI(); 
+                    currentDifficulty = oldDiff;
+
                     tutorialStep++; updateTutorialUI();
                 };
             }
@@ -1745,6 +1998,8 @@
         const studyBackBtn = document.getElementById('study-back-btn');
         if(studyBackBtn) studyBackBtn.style.display = 'block';
         
+        document.getElementById('diff-badge').innerText = ""; 
+
         document.getElementById('game-container').style.display = 'none';
         document.getElementById('reward-screen').style.display = 'none';
         document.getElementById('study-screen').style.display = 'none';
