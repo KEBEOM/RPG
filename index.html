@@ -125,8 +125,9 @@
     .quiz-btn { background-color: #d32f2f; font-size: 1.05rem; }
     .potion-btn { background-color: #fbc02d; color: #333; font-weight: bold;}
     
-    #log-box { flex: none; height: 120px; background-color: #000; border-top: 2px solid #555; padding: 8px; overflow-y: auto; font-size: 0.85rem; line-height: 1.3; box-sizing: border-box; }
-    #log-box p { margin: 4px 0; }
+    /* MOD 8: 모바일 로그 화면 잘림 방지 (word-break 적용 및 min-height 고정) */
+    #log-box { flex: 0 0 120px; min-height: 120px; height: 120px; background-color: #000; border-top: 2px solid #555; padding: 8px; overflow-y: auto; font-size: 0.85rem; line-height: 1.3; box-sizing: border-box; }
+    #log-box p { margin: 4px 0; word-break: break-all; white-space: pre-wrap; }
 
     .custom-modal { display: none; position: absolute; top: 5%; left: 5%; right: 5%; bottom: 5%; background: rgba(30, 40, 50, 0.98); border: 3px solid #f39c12; z-index: 600; border-radius: 15px; padding: 15px; flex-direction: column; box-shadow: 0 10px 20px rgba(0,0,0,0.8); max-width: 500px; margin: 0 auto;}
     .modal-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
@@ -172,7 +173,7 @@
         .grid-ui { gap: 6px; }
         button { padding: 8px; font-size: 0.85rem; }
         .option-btn { padding: 8px; }
-        #log-box { height: 60px; font-size: 0.8rem; padding: 5px 10px; }
+        #log-box { flex: 0 0 60px; min-height: 60px; height: 60px; font-size: 0.8rem; padding: 5px 10px; }
         #reward-cards-container { flex-direction: row; justify-content: center; max-width: 100%; height: 100%; align-items: stretch; gap: 10px;}
         .reward-card { flex: 1; flex-direction: column; padding: 10px; text-align: center; }
         .reward-icon { margin-right: 0; margin-bottom: 5px; font-size: 1.2rem; min-width: 35px; padding: 5px;}
@@ -195,7 +196,7 @@
         button { padding: 15px; font-size: 1.1rem; }
         .option-btn { padding: 15px; }
         .shop-btn span { font-size: 0.9rem; margin-top: 8px;}
-        #log-box { height: 120px; font-size: 1rem; }
+        #log-box { flex: 0 0 120px; min-height: 120px; height: 120px; font-size: 1rem; }
         #tutorial-overlay { max-width: 500px; padding: 25px; }
         #tutorial-text { font-size: 1.2rem; }
     }
@@ -219,7 +220,7 @@
         button { font-size: 1.05rem; padding: 12px; }
         .option-btn { font-size: 1.05rem; padding: 12px; margin-bottom: 0; } 
         .shop-btn span { font-size: 0.85rem; margin-top: 5px;}
-        #log-box { height: 100px; font-size: 1rem; padding: 10px 30px; border-top: 2px solid #555;}
+        #log-box { flex: 0 0 100px; min-height: 100px; height: 100px; font-size: 1rem; padding: 10px 30px; border-top: 2px solid #555;}
         #reward-cards-container { flex-direction: row; max-width: 90%; gap: 15px; height: auto;}
         .reward-card { flex: 1; flex-direction: column; text-align: center; padding: 25px 15px; }
         .reward-card:hover { transform: translateY(-5px); background-color: #34495e;}
@@ -281,7 +282,7 @@
             <div class="stat-box" style="flex: 1 1 100%;">층수: <span id="floor-ui">1F</span></div>
             <div class="stat-box" id="hp-container">집중력: <span id="hp-ui" style="color: #ff6b6b; font-weight: bold;">100/100</span></div>
             <div class="stat-box">골드: <span id="gold-ui">0</span>G</div>
-            <div class="stat-box" style="color:#ffb74d;">기억력: <span id="atk-ui">+0</span></div>
+            <div class="stat-box" style="color:#ffb74d;">기억력: <span id="atk-ui">15</span></div>
             <div class="stat-box" style="color:#81c784;">딴짓 피하기: <span id="eva-ui">0</span>%</div>
             <div class="stat-box">초콜릿: <span id="potion-ui">3</span>개</div>
             <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
@@ -318,7 +319,7 @@
                     </div>
                     
                     <div id="shop-ui" class="grid-ui">
-                        <button class="shop-btn" onclick="buyItem('potion')">[아이템] 당충전 초콜릿 (30G)<span>집중력 40 회복</span></button>
+                        <button class="shop-btn" onclick="buyItem('random')">[아이템] 랜덤 뽑기 (50G)<span>무작위 아이템 1개 획득</span></button>
                         <button class="shop-btn" onclick="buyItem('shield')">[아이템] 철벽 백과사전 (50G)<span>방해꾼의 훼방 무효화</span></button>
                         <button class="shop-btn" onclick="buyItem('powerUp')">[아이템] 마법의 형광펜 (50G)<span>다음 2번 정답의 힘 상승</span></button>
                         <button class="shop-btn" onclick="buyItem('maxhp')">[성장] 만점 비법 노트 (100G)<span>최대 집중력 증가</span></button>
@@ -485,7 +486,8 @@
     let categoryList = [];
     let activeQuizBank = [];
     
-    let player = { currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, gold: 0, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, potions: 3, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
+    // MOD 4: 기본 공격력(baseAtk) 15부터 시작하도록 변경
+    let player = { currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, gold: 0, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, potions: 3, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
     let monster = null;
     let activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
     let savedHighScore = 1;
@@ -763,8 +765,9 @@
         document.getElementById('game-container').style.display = 'flex';
         document.getElementById('main-screen').style.display = 'flex'; 
         
+        // MOD 4: baseAtk 초기화 15
         const saved = getSavedCharacters();
-        player = { hp: 100, maxHp: 100, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: saved.current, ownedChars: saved.owned, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
+        player = { hp: 100, maxHp: 100, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, currentChar: saved.current, ownedChars: saved.owned, totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 };
         
         const logBox = document.getElementById('log-box');
         if(logBox) logBox.innerHTML = ""; 
@@ -779,7 +782,12 @@
         
         try {
             let data = JSON.parse(saved);
-            player = Object.assign({ hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: "char_01", ownedChars: ["char_01"], totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 }, data.player);
+            // MOD 4: 기본 베이스를 15로 두고 이전 데이터 보정
+            player = Object.assign({ hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, currentChar: "char_01", ownedChars: ["char_01"], totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 }, data.player);
+            if (player.baseAtk < 15) {
+                player.baseAtk += 15; // 옛날 세이브 데이터 호환용
+            }
+            
             activeEffects = data.effects || { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0 };
             activeQuizBank = quizBank; 
             
@@ -827,7 +835,6 @@
         document.getElementById('shop-ui').style.display = 'none';
         document.getElementById('hub-ui').style.display = 'grid'; 
         
-        // 💡 휴식 공간 진입 시 구분선 및 입장 멘트 추가
         addLog("------------------------------------", "#7f8c8d");
         addLog("[안내] 휴식 공간에 입장했습니다.", "#a5d6a7");
 
@@ -849,7 +856,8 @@
 
         const uiGold = document.getElementById('gold-ui'); if (uiGold) uiGold.innerText = player.gold; 
         const uiPotion = document.getElementById('potion-ui'); if (uiPotion) uiPotion.innerText = player.potions;
-        const uiAtk = document.getElementById('atk-ui'); if (uiAtk) uiAtk.innerText = "+" + player.baseAtk;
+        // MOD 4: 공격력 UI에서 '+' 제거하고 15부터 시작된 수치 보여주기
+        const uiAtk = document.getElementById('atk-ui'); if (uiAtk) uiAtk.innerText = player.baseAtk;
         const uiEva = document.getElementById('eva-ui'); if (uiEva) uiEva.innerText = player.evasion + "%";
         
         let buffText = [];
@@ -909,8 +917,9 @@
         
         let baseM = isBoss ? BOSS_MONSTERS[Math.min(Math.floor(player.floor/10)-1, 9)] : NORMAL_MONSTERS[Math.floor(Math.random() * NORMAL_MONSTERS.length)];
         
+        // MOD 7: 보스 이름 옆에 [보스] 적기
         monster = {
-            name: isBoss ? baseM.name : `Lv.${player.floor} ${baseM.name}`,
+            name: isBoss ? `[보스] ${baseM.name}` : `Lv.${player.floor} ${baseM.name}`,
             icon: baseM.icon, image: baseM.image,
             hp: isBoss ? Math.floor(mHp*2.5) : mHp,
             maxHp: isBoss ? Math.floor(mHp*2.5) : mHp,
@@ -922,7 +931,6 @@
         document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`;
         updateMonsterImageUI(monster); 
         
-        // 💡 배틀 시작 시 구분선 및 텍스트 순서 변경 적용
         addLog("------------------------------------", "#7f8c8d");
         addLog(isBoss ? `[경고] 대왕 방해꾼 출현!` : `[도전] 학습 방해꾼이 나타났습니다.`, "#ff4081");
         addLog("[안내] 집중력이 다 떨어지면 공부를 할 수 없으니 조심하자!", "#ffd700");
@@ -942,7 +950,7 @@
         let mAtk = 5 + Math.floor(player.floor / 2);
         
         monster = {
-            name: `정예: ${baseM.name}`, icon: baseM.icon, image: baseM.image,
+            name: `[정예] ${baseM.name}`, icon: baseM.icon, image: baseM.image,
             hp: Math.floor(mHp * 1.5), maxHp: Math.floor(mHp * 1.5), atk: Math.floor(mAtk * 1.2),
             isBoss: false, isElite: true 
         };
@@ -993,7 +1001,8 @@
         document.getElementById('options-ui').style.display = 'none';
 
         if (isCorrect) {
-            let dmg = 15 + player.baseAtk;
+            // MOD 4: 기본 데미지를 기억력 그대로 사용 (기본 15세팅)
+            let dmg = player.baseAtk;
             if (activeEffects.powerUp > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.powerUp--; }
             if (activeEffects.armorBreak > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.armorBreak--; }
             monster.hp -= dmg;
@@ -1001,6 +1010,7 @@
             document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`;
             updateUI(); 
 
+            // 데미지로 몬스터가 죽으면 적 턴 로직을 무시하고 승리 처리
             if (monster.hp <= 0) return winBattle();
         } else {
             addLog(`[오답] 정답은 '${ansStr}' 입니다.`, "#ff7043");
@@ -1009,38 +1019,47 @@
             updateUI();
         }
 
-        // 💡 1초(1000ms) 대기 후 적 턴 행동이 실행되도록 수정
-        addLog("▶ <b>[방해꾼의 턴]</b>", "#ff6b6b");
-        
+        // MOD 2: 내 행동 이후 1초 뒤 방해꾼 턴 선언, 그 후 1초 뒤 피격 적용
         setTimeout(() => {
-            if (Math.random() * 100 < player.evasion) {
-                addLog(`[집중] 방해꾼의 훼방을 완벽히 차단했습니다!`, "#81c784");
-                player.totalEvasions++;
-                checkHiddenUnlocks();
-            } else if (activeEffects.shield > 0) {
-                addLog(`[방어] 훼방을 성공적으로 막아냈습니다!`, "#4dd0e1");
-                activeEffects.shield--;
-            } else {
-                let dmg = monster.atk;
-                if (activeEffects.weaken > 0) { dmg = Math.floor(dmg / 2); activeEffects.weaken--; }
-                player.hp -= dmg;
-                addLog(`[방해받음] 아차! 집중력이 ${dmg} 떨어졌습니다.`, "#ff5252");
-                if (player.hp <= 0) {
-                    updateUI();
-                    return checkDeath();
+            addLog("▶ <b>[방해꾼의 턴]</b>", "#ff6b6b");
+            
+            setTimeout(() => {
+                if (Math.random() * 100 < player.evasion) {
+                    // MOD 3: 회피 성공 시 명시적 문구 출력
+                    addLog(`[회피] 방해꾼의 방해를 무시했습니다.`, "#81c784");
+                    player.totalEvasions++;
+                    checkHiddenUnlocks();
+                } else if (activeEffects.shield > 0) {
+                    addLog(`[방어] 훼방을 성공적으로 막아냈습니다!`, "#4dd0e1");
+                    activeEffects.shield--;
+                } else {
+                    let dmg = monster.atk;
+                    if (activeEffects.weaken > 0) { dmg = Math.floor(dmg / 2); activeEffects.weaken--; }
+                    player.hp -= dmg;
+                    addLog(`[방해받음] 아차! 집중력이 ${dmg} 떨어졌습니다.`, "#ff5252");
+                    if (player.hp <= 0) {
+                        updateUI();
+                        return checkDeath();
+                    }
                 }
-            }
-            document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`;
-            updateUI(); 
-            // 1초 뒤 방해꾼의 행동이 끝나면 다시 메뉴를 보여줌
-            document.getElementById('battle-ui').style.display = 'grid'; 
-        }, 1000);
+                document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`;
+                updateUI(); 
+                document.getElementById('battle-ui').style.display = 'grid'; 
+            }, 1000); // 방해꾼 공격 1초 지연
+            
+        }, 1000); // 턴 넘김 1초 지연
     }
 
     function winBattle() {
         document.getElementById('monster-hp').innerText = `0/${monster.maxHp}`;
         addLog(`[성공] 방해꾼을 완벽히 물리쳤습니다!`, "#ffd700");
         
+        // MOD 5: 보스 처치 시 집중력 완전 회복
+        if (monster.isBoss) {
+            player.hp = player.maxHp;
+            addLog("[휴식] 대왕 방해꾼을 물리쳐 집중력이 완벽히 회복되었습니다!", "#64b5f6");
+        }
+
         let gold = 10 + Math.floor(Math.random() * 10) + player.floor;
         player.gold += gold;
         player.totalGoldEarned += gold;
@@ -1121,14 +1140,21 @@
     }
 
     function buyItem(type) {
-        const prices = { potion: 30, shield: 50, powerUp: 50, maxhp: 100 };
+        // MOD 6: 당충전 초콜릿 대신 랜덤 아이템 50G에 판매
+        const prices = { random: 50, shield: 50, powerUp: 50, maxhp: 100 };
         if (player.gold >= prices[type]) {
             player.gold -= prices[type];
-            if (type === 'potion') { player.potions++; }
-            else if (type === 'maxhp') { player.maxHp += 20; player.hp += 20; }
-            else player.inventory[type] = (player.inventory[type] || 0) + 1;
-            
-            addLog(`[상점] 아이템 구매 완료!`, "#a5d6a7"); 
+            if (type === 'random') { 
+                let keys = Object.keys(ITEM_DB); 
+                let drop = keys[Math.floor(Math.random() * keys.length)];
+                player.inventory[drop] = (player.inventory[drop] || 0) + 1;
+                addLog(`[상점] 랜덤 뽑기로 ${ITEM_DB[drop].name} 획득!`, "#e040fb");
+            }
+            else if (type === 'maxhp') { player.maxHp += 20; player.hp += 20; addLog(`[상점] 만점 비법 노트 적용 완료!`, "#a5d6a7"); }
+            else {
+                player.inventory[type] = (player.inventory[type] || 0) + 1;
+                addLog(`[상점] 아이템 구매 완료!`, "#a5d6a7"); 
+            }
             updateUI();
         } else {
             alert("특별 용돈이 부족합니다.");
@@ -1139,12 +1165,15 @@
         if (player.potions > 0) {
             if (player.hp >= player.maxHp) return alert("집중력이 이미 가득 차 있습니다.");
             player.potions--; 
-            player.hp = Math.min(player.maxHp, player.hp + 40);
+            
+            // MOD 1: 집중력 30 회복으로 텍스트와 실제 회복량 동기화
+            player.hp = Math.min(player.maxHp, player.hp + 30);
             
             player.totalPotionsUsed++;
             checkHiddenUnlocks();
             
-            addLog("[회복] 달콤한 초콜릿을 먹었습니다.", "#a5d6a7"); 
+            // MOD 1
+            addLog("[회복] 달콤한 초콜릿을 먹었습니다(집중력+30)", "#a5d6a7"); 
             updateUI();
         } else {
             alert("초콜릿이 없습니다!");
@@ -1321,7 +1350,8 @@
         document.getElementById('main-screen').style.display = 'flex';
         
         let charData = getSavedCharacters();
-        player = { hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 0, evasion: 0, currentChar: charData.current, ownedChars: charData.owned };
+        // MOD 4: 튜토리얼에서도 baseAtk 15로 세팅
+        player = { hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, currentChar: charData.current, ownedChars: charData.owned };
         monster = { name: "튜토리얼 방해꾼", icon: ["(꒪⌓꒪)", "(꒪0꒪)"], hp: 50, maxHp: 50, atk: 5, isBoss: false };
         
         document.getElementById('monster-name').innerText = monster.name;
@@ -1392,12 +1422,14 @@
                             
                             addLog(`[정답] 튜토리얼 방해꾼의 에너지를 깎았습니다!`, "#00e676");
                             
-                            // 튜토리얼에서도 1초 딜레이 적용
-                            addLog("▶ <b>[방해꾼의 턴]</b>", "#ff6b6b");
+                            // MOD 2: 튜토리얼에서도 동일하게 1초 + 1초 로직
                             setTimeout(() => {
-                                addLog("[성공] 방해꾼을 물리쳤습니다!", "#ffd700");
-                                tutorialStep++; 
-                                updateTutorialUI();
+                                addLog("▶ <b>[방해꾼의 턴]</b>", "#ff6b6b");
+                                setTimeout(() => {
+                                    addLog("[성공] 방해꾼을 물리쳤습니다!", "#ffd700");
+                                    tutorialStep++; 
+                                    updateTutorialUI();
+                                }, 1000); 
                             }, 1000); 
 
                         } else {
