@@ -102,7 +102,7 @@
     .select-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
     select { 
         padding: 10px; font-size: 1rem; border-radius: 5px; width: 65%; 
-        background-color: #34495e; color: #fff; border: 2px solid #f39c12; font-family: inherit; font-weight: bold;
+        background-color: #34495e; color: #fff; border: 2px solid #f39c12; font-family: inherit;
     }
 
     #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; padding: 20px; justify-content: center; align-items: center; flex-direction: column;}
@@ -114,8 +114,8 @@
         box-sizing: border-box; cursor: pointer; transition: transform 0.2s;
     }
     .reward-icon { 
-        font-size: 0.95rem; margin-right: 15px; flex: none; background: #34495e; 
-        padding: 10px 5px; border-radius: 8px; text-align: center; min-width: 60px; 
+        font-size: 1.3rem; margin-right: 15px; flex: none; background: #34495e; 
+        padding: 10px; border-radius: 8px; text-align: center; min-width: 45px; 
         font-weight: bold; color: #ffd700; box-sizing: border-box;
     }
     .reward-text-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
@@ -130,8 +130,8 @@
     }
     .category-header { 
         background-color: #e65100; color: #fff; padding: 15px; border-radius: 8px; 
-        font-size: 1rem; font-weight: bold; margin-top: 10px; cursor: pointer; 
-        display: flex; justify-content: space-between; line-height: 1.4;
+        font-size: 1.1rem; font-weight: bold; margin-top: 10px; cursor: pointer; 
+        display: flex; justify-content: space-between;
     }
     .category-content { display: none; padding-left: 10px; border-left: 3px solid #e65100; margin-bottom: 10px; margin-top: 10px; }
     .study-item { background-color: #34495e; border-radius: 8px; margin-bottom: 8px; overflow: hidden;}
@@ -276,7 +276,7 @@
         #log-box { height: 60px; font-size: 0.8rem; padding: 5px 10px; }
         #reward-cards-container { flex-direction: row; justify-content: center; max-width: 100%; height: 100%; align-items: stretch; gap: 10px;}
         .reward-card { flex: 1; flex-direction: column; padding: 10px; text-align: center; }
-        .reward-icon { margin-right: 0; margin-bottom: 5px; font-size: 1rem; min-width: 45px; padding: 5px;}
+        .reward-icon { margin-right: 0; margin-bottom: 5px; font-size: 1.2rem; min-width: 35px; padding: 5px;}
         
         #tutorial-overlay { padding: 10px; }
         #tutorial-overlay.pos-bottom { bottom: 5px; width: 70%; }
@@ -322,7 +322,7 @@
         #reward-cards-container { flex-direction: row; max-width: 90%; gap: 15px; height: auto;}
         .reward-card { flex: 1; flex-direction: column; text-align: center; padding: 25px 15px; }
         .reward-card:hover { transform: translateY(-5px); background-color: #34495e;}
-        .reward-icon { margin-right: 0; margin-bottom: 10px; font-size: 1.1rem; }
+        .reward-icon { margin-right: 0; margin-bottom: 10px; font-size: 1.5rem; }
         .reward-title { font-size: 1.3rem; margin-bottom: 5px;}
         .reward-desc { font-size: 0.95rem; }
         #tutorial-overlay { padding: 25px; }
@@ -535,7 +535,7 @@
         /* 1 */ "먼저 화면 상단의 <span class='hlt'>[상태창]</span>을 볼까요?\n\n<span class='hlt-cyan'>[집중력]</span>: 여러분이 버틸 수 있는 체력입니다.\n<span class='hlt-cyan'>[기억력]</span>: 퀴즈를 맞혔을 때 방해꾼을 약화시키는 힘입니다.",
         /* 2 */ "앗! 학습 방해꾼이 나타났습니다! (꒪⌓꒪)\n도전이 어떻게 진행되는지 직접 체험해 볼까요?\n\n(아래 <span class='hlt'>'다음'</span> 버튼을 누르세요.)",
         /* 3 */ "방해꾼의 유혹을 이겨내려면 지식 문제를 맞혀야 합니다.\n\n자, 노랗게 빛나는 정답 <span class='hlt'>[1. 이성계]</span>를 직접 클릭해 보세요!",
-        /* 4 */ "훌륭합니다! 방해꾼을 물리치면 <span class='hlt'>학습 보상</span>을 얻을 수 있습니다.",
+        /* 4 */ "훌륭합니다! 방해꾼을 물리치면 <span class='hlt'>전리품</span>을 얻을 수 있습니다.",
         /* 5 */ "(실제 게임에서는 <span class='hlt-cyan'>3개의 무작위 보상</span>이 나오며, 그 중 나에게 필요한 <span class='hlt-cyan'>1개를 신중하게 선택</span>해야 합니다!)",
         /* 6 */ "자, 화면에 나타난 <span class='hlt'>[깜짝 장학금]</span> 보상 카드를 직접 클릭해서 획득해 보세요!",
         /* 7 */ "보상을 얻고 나면 <span class='hlt'>[휴식 및 정비 공간]</span>으로 돌아옵니다.\n\n방금 받은 용돈으로 아이템을 사볼까요?\n노랗게 빛나는 <span class='hlt'>[아이템 구매]</span> 버튼을 눌러보세요.",
@@ -549,7 +549,7 @@
     ];
 
     // ==========================================
-    // 💡 2. 아이템, 보상 및 캐릭터 데이터
+    // 💡 2. 아이템 및 5단계 등급(Tier) 캐릭터 데이터 
     // ==========================================
     const ITEM_DB = {
         revive: { name: "마법의 지우개", desc: "집중력 바닥날 때 절반 회복 후 부활", isPassive: false },
@@ -572,28 +572,6 @@
         boss_art_13: { name: "직지심체요절", desc: "최대 집중력 +100 영구 상승", isPassive: true },
         boss_art_14: { name: "동의보감", desc: "매 층 클리어 시 집중력 30 자동 회복", isPassive: true }
     };
-
-    // 이모지 대신 텍스트 브라켓 형태의 아이콘을 사용하여 저작권 문제 해결
-    const NORMAL_REWARD_CARDS = [
-        { id: 'gold', title: '용돈 발견', desc: '특별 용돈 30G를 추가로 얻습니다.', icon: '[용돈]', action: () => { player.gold += 30; player.totalGoldEarned += 30; } },
-        { id: 'heal', title: '잠깐 휴식', desc: '집중력을 30 회복합니다.', icon: '[휴식]', action: () => { player.hp = Math.min(player.maxHp, player.hp + 30); } },
-        { id: 'atk', title: '기억력 강화', desc: '기억력이 3 증가합니다.', icon: '[기억]', action: () => { player.baseAtk += 3; } },
-        { id: 'eva', title: '집중 모드', desc: '딴짓 피하기 확률이 2% 증가합니다.', icon: '[집중]', action: () => { player.evasion += 2; } },
-        { id: 'maxhp', title: '기초 체력', desc: '최대 집중력이 10 증가합니다.', icon: '[체력]', action: () => { player.maxHp += 10; player.hp += 10; } },
-        { id: 'elite', title: '심화 학습', desc: '다음 층에서 정예 방해꾼이 등장합니다! (더 큰 보상)', icon: '[심화]', action: () => { startEliteBattle(); return 'boss'; } }
-    ];
-
-    const ELITE_REWARD_CARDS = [
-        { id: 'gold_heavy', title: '장학금 획득', desc: '특별 용돈 100G를 얻습니다.', icon: '[장학]', action: () => { player.gold += 100; player.totalGoldEarned += 100; } },
-        { id: 'atk_heavy', title: '완전 정복', desc: '기억력이 8 증가합니다.', icon: '[마스터]', action: () => { player.baseAtk += 8; } },
-        { id: 'maxhp_heavy', title: '체력 증진', desc: '최대 집중력이 30 증가합니다.', icon: '[성장]', action: () => { player.maxHp += 30; player.hp += 30; } },
-        { id: 'potion', title: '당 충전 완료', desc: '초콜릿을 2개 얻습니다.', icon: '[간식]', action: () => { player.potions += 2; } }
-    ];
-
-    // ITEM_DB에서 패시브 아이템만 필터링하여 보스 보상 카드로 자동 생성
-    const BOSS_REWARD_CARDS = Object.keys(ITEM_DB).filter(k => ITEM_DB[k].isPassive).map(k => {
-        return { id: k, title: ITEM_DB[k].name, desc: ITEM_DB[k].desc, icon: '[유물]', action: () => { player.inventory[k] = 1; } };
-    });
 
     const TIER_COLORS = { normal: "#bdc3c7", rare: "#4fc3f7", unique: "#ce93d8", hidden: "#ffb74d", legend: "#ff1744" };
     const TIER_NAMES = { normal: "[노멀]", rare: "[레어]", unique: "[유니크]", hidden: "[히든]", legend: "[전설]" };
@@ -640,24 +618,36 @@
     ];
 
     const NORMAL_MONSTERS = [
-        { name: "망각의 구름", icon: ["(꒪⌓꒪)", "(꒪0꒪)"] }, { name: "게으름 요정", icon: ["[ `皿´ ]", "[ `O´ ]"] },
-        { name: "졸음 양", icon: ["(=_=)zZ", "(-_-)zZ"] }, { name: "딴짓 슬라임", icon: ["< 0_0 >", "< 0-0 >"] },
-        { name: "혼란의 바람", icon: ["^/_\\^", "^\\_/^"] }, { name: "핑계쟁이 앵무새", icon: ["(▼皿▼)", "(▼O▼)"] },
-        { name: "잡념 먼지", icon: ["/\\(O_O)/\\", "\\/(O_O)\\/"] }, { name: "오답 유도꾼", icon: ["( ಠ_ಠ)", "( ಠoಠ)"] },
-        { name: "기억 도둑", icon: ["(￢_￢)", "(￢o￢)"] }, { name: "무기력 그림자", icon: ["[ × _ × ]", "[ × o × ]"] }
+        { name: "망각의 구름", icon: ["(꒪⌓꒪)", "(꒪0꒪)"] },
+        { name: "게으름 요정", icon: ["[ `皿´ ]", "[ `O´ ]"] },
+        { name: "졸음 양", icon: ["(=_=)zZ", "(-_-)zZ"] },
+        { name: "딴짓 슬라임", icon: ["< 0_0 >", "< 0-0 >"] },
+        { name: "혼란의 바람", icon: ["^/_\\^", "^\\_/^"] },
+        { name: "핑계쟁이 앵무새", icon: ["(▼皿▼)", "(▼O▼)"] },
+        { name: "잡념 먼지", icon: ["/\\(O_O)/\\", "\\/(O_O)\\/"] },
+        { name: "오답 유도꾼", icon: ["( ಠ_ಠ)", "( ಠoಠ)"] },
+        { name: "기억 도둑", icon: ["(￢_￢)", "(￢o￢)"] },
+        { name: "무기력 그림자", icon: ["[ × _ × ]", "[ × o × ]"] }
     ];
 
     const BOSS_MONSTERS = [
-        { name: "[보스] 나태의 장벽", icon: ["[ ■ _ ■ ]", "[ ■ o ■ ]"] }, { name: "[보스] 스마트폰 유혹", icon: ["[=□_□=]", "[=□o□=]"] },
-        { name: "[보스] 혼돈의 폭풍", icon: ["( ╬ Ò ‸ Ó)", "( ╬ Ò 0 Ó)"] }, { name: "[보스] 왜곡의 거울", icon: ["|˚–˚|", "|˚O˚|"] },
-        { name: "[보스] 무지의 안개", icon: ["( ╰ _ ╯ )", "( ╰ o ╯ )"] }, { name: "[보스] 개념 지우개", icon: ["( 炎 _ 炎 )", "( 炎 o 炎 )"] },
-        { name: "[보스] 시간 낭비꾼", icon: ["( ﾟДﾟ;)", "( ﾟOﾟ;)"] }, { name: "[보스] 망각의 늪", icon: ["[  ∞  ]", "[  8  ]"] },
-        { name: "[보스] 피노키오", icon: ["( 눈 _ 눈 )", "( 눈 o 눈 )"] }, { name: "[보스] 백지화 현상", icon: ["( ꒪o꒪ )", "( ꒪0꒪ )"] }
+        { name: "[보스] 나태의 장벽", icon: ["[ ■ _ ■ ]", "[ ■ o ■ ]"] },
+        { name: "[보스] 스마트폰 유혹", icon: ["[=□_□=]", "[=□o□=]"] },
+        { name: "[보스] 혼돈의 폭풍", icon: ["( ╬ Ò ‸ Ó)", "( ╬ Ò 0 Ó)"] },
+        { name: "[보스] 왜곡의 거울", icon: ["|˚–˚|", "|˚O˚|"] },
+        { name: "[보스] 무지의 안개", icon: ["( ╰ _ ╯ )", "( ╰ o ╯ )"] },
+        { name: "[보스] 개념 지우개", icon: ["( 炎 _ 炎 )", "( 炎 o 炎 )"] },
+        { name: "[보스] 시간 낭비꾼", icon: ["( ﾟДﾟ;)", "( ﾟOﾟ;)"] },
+        { name: "[보스] 망각의 늪", icon: ["[  ∞  ]", "[  8  ]"] },
+        { name: "[보스] 거짓말쟁이 피노키오", icon: ["( 눈 _ 눈 )", "( 눈 o 눈 )"] },
+        { name: "[보스] 백지화 현상", icon: ["( ꒪o꒪ )", "( ꒪0꒪ )"] }
     ];
 
     const ELITE_MONSTERS = [
-        { name: "벼락치기 함정", icon: ["( ✧ _ ✧ )", "( ✧ o ✧ )"] }, { name: "수면 마법사", icon: ["( ˘ω˘ )zZ", "( -ω- )zZ"] },
-        { name: "도파민 함정", icon: ["( O _ O )", "( O 0 O )"] }, { name: "숏폼 요정", icon: ["( > ▽ < )", "( > O < )"] },
+        { name: "벼락치기 함정", icon: ["( ✧ _ ✧ )", "( ✧ o ✧ )"] },
+        { name: "수면 마법사", icon: ["( ˘ω˘ )zZ", "( -ω- )zZ"] },
+        { name: "도파민 함정", icon: ["( O _ O )", "( O 0 O )"] },
+        { name: "숏폼 요정", icon: ["( > ▽ < )", "( > O < )"] },
         { name: "집중력 브레이커", icon: ["( ╯°□°)╯", "( ╯°O°)╯"] }
     ];
 
@@ -667,6 +657,7 @@
     let quizBank = [];
     let studyBank = [];
     
+    // 트리 구조 및 카테고리
     let treeData = {}; 
     let gradesList = [];
     let subjectsList = [];
@@ -922,8 +913,7 @@
 
     function parseAllData() {
         try {
-            savedHighScore = parseInt(getSafeStorage('historyTowerMaxFloor', 1), 10);
-            if (isNaN(savedHighScore)) savedHighScore = 1;
+            savedHighScore = getSafeStorage('historyTowerMaxFloor', 1);
             const hsEl = document.getElementById('high-score-ui'); 
             if(hsEl) hsEl.innerText = savedHighScore;
 
@@ -936,32 +926,11 @@
                     let ln = l.trim(); 
                     if (!ln) return;
                     if (ln.startsWith('[') && ln.endsWith(']')) { 
-                        let content = ln.slice(1, -1);
-                        let parts = content.split('|').map(x=>x.trim());
-                        
-                        // 스마트 카테고리 분류 (글자 포함 여부로 학년/과목 자동 매핑)
-                        let head = parts[0] || "";
-                        let sub = parts[1] || "";
-                        let fullText = head + " " + sub;
-
-                        if (fullText.includes('5')) cg = '5학년';
-                        else if (fullText.includes('6') || fullText.includes('보완')) cg = '6학년';
-                        else cg = '공통';
-
-                        if (fullText.includes('사회')) cs = '사회';
-                        else if (fullText.includes('과학') || fullText.includes('보완')) cs = '과학';
-                        else cs = '공통';
-
-                        // 파이프(|) 개수에 따라 대단원, 소단원 유연하게 할당
-                        if (parts.length >= 4) {
-                            cc = parts[2]; cu = parts[3];
-                        } else if (parts.length === 3) {
-                            cc = parts[1]; cu = parts[2];
-                        } else if (parts.length === 2) {
-                            cc = parts[1]; cu = "기타";
-                        } else {
-                            cc = "일반"; cu = "기타";
-                        }
+                        let parts = ln.slice(1, -1).split('|').map(x=>x.trim());
+                        cg = parts[0] || "공통";
+                        cs = parts[1] || "기본";
+                        cc = parts[2] || "일반";
+                        cu = parts[3] || "기타";
                         
                         if(!treeData[cg]) treeData[cg] = {};
                         if(!treeData[cg][cs]) treeData[cg][cs] = {};
@@ -986,30 +955,11 @@
                     let ln = l.trim(); 
                     if (!ln) return;
                     if (ln.startsWith('[') && ln.endsWith(']')) { 
-                        let content = ln.slice(1, -1);
-                        let parts = content.split('|').map(x=>x.trim());
-
-                        let head = parts[0] || "";
-                        let sub = parts[1] || "";
-                        let fullText = head + " " + sub;
-
-                        if (fullText.includes('5')) cg = '5학년';
-                        else if (fullText.includes('6') || fullText.includes('보완')) cg = '6학년';
-                        else cg = '공통';
-
-                        if (fullText.includes('사회')) cs = '사회';
-                        else if (fullText.includes('과학') || fullText.includes('보완')) cs = '과학';
-                        else cs = '공통';
-
-                        if (parts.length >= 4) {
-                            cc = parts[2]; cu = parts[3];
-                        } else if (parts.length === 3) {
-                            cc = parts[1]; cu = parts[2];
-                        } else if (parts.length === 2) {
-                            cc = parts[1]; cu = "기타";
-                        } else {
-                            cc = "일반"; cu = "기타";
-                        }
+                        let parts = ln.slice(1, -1).split('|').map(x=>x.trim());
+                        cg = parts[0] || "공통";
+                        cs = parts[1] || "기본";
+                        cc = parts[2] || "일반";
+                        cu = parts[3] || "기타";
                     } else { 
                         let p = ln.split('|').map(x => x.trim()); 
                         if (p.length >= 2) {
@@ -1043,24 +993,6 @@
         gradesList.sort(); 
         subjectsList.sort();
         
-        let gStart = document.getElementById('grade-start'); 
-        let gEnd = document.getElementById('grade-end');
-        let subjSel = document.getElementById('subject-select');
-        
-        if(gStart) {
-            gradesList.forEach(g => {
-                gStart.options.add(new Option(g, g));
-                gEnd.options.add(new Option(g, g));
-            });
-            if(gradesList.length > 0) gEnd.value = gradesList[gradesList.length - 1];
-        }
-
-        if(subjSel) {
-            subjectsList.forEach(s => { 
-                subjSel.options.add(new Option(s, s)); 
-            });
-        }
-        
         setGameGrade('all');
         setGameSubject('all');
         setStudyGrade('all');
@@ -1088,16 +1020,12 @@
         let chapSel = document.getElementById('chapter-select');
         let unitWrap = document.getElementById('sub-unit-range-wrapper');
         
-        let chapMap = treeData[curGameGrade]?.[curGameSubject];
-        
-        if (curGameGrade !== 'all' && curGameSubject !== 'all' && chapMap) {
+        if (curGameGrade !== 'all' && curGameSubject !== 'all' && treeData[curGameGrade] && treeData[curGameGrade][curGameSubject]) {
             chapWrap.style.display = 'block';
             chapSel.innerHTML = '<option value="all">전체 단원</option>';
-            let chapters = Object.keys(chapMap);
+            let chapters = Object.keys(treeData[curGameGrade][curGameSubject]);
             chapters.forEach(c => {
-                // 범위 선택 드롭다운 메뉴도 깔끔하게 텍스트 축약
-                let cleanName = c.replace(/^\[.*?\]\s*/, '').replace(/^([0-9]학기\s*)?([0-9]+\.\s*)?/, '');
-                chapSel.options.add(new Option(cleanName, c));
+                chapSel.options.add(new Option(c, c));
             });
         } else {
             chapWrap.style.display = 'none';
@@ -1112,18 +1040,16 @@
         let startSel = document.getElementById('start-category');
         let endSel = document.getElementById('end-category');
         
-        let unitList = treeData[curGameGrade]?.[curGameSubject]?.[chap];
-        
-        if (curGameGrade !== 'all' && curGameSubject !== 'all' && chap !== 'all' && unitList) {
+        if (curGameGrade !== 'all' && curGameSubject !== 'all' && chap !== 'all' && treeData[curGameGrade][curGameSubject][chap]) {
             unitWrap.style.display = 'block';
             startSel.innerHTML = ""; 
             endSel.innerHTML = "";
-            
-            unitList.forEach((u, i) => { 
+            let units = treeData[curGameGrade][curGameSubject][chap];
+            units.forEach((u, i) => { 
                 startSel.options.add(new Option(u, i)); 
                 endSel.options.add(new Option(u, i)); 
             });
-            if(unitList.length > 0) endSel.value = unitList.length - 1;
+            if(units.length > 0) endSel.value = units.length - 1;
         } else {
             unitWrap.style.display = 'none';
         }
@@ -1132,59 +1058,11 @@
     // ==========================================
     // 💡 6. 메인 게임 흐름 제어
     // ==========================================
-    
-    function updatePlayerAreaUI() {
-        let charData = PLAYER_CHARS.find(c => c.id === player.currentChar) || PLAYER_CHARS[0];
-        document.getElementById('player-name-ui').innerText = charData.name;
-        document.getElementById('player-image-ui').innerText = Array.isArray(charData.icon) ? charData.icon[0] : charData.icon;
-    }
-
-    function updateMonsterImageUI(m) {
-        const mImg = document.getElementById('monster-image');
-        if(mImg) {
-            mImg.innerText = Array.isArray(m.icon) ? m.icon[0] : m.icon;
-            if(m.isBoss) mImg.style.color = "#f4ffb3";
-            else if(m.isElite) mImg.style.color = "#e6b3ff";
-            else mImg.style.color = "#ffb74d";
-        }
-    }
-    
-    function startTutorial() {
-        isTutorialMode = true;
-        tutorialStep = 0;
-        
-        player = { 
-            currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, 
-            gold: 0, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, potions: 3, 
-            totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0, bossBag: [] 
-        };
-        activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0, revive: 0 };
-        monster = { name: "튜토리얼 방해꾼", icon: "(꒪⌓꒪)", hp: 15, maxHp: 15, atk: 5, isBoss: false };
-        
-        document.getElementById('title-screen').style.display = 'none';
-        document.getElementById('game-container').style.display = 'flex';
-        document.getElementById('main-screen').style.display = 'flex';
-        document.getElementById('monster-area').style.display = 'flex';
-        document.getElementById('player-area').style.display = 'none';
-        document.getElementById('hub-ui').style.display = 'none';
-        document.getElementById('battle-ui').style.display = 'grid';
-        
-        updatePlayerAreaUI();
-        updateMonsterImageUI(monster);
-        updateUI();
-        
-        document.getElementById('tutorial-overlay').style.display = 'flex';
-        updateTutorialUI();
-    }
-
     function openCategoryScreen() {
         document.getElementById('title-screen').style.display = 'none';
         document.getElementById('range-screen').style.display = 'flex';
         document.getElementById('category-box').style.display = 'block';
         document.getElementById('difficulty-box').style.display = 'none';
-        
-        setGameGrade('all');
-        setGameSubject('all');
     }
     
     function closeRangeScreen() { 
@@ -1200,13 +1078,9 @@
     function goToDifficultyScreen() {
         let unitWrap = document.getElementById('sub-unit-range-wrapper');
         if (unitWrap.style.display === 'block') {
-            let startCat = document.getElementById('start-category');
-            let endCat = document.getElementById('end-category');
-            if (startCat.options.length > 0 && endCat.options.length > 0) {
-                let sIdx = parseInt(startCat.value);
-                let eIdx = parseInt(endCat.value);
-                if (sIdx > eIdx) return alert("소단원 범위가 잘못되었습니다. 시작 단원이 끝 단원보다 앞서야 합니다.");
-            }
+            let sIdx = parseInt(document.getElementById('start-category').value);
+            let eIdx = parseInt(document.getElementById('end-category').value);
+            if (sIdx > eIdx) return alert("소단원 범위가 잘못되었습니다. 시작 단원이 끝 단원보다 앞서야 합니다.");
         }
 
         document.getElementById('category-box').style.display = 'none';
@@ -1271,19 +1145,10 @@
         });
         
         if (unitWrap.style.display === 'block') {
-            let startCat = document.getElementById('start-category');
-            let endCat = document.getElementById('end-category');
-            
-            if (startCat && endCat && startCat.value && endCat.value) {
-                let sIdx = parseInt(startCat.value);
-                let eIdx = parseInt(endCat.value);
-                
-                let unitList = treeData[curGameGrade]?.[curGameSubject]?.[chap];
-                if (unitList && Array.isArray(unitList)) {
-                    let units = unitList.slice(sIdx, eIdx + 1);
-                    activeQuizBank = activeQuizBank.filter(q => units.includes(q.unit));
-                }
-            }
+            let sIdx = parseInt(document.getElementById('start-category').value);
+            let eIdx = parseInt(document.getElementById('end-category').value);
+            let units = treeData[curGameGrade][curGameSubject][chap].slice(sIdx, eIdx + 1);
+            activeQuizBank = activeQuizBank.filter(q => units.includes(q.unit));
         }
 
         if (activeQuizBank.length === 0) {
@@ -1624,11 +1489,6 @@
 
     function winBattle() {
         document.getElementById('monster-hp').innerText = `0/${monster.maxHp}`; 
-        
-        if (isTutorialMode) {
-            return;
-        }
-
         addLog(`[성공] 방해꾼을 완벽히 물리쳤습니다!`, "#ffd700");
         
         if (monster && monster.isBoss) { 
@@ -1765,12 +1625,8 @@
             let units = [...new Set(chapItems.map(item => item.unit))];
 
             units.forEach(u => {
-                // "[학년-과목] 1학기 X. 제목" 형태에서 앞부분 텍스트 정리 (정규식 사용)
-                let cleanChapter = c.replace(/^[0-9]학기\s*[0-9]+\.\s*/, ''); 
-                // 위 정규식에 매칭되지 않는 경우(예: "[6학년 과학 보완자료]")를 위해 한번 더 정리
-                cleanChapter = cleanChapter.replace(/^\[.*?\]\s*/, '');
-                
-                let displayHeader = `${cleanChapter} - ${u}`;
+                let firstItem = chapItems.find(item => item.unit === u);
+                let displayHeader = `[${firstItem.grade} - ${firstItem.subject}] ${c} - ${u}`;
                 
                 let header = document.createElement('div'); 
                 header.className = 'category-header'; 
@@ -1854,12 +1710,12 @@
         } 
         else if (monster.isElite) { 
             borderCol = '#b388ff'; 
-            shuffled = [...ELITE_REWARD_CARDS].sort(() => 0.5 - Math.random()).slice(0, 3); 
+            shuffled = ELITE_REWARD_CARDS.sort(() => 0.5 - Math.random()).slice(0, 3); 
         } 
         else { 
             let pool = NORMAL_REWARD_CARDS; 
             if (player.floor % 10 === 0) pool = NORMAL_REWARD_CARDS.filter(r => r.id !== 'elite'); 
-            shuffled = [...pool].sort(() => 0.5 - Math.random()).slice(0, 3); 
+            shuffled = pool.sort(() => 0.5 - Math.random()).slice(0, 3); 
         }
         
         shuffled.forEach(r => { 
@@ -2219,7 +2075,7 @@
             const container = document.getElementById('reward-cards-container'); 
             container.innerHTML = `
                 <div class="reward-card" id="tut-reward-card" style="animation: ${tutorialStep === 6 ? 'hintPulse 1.5s infinite' : 'none'}; z-index:1001; cursor:${tutorialStep === 6 ? 'pointer' : 'default'}; border: 3px solid #f39c12;">
-                    <div class="reward-icon">[용돈]</div>
+                    <div class="reward-icon">GOLD</div>
                     <div class="reward-text-wrap">
                         <div class="reward-title" style="color:#f39c12;">깜짝 장학금</div>
                         <div class="reward-desc">특별 용돈 50G 획득 ${tutorialStep === 6 ? '(클릭하세요!)' : ''}</div>
@@ -2395,4 +2251,4 @@
     }
 </script>
 </body>
-</html> 
+</html>
