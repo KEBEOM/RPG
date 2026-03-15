@@ -1,0 +1,2517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>지식 타워 RPG</title>
+
+<script>
+    var rawQuizData = "";
+    var rawStudyData = "";
+</script>
+
+<script src="quiz/quiz_soc_3.js"></script>
+<script src="study/study_soc_3.js"></script>
+<script src="quiz/quiz_sci_3.js"></script>
+<script src="study/study_sci_3.js"></script>
+
+<script src="quiz/quiz_soc_4.js"></script>
+<script src="study/study_soc_4.js"></script>
+<script src="quiz/quiz_sci_4.js"></script>
+<script src="study/study_sci_4.js"></script>
+
+<script src="quiz/quiz_soc_5.js"></script>
+<script src="study/study_soc_5.js"></script>
+<script src="quiz/quiz_sci_5.js"></script>
+<script src="study/study_sci_5.js"></script>
+
+<script src="quiz/quiz_soc_6.js"></script>
+<script src="study/study_soc_6.js"></script>
+<script src="quiz/quiz_sci_6.js"></script>
+<script src="study/study_sci_6.js"></script>
+
+<style>
+    :root {
+        --safe-left: env(safe-area-inset-left);
+        --safe-right: env(safe-area-inset-right);
+        --safe-bottom: env(safe-area-inset-bottom);
+        --safe-top: env(safe-area-inset-top);
+    }
+
+    html, body {
+        width: 100%; height: 100%; margin: 0; padding: 0; 
+        background-color: #000; display: flex; justify-content: center; align-items: center;
+        font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
+        overflow: hidden; 
+    }
+
+    #app-wrapper {
+        width: 100%; height: 100%; max-width: 100%;
+        position: relative; background-color: #1a1a1a; color: #fff;
+        overflow: hidden; display: flex; flex-direction: column;
+        padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
+        box-sizing: border-box;
+    }
+
+    @media (min-width: 451px) {
+        #app-wrapper { max-width: 450px; height: 95vh; border-radius: 20px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+    }
+
+    .screen-panel { 
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+        background-color: #111; display: flex; flex-direction: column; 
+        justify-content: center; align-items: center; z-index: 100; 
+        padding: calc(var(--safe-top) + 60px) 20px 20px 20px; box-sizing: border-box; 
+    }
+    
+    .game-title { 
+        font-size: 2.8rem; color: #ffd700; text-align: center; 
+        margin-bottom: 10px; text-shadow: 2px 2px 0px #d32f2f; flex: none; 
+    }
+    #data-status { 
+        color: #a5d6a7; font-size: 1rem; margin-bottom: 15px; text-align: center; 
+    }
+    #high-score-display { 
+        font-size: 1.2rem; color: #4dd0e1; margin-bottom: 20px; font-weight: bold; 
+        text-shadow: 1px 1px 0px #333; background-color: #2c3e50; padding: 10px 20px; 
+        border-radius: 8px; border: 2px solid #34495e; 
+    }
+
+    .title-btn-group { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 280px; }
+    .title-btn { 
+        background-color: #e65100; color: white; border: none; padding: 15px; 
+        font-size: 1.3rem; border-radius: 10px; cursor: pointer; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-weight: bold; transition: transform 0.1s;
+    }
+    
+    .title-btn.tutorial-btn { background-color: #e91e63; }
+    .title-btn.study-btn { background-color: #0277bd; }
+    .title-btn.load-btn { background-color: #00838f; }
+    .title-btn.reset-btn { background-color: #c62828; font-size: 1.1rem; padding: 12px;} 
+    button:active { transform: scale(0.95); }
+    .back-btn { 
+        background-color: #616161; color: white; border: none; padding: 12px; 
+        font-size: 1rem; border-radius: 6px; cursor: pointer; flex: none; 
+        width: 100%; margin-top: 10px;
+    }
+
+    #top-right-ui { 
+        position: absolute; top: calc(var(--safe-top) + 12px); 
+        right: calc(var(--safe-right) + 12px); display: flex; gap: 8px; 
+        z-index: 500; align-items: center; 
+    }
+    .help-btn { 
+        background-color: #0277bd; border: 1.5px solid #fff; color: #fff; 
+        border-radius: 50%; width: 32px; height: 32px; cursor: pointer; 
+        font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; justify-content: center; 
+    }
+    .sound-btn { 
+        background-color: #616161; border: 1.5px solid #fff; color: #fff; 
+        border-radius: 16px; padding: 0 10px; height: 32px; cursor: pointer; 
+        font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; 
+        justify-content: center; transition: background-color 0.2s;
+    }
+    .dev-btn { 
+        background-color: #8e44ad; border: 1.5px solid #fff; color: #fff; 
+        border-radius: 16px; padding: 0 10px; height: 32px; cursor: pointer; 
+        font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; 
+    }
+
+    #range-screen { display: none; z-index: 120; }
+    .range-box { 
+        background-color: #2c3e50; padding: 25px; border-radius: 15px; 
+        border: 2px solid #f39c12; text-align: center; width: 100%; 
+        box-sizing: border-box; max-width: 400px;
+    }
+    .select-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+    select { 
+        padding: 10px; font-size: 1rem; border-radius: 5px; width: 65%; 
+        background-color: #34495e; color: #fff; border: 2px solid #f39c12; font-family: inherit; font-weight: bold;
+    }
+
+    #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; padding: 20px; justify-content: center; align-items: center; flex-direction: column;}
+    #reward-cards-container { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 400px; }
+    .reward-card { 
+        background-color: #2c3e50; border: 3px solid #f39c12; border-radius: 12px; 
+        display: flex; flex-direction: row; width: 100%; padding: 15px; 
+        align-items: center; text-align: left; box-shadow: 0 4px 8px rgba(0,0,0,0.4); 
+        box-sizing: border-box; cursor: pointer; transition: transform 0.2s;
+    }
+    .reward-icon { 
+        font-size: 0.95rem; margin-right: 15px; flex: none; background: #34495e; 
+        padding: 10px 5px; border-radius: 8px; text-align: center; min-width: 60px; 
+        font-weight: bold; color: #ffd700; box-sizing: border-box;
+    }
+    .reward-text-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .reward-title { color: #ffd700; font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+    .reward-desc { color: #ecf0f1; font-size: 0.9rem; line-height: 1.3; word-break: keep-all;}
+
+    #study-screen { display: none; background-color: #1a1a1a; z-index: 150; }
+    #study-content { 
+        flex: 1; width: 100%; max-width: 600px; overflow-y: auto; 
+        background-color: #212f3d; border-radius: 10px; padding: 15px; 
+        border: 2px solid #34495e; box-sizing: border-box;
+    }
+    .category-header { 
+        background-color: #e65100; color: #fff; padding: 15px; border-radius: 8px; 
+        font-size: 1rem; font-weight: bold; margin-top: 10px; cursor: pointer; 
+        display: flex; justify-content: space-between; line-height: 1.4;
+    }
+    .category-content { display: none; padding-left: 10px; border-left: 3px solid #e65100; margin-bottom: 10px; margin-top: 10px; }
+    
+    /* 지식노트 UI 구조 수정된 CSS */
+    .study-item { background-color: #34495e; border-radius: 8px; margin-bottom: 8px; overflow: hidden;}
+    .study-keyword { padding: 12px; font-size: 1.05rem; color: #4dd0e1; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center;}
+    .study-desc { display: none; padding: 12px; font-size: 0.95rem; color: #ecf0f1; background-color: #2c3e50; line-height: 1.5; border-top: 1px solid #455a64; word-break: keep-all;}
+
+    #game-container { display: none; flex-direction: column; height: 100%; width: 100%; position: relative; padding-top: calc(var(--safe-top) + 55px);}
+    
+    #status-bar { 
+        display: flex; justify-content: space-between; flex-wrap: wrap; 
+        background-color: #333; padding: 8px 12px; font-size: 0.9rem; 
+        border-top: 2px solid #555; border-bottom: 2px solid #555; gap: 5px; flex: none; z-index: 10; 
+    }
+    .stat-box { flex: 1 1 45%; min-width: 80px; }
+    .stat-box span { color: #ffd700; font-weight: bold; }
+    .hp-text { color: #ff6b6b; }
+    .hp-danger { animation: hpBlink 0.5s infinite alternate; font-weight: bold;}
+    @keyframes hpBlink { from { color: #ff6b6b; } to { color: #fff; text-shadow: 0 0 5px #ff0000;} }
+
+    #main-screen { flex: 1; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
+    #action-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; width: 100%; gap: 10px;}
+    #left-panel, #right-panel { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; }
+
+    #monster-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
+    #monster-name { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0; transition: color 0.3s, text-shadow 0.3s;}
+    
+    .name-normal { color: #ffffff; text-shadow: none; }
+    .name-elite { color: #e6b3ff !important; text-shadow: 0 0 8px rgba(230, 179, 255, 0.6); } 
+    .name-boss { color: #f4ffb3 !important; text-shadow: 0 0 8px rgba(244, 255, 179, 0.6); } 
+
+    #monster-image { 
+        width: auto; min-width: 120px; padding: 0 15px; height: 90px; 
+        background-color: transparent; border: none; display: flex; 
+        align-items: center; justify-content: center; font-size: 1.3rem; 
+        font-weight: bold; margin-bottom: 5px; color: #ffb74d; text-align: center; 
+        line-height: 1.2; white-space: nowrap;
+    }
+    
+    #player-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
+    #player-name-ui { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0; color: #bdc3c7; transition: color 0.3s;}
+    
+    #player-image-ui { 
+        width: auto; min-width: 120px; padding: 0 15px; height: 90px; 
+        background-color: #2c3e50; border: 3px solid #bdc3c7; border-radius: 10px; 
+        display: flex; align-items: center; justify-content: center; font-size: 1.3rem; 
+        font-weight: bold; margin-bottom: 5px; color: #fff; text-align: center; 
+        line-height: 1.2; white-space: nowrap; transition: border-color 0.3s;
+    }
+
+    #quiz-box { 
+        display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; 
+        border: 2px solid #f39c12; margin-bottom: 10px; width: 100%; font-size: 1rem; 
+        line-height: 1.4; word-break: keep-all; box-sizing: border-box; text-align: center; 
+    }
+
+    button { color: white; border: none; font-size: 0.95rem; border-radius: 8px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.3); box-sizing: border-box; padding: 10px; font-family: inherit;}
+
+    .grid-ui { display: none; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; align-content: center; }
+    .full-width { grid-column: 1 / -1; } 
+    .option-btn { margin: 0 !important; font-size: 1rem; padding: 12px; background-color: #34495e; text-align: center; }
+
+    @keyframes hintPulse {
+        0% { box-shadow: 0 0 0px rgba(255, 215, 0, 0.5); border-color: #f39c12; }
+        50% { box-shadow: 0 0 15px rgba(255, 215, 0, 1); border-color: #ffd700; background-color: #4a4a1a;}
+        100% { box-shadow: 0 0 0px rgba(255, 215, 0, 0.5); border-color: #f39c12;}
+    }
+    .hint-btn { border: 2px solid #ffd700 !important; color: #ffd700 !important; font-weight: bold; animation: hintPulse 1.5s infinite; z-index: 1001;} 
+
+    .lobby-btn { background-color: #7b1fa2; font-size: 1rem; }
+    .bag-btn { background-color: #8d6e63; }
+    .system-btn { background-color: #455a64; }
+    .quit-btn { background-color: #c62828; }
+    .char-btn { background-color: #f57c00; } 
+    
+    .shop-btn { background-color: #00838f; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; padding: 10px 5px;}
+    .shop-btn span { font-size:0.75rem; color:#b2ebf2; word-break: keep-all;}
+
+    .quiz-btn { background-color: #d32f2f; font-size: 1.05rem; }
+    .potion-btn { background-color: #fbc02d; color: #333; font-weight: bold;}
+    
+    #log-box { 
+        flex: none; height: 120px; background-color: #000; border-top: 2px solid #555; 
+        padding: 8px; overflow-y: auto; font-size: 0.85rem; line-height: 1.3; box-sizing: border-box; 
+    }
+    #log-box p { margin: 4px 0; }
+
+    .custom-modal { 
+        display: none; position: absolute; top: 10%; left: 5%; right: 5%; bottom: 10%; 
+        background: rgba(30, 40, 50, 0.98); border: 3px solid #f39c12; z-index: 600; 
+        border-radius: 15px; padding: 15px; flex-direction: column; 
+        box-shadow: 0 10px 20px rgba(0,0,0,0.8); max-width: 500px; margin: 0 auto;
+    }
+    .modal-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    
+    .list-item { display: flex; justify-content: space-between; align-items: center; background: #34495e; padding: 10px; border-radius: 8px; }
+    .list-item-info { flex: 1; display: flex; align-items: center; gap: 10px;}
+    .list-item-icon { 
+        font-size: 0.85rem; background: #2c3e50; min-width: 85px; height: 45px; 
+        display: flex; justify-content: center; align-items: center; border-radius: 8px; 
+        font-weight: bold; padding: 0 5px; box-sizing: border-box; white-space: nowrap;
+    }
+    .list-item-text-wrap { display: flex; flex-direction: column; }
+    .list-item-title { font-size: 0.95rem; color: #ffd700; font-weight: bold; margin-bottom: 3px;}
+    .list-item-desc { font-size: 0.8rem; color: #bdc3c7; line-height: 1.2;}
+    .action-btn { background-color: #e65100; padding: 8px 12px; flex: none; margin-left: 10px; font-size: 0.85rem;}
+    .action-btn.equipped { background-color: #4CAF50; cursor: default; }
+    .action-btn.buy { background-color: #0277bd; }
+    .hidden-condition { font-size: 0.75rem; color: #ff8a65; padding: 5px; text-align: right; line-height: 1.2; word-break: keep-all; }
+
+    @keyframes fadeInPanel { from { opacity: 0; } to { opacity: 1; } }
+
+    #tutorial-overlay {
+        display: none; position: absolute; z-index: 9999 !important; background: rgba(30, 40, 50, 0.98);
+        border: 3px solid #00e676; border-radius: 15px; padding: 15px; box-sizing: border-box;
+        flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.9); animation: fadeInPanel 0.2s ease-out;
+    }
+    #tutorial-overlay.pos-bottom { bottom: 15px; top: auto; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; }
+    #tutorial-overlay.pos-top { top: calc(var(--safe-top) + 20px); bottom: auto; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; } 
+    #tutorial-overlay.pos-quiz { top: 60px; bottom: auto; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; } 
+
+    .hlt { color: #ffd700; font-weight: bold; }
+    .hlt-cyan { color: #4dd0e1; font-weight: bold; }
+
+    #tutorial-text { font-size: 0.95rem; line-height: 1.5; color: #fff; margin-bottom: 10px; white-space: pre-line; word-break: keep-all; text-align: left; }
+    .tut-btn-wrap { display: flex; justify-content: space-between; gap: 8px; }
+    .tut-btn { padding: 8px 15px; font-size: 0.95rem; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+    .tut-exit { background-color: #616161; color: white; }
+    .tut-next { background-color: #00e676; color: #000; flex: 1; }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+        #app-wrapper { max-width: 100%; border-radius: 0; }
+        #status-bar { padding: 4px 10px; font-size: 0.8rem; }
+        #action-area { flex-direction: row; gap: 15px; padding: 10px; align-items: stretch;}
+        #left-panel { width: 35%; justify-content: center; }
+        #right-panel { width: 60%; justify-content: center; }
+        #monster-area, #player-area { margin-bottom: 0; }
+        #monster-image, #player-image-ui { height: 60px; font-size: 0.9rem; }
+        #quiz-box { margin-bottom: 8px; padding: 10px; font-size: 0.95rem; }
+        .grid-ui { gap: 6px; }
+        button { padding: 8px; font-size: 0.85rem; }
+        .option-btn { padding: 8px; }
+        #log-box { height: 60px; font-size: 0.8rem; padding: 5px 10px; }
+        #reward-cards-container { flex-direction: row; justify-content: center; max-width: 100%; height: 100%; align-items: stretch; gap: 10px;}
+        .reward-card { flex: 1; flex-direction: column; padding: 10px; text-align: center; }
+        .reward-icon { margin-right: 0; margin-bottom: 5px; font-size: 1rem; min-width: 45px; padding: 5px;}
+        
+        #tutorial-overlay { padding: 10px; }
+        #tutorial-overlay.pos-bottom { bottom: 5px; width: 70%; }
+        #tutorial-overlay.pos-top { top: 5px; width: 70%; }
+        #tutorial-overlay.pos-quiz { top: 50%; left: 10px; transform: translateY(-50%); width: 40%; max-width: none; } 
+        #tutorial-text { font-size: 0.85rem; margin-bottom: 8px; line-height: 1.3; }
+        .tut-btn { padding: 6px 10px; font-size: 0.85rem; }
+    }
+
+    @media (min-width: 600px) and (max-width: 900px) and (min-height: 501px) {
+        #app-wrapper { max-width: 600px; height: 90vh; border-radius: 20px; }
+        .game-title { font-size: 3.5rem; }
+        #monster-image, #player-image-ui { height: 110px; font-size: 1.5rem; }
+        #monster-name, #player-name-ui { font-size: 1.6rem; }
+        #quiz-box { font-size: 1.2rem; padding: 20px; }
+        button { padding: 15px; font-size: 1.1rem; }
+        .option-btn { padding: 15px; }
+        .shop-btn span { font-size: 0.9rem; margin-top: 8px;}
+        #log-box { height: 120px; font-size: 1rem; }
+        #tutorial-overlay { max-width: 500px; padding: 20px; }
+        #tutorial-text { font-size: 1.1rem; margin-bottom: 15px;}
+        .tut-btn { padding: 10px 15px; font-size: 1.05rem; }
+    }
+
+    @media (min-width: 901px) and (min-height: 501px) {
+        #app-wrapper { max-width: 950px; height: 85vh; min-height: 600px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        .game-title { font-size: 3.5rem; margin-bottom: 15px; }
+        .title-btn-group { flex-direction: row; max-width: 800px; gap: 20px; }
+        .title-btn { flex: 1; padding: 15px; font-size: 1.3rem; }
+        #status-bar { font-size: 1.05rem; padding: 10px 25px; }
+        #action-area { flex-direction: row; align-items: stretch; padding: 15px 30px; gap: 30px; }
+        #left-panel { width: 40%; border-right: 2px dashed #444; padding-right: 20px; justify-content: center; }
+        #right-panel { width: 60%; padding-left: 10px; justify-content: center; display: flex; flex-direction: column; }
+        #monster-image, #player-image-ui { height: 120px; font-size: 1.6rem; margin-bottom: 10px; min-width: 170px;}
+        #monster-name, #player-name-ui { font-size: 1.8rem; margin-bottom: 0;}
+        .hp-text { font-size: 1.2rem; margin-top: 5px;}
+        #quiz-box { font-size: 1.1rem; padding: 15px; margin-bottom: 15px; flex: none; }
+        .grid-ui { gap: 10px; }
+        button { font-size: 1.05rem; padding: 12px; }
+        .option-btn { font-size: 1.05rem; padding: 12px; margin-bottom: 0; } 
+        .shop-btn span { font-size: 0.85rem; margin-top: 5px;}
+        #log-box { height: 100px; font-size: 1rem; padding: 10px 30px; border-top: 2px solid #555;}
+        #reward-cards-container { flex-direction: row; max-width: 90%; gap: 15px; height: auto;}
+        .reward-card { flex: 1; flex-direction: column; text-align: center; padding: 25px 15px; }
+        .reward-card:hover { transform: translateY(-5px); background-color: #34495e;}
+        .reward-icon { margin-right: 0; margin-bottom: 10px; font-size: 1.1rem; }
+        .reward-title { font-size: 1.3rem; margin-bottom: 5px;}
+        .reward-desc { font-size: 0.95rem; }
+        #tutorial-overlay { padding: 25px; }
+        #tutorial-overlay.pos-bottom { bottom: 30px; width: 600px; top: auto;}
+        #tutorial-overlay.pos-top { top: 30px; width: 600px; bottom: auto;}
+        #tutorial-overlay.pos-quiz { top: 50%; left: 30px; transform: translateY(-50%); width: 35%; max-width: 400px; bottom: auto; }
+        #tutorial-text { font-size: 1.1rem; margin-bottom: 15px; }
+        .tut-btn { padding: 12px 20px; font-size: 1.1rem; }
+    }
+</style>
+</head>
+<body>
+
+<div id="app-wrapper">
+    <div id="top-right-ui">
+        <button id="dev-btn" class="dev-btn" onclick="openCheatModal()">치트</button>
+        <button id="sound-btn" class="sound-btn" onclick="toggleBGM()">음악 끔</button>
+        <button id="global-help" class="help-btn" onclick="showHelp()">?</button>
+    </div>
+
+    <div id="title-screen" class="screen-panel">
+        <h1 class="game-title">풀어라!<br>지식의 탑!</h1>
+        <div id="high-score-display">최고 도달 기록: <span id="high-score-ui">1</span>층</div>
+        <div id="data-status">데이터를 불러오는 중...</div>
+        <div class="title-btn-group">
+            <button class="title-btn tutorial-btn" onclick="startTutorial()">튜토리얼</button>
+            <button class="title-btn study-btn" onclick="openStudyScreen()">공부하기 (지식 노트)</button>
+            <button id="btn-continue" class="title-btn load-btn" style="display:none;" onclick="loadGameFromTitle()">이어하기</button>
+            <button class="title-btn" onclick="openCategoryScreen()">새 게임 (출제 범위)</button>
+            <button class="title-btn reset-btn" style="grid-column: 1 / -1;" onclick="resetAllData()">초기화</button>
+        </div>
+    </div>
+
+    <div id="range-screen" class="screen-panel">
+        <div class="range-box" id="category-box">
+            <h2>출제 범위 선택</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:10px; width:100%; margin-bottom:15px;">
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <span style="color:#a5d6a7; font-weight:bold; width: 45px; text-align: left; font-size: 0.9rem;">학년:</span>
+                    <button id="g-grade-3" class="title-btn" style="flex:1; padding:6px; font-size:0.9rem; background-color:#e65100;" onclick="setGameGrade('3학년')">3학년</button>
+                    <button id="g-grade-4" class="title-btn" style="flex:1; padding:6px; font-size:0.9rem; background-color:#616161;" onclick="setGameGrade('4학년')">4학년</button>
+                    <button id="g-grade-5" class="title-btn" style="flex:1; padding:6px; font-size:0.9rem; background-color:#616161;" onclick="setGameGrade('5학년')">5학년</button>
+                    <button id="g-grade-6" class="title-btn" style="flex:1; padding:6px; font-size:0.9rem; background-color:#616161;" onclick="setGameGrade('6학년')">6학년</button>
+                </div>
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <span style="color:#a5d6a7; font-weight:bold; width: 45px; text-align: left; font-size: 0.9rem;">학기:</span>
+                    <button id="g-sem-1" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setGameSemester('1학기')">1학기</button>
+                    <button id="g-sem-2" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setGameSemester('2학기')">2학기</button>
+                    <button id="g-sem-all" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#8e44ad;" onclick="setGameSemester('all')">공통</button>
+                </div>
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <span style="color:#a5d6a7; font-weight:bold; width: 45px; text-align: left; font-size: 0.9rem;">과목:</span>
+                    <button id="g-subj-soc" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setGameSubject('사회')">사회</button>
+                    <button id="g-subj-sci" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setGameSubject('과학')">과학</button>
+                    <button id="g-subj-all" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#0277bd;" onclick="setGameSubject('all')">공통</button>
+                </div>
+            </div>
+
+            <div id="chapter-range-wrapper" style="display:none; margin-top:10px; padding-top:15px; border-top: 2px dashed #555;">
+                <div class="select-wrapper" style="margin-bottom:0;">
+                    <span style="color:#a5d6a7; font-weight:bold;">대단원:</span>
+                    <select id="chapter-select" style="width: 70%;" onchange="updateSubUnitOptions()">
+                        <option value="all">전체 단원</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="sub-unit-range-wrapper" style="display:none; margin-top:10px; padding-top:15px; border-top: 2px dashed #555;">
+                <p style="font-size: 0.9rem; color: #a5d6a7; margin-top:0; margin-bottom: 10px;">소단원 범위를 선택하세요.</p>
+                <div class="select-wrapper"><span>시작:</span><select id="start-category" style="width: 70%;"></select></div>
+                <div class="select-wrapper" style="margin-bottom:0;"><span>끝:</span><select id="end-category" style="width: 70%;"></select></div>
+            </div>
+
+            <button class="title-btn start-game-btn" style="width:100%; margin-top:20px;" onclick="goToDifficultyScreen()">다음 단계 (난이도 선택)</button>
+            <button class="back-btn" style="margin-top: 15px;" onclick="closeRangeScreen()">메인 메뉴로</button>
+        </div>
+
+        <div class="range-box" id="difficulty-box" style="display: none;">
+            <h2>난이도 선택</h2>
+            <div class="title-btn-group" style="max-width: 100%;">
+                <button class="title-btn" style="background-color: #4caf50;" onclick="startGameWithDifficulty('easy')">쉬움</button>
+                <button class="title-btn" style="background-color: #f39c12;" onclick="startGameWithDifficulty('normal')">보통</button>
+                <button class="title-btn" style="background-color: #e74c3c;" onclick="startGameWithDifficulty('hard')">어려움</button>
+            </div>
+            <button class="back-btn" style="margin-top: 15px;" onclick="backToCategoryScreen()">이전으로</button>
+        </div>
+    </div>
+
+    <div id="reward-screen" class="screen-panel">
+        <h2 class="game-title">층 클리어 보상</h2>
+        <div id="reward-cards-container"></div>
+    </div>
+
+    <div id="study-screen" class="screen-panel">
+        <h2 class="game-title" style="font-size: 2rem; margin-bottom: 15px;">지식 노트</h2>
+        
+        <div id="study-filter-container" style="display:flex; flex-direction:column; gap:10px; width:100%; max-width:600px; margin-bottom:15px;">
+            <div style="display:flex; gap:5px;">
+                <button id="s-grade-3" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#e65100;" onclick="setStudyGrade('3학년')">3학년</button>
+                <button id="s-grade-4" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setStudyGrade('4학년')">4학년</button>
+                <button id="s-grade-5" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setStudyGrade('5학년')">5학년</button>
+                <button id="s-grade-6" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setStudyGrade('6학년')">6학년</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button id="s-sem-1" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#616161;" onclick="setStudySemester('1학기')">1학기</button>
+                <button id="s-sem-2" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#616161;" onclick="setStudySemester('2학기')">2학기</button>
+                <button id="s-sem-all" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#8e44ad;" onclick="setStudySemester('all')">공통</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button id="s-subj-soc" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#0277bd;" onclick="setStudySubject('사회')">사회</button>
+                <button id="s-subj-sci" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#616161;" onclick="setStudySubject('과학')">과학</button>
+                <button id="s-subj-all" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#616161;" onclick="setStudySubject('all')">공통</button>
+            </div>
+        </div>
+
+        <div id="study-content"></div>
+        <button id="study-back-btn" class="back-btn" style="max-width: 600px;" onclick="closeStudyScreen()">돌아가기</button>
+    </div>
+
+    <div id="game-container">
+        <div id="status-bar">
+            <div class="stat-box" style="flex: 1 1 100%;">층수: <span id="floor-ui">1F</span> <span id="diff-badge" style="font-size:0.8rem; margin-left: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold;"></span></div>
+            <div class="stat-box" id="hp-container">집중력: <span id="hp-ui" style="color: #ff6b6b; font-weight: bold;">100/100</span></div>
+            <div class="stat-box">골드: <span id="gold-ui">0</span>G</div>
+            <div class="stat-box" style="color:#ffb74d;">기억력: <span id="atk-ui">15</span></div>
+            <div class="stat-box" style="color:#81c784;">딴짓 피하기: <span id="eva-ui">0%</span></div>
+            <div class="stat-box">초콜릿: <span id="potion-ui">3</span>개</div>
+            <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
+        </div>
+
+        <div id="main-screen">
+            <div id="action-area">
+                <div id="left-panel">
+                    <div id="monster-area">
+                        <h2 id="monster-name" class="name-normal">도파민 유혹</h2>
+                        <div id="monster-image" data-is-text="true">(꒪⌓꒪)</div>
+                        <h3 class="hp-text" style="margin:0;">남은 방해 에너지: <span id="monster-hp">50/50</span></h3>
+                    </div>
+                    <div id="player-area">
+                        <h2 id="player-name-ui">일반학생</h2>
+                        <div id="player-image-ui">(・_・)</div>
+                        <h3 style="margin:0; color:#bdc3c7; font-size: 1rem;">현재 내 모습</h3>
+                    </div>
+                </div>
+
+                <div id="right-panel">
+                    <div id="quiz-box"></div>
+                    
+                    <div id="hub-ui" class="grid-ui">
+                        <div class="full-width" style="text-align: center; color: #a5d6a7; font-size: 1.1rem; margin-bottom: 5px; font-weight: bold; background-color: #2c3e50; padding: 10px; border-radius: 8px; border: 1.5px solid #4dd0e1;">
+                            [ 휴식 및 정비 공간 ]<br><span style="font-size:0.85rem; color:#bdc3c7; font-weight: normal;">다음 층으로 가기 전, 가방을 열거나 준비를 마치세요.</span>
+                        </div>
+                        <button id="hub-btn-next" class="lobby-btn full-width" onclick="startBattle()">다음 층 올라가기</button>
+                        <button id="hub-btn-char" class="char-btn full-width" onclick="openCharacterRoom()">[상점] 캐릭터 변경 및 구매</button>
+                        <button id="hub-btn-shop" class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">[상점] 아이템 구매</button>
+                        <button id="hub-btn-bag" class="bag-btn" onclick="openInventory()">내 가방 (아이템)</button>
+                        <button class="system-btn" onclick="saveGame(true)">저장하기</button>
+                        <button class="quit-btn" onclick="confirmReturnToTitle()">나가기</button>
+                    </div>
+                    
+                    <div id="shop-ui" class="grid-ui">
+                        <button class="shop-btn" onclick="buyItem('potion')">[아이템] 당충전 초콜릿 (30G)<span>집중력 40 회복</span></button>
+                        <button id="shop-btn-shield" class="shop-btn" onclick="buyItem('shield')">[아이템] 철벽 백과사전 (50G)<span>방해꾼의 훼방 무효화</span></button>
+                        <button class="shop-btn" onclick="buyItem('powerUp')">[아이템] 마법의 형광펜 (50G)<span>다음 2번 정답의 힘 상승</span></button>
+                        <button class="shop-btn" onclick="buyItem('maxhp')">[성장] 만점 비법 노트 (100G)<span>최대 집중력 증가</span></button>
+                        <button class="back-btn full-width" style="margin-top:0;" onclick="closeShop()">상점 닫기</button>
+                    </div>
+                    
+                    <div id="battle-ui" class="grid-ui">
+                        <button class="quiz-btn full-width" onclick="loadQuiz()">지식 문제 풀기 (물리치기)</button>
+                        <button class="potion-btn" onclick="usePotion()">초콜릿 먹기 (회복) </button>
+                        <button class="bag-btn" onclick="openInventory()">내 가방 열기 (아이템)</button>
+                    </div>
+                    
+                    <div id="options-ui" class="grid-ui" style="grid-template-columns: 1fr;"></div>
+                </div>
+            </div>
+        </div>
+        <div id="log-box"></div>
+    </div>
+
+    <div id="inventory-modal" class="custom-modal">
+        <h2 style="margin-top: 0; color: #fff;">가방 내용물</h2>
+        <div id="inventory-list" class="modal-list"></div>
+        <button id="btn-close-bag" class="back-btn" onclick="closeInventory()" style="flex: none; margin-top:10px;">닫기</button>
+    </div>
+
+    <div id="character-modal" class="custom-modal">
+        <h2 style="margin-top: 0; color: #fff;">캐릭터 상점 & 옷장</h2>
+        <div id="character-list" class="modal-list"></div>
+        <button id="btn-close-char" class="back-btn" onclick="closeCharacterRoom()" style="flex: none; margin-top:10px;">닫기</button>
+    </div>
+
+    <div id="cheat-modal" class="custom-modal">
+        <h2 style="margin-top: 0; color: #fff; text-align: center;">개발자 치트 메뉴</h2>
+        <p style="font-size:0.9rem; color:#bdc3c7; text-align: center;">게임 진행 중에만 사용 가능합니다.</p>
+        <div class="modal-list"> 
+            <button class="title-btn" style="background-color: #f1c40f; color:#000;" onclick="cheatAction('gold')">골드 +10,000 획득</button>
+            <button class="title-btn" style="background-color: #e67e22; color:#fff;" onclick="cheatAction('chars')">모든 캐릭터 스킨 해금</button>
+            <button class="title-btn" style="background-color: #3498db; color:#fff;" onclick="cheatAction('items')">모든 아이템 1개씩 획득</button> 
+            <button class="title-btn" style="background-color: #e74c3c; color:#fff;" onclick="cheatAction('stats')">집중력/기억력 대폭 상승</button>
+            <button class="title-btn" style="background-color: #9b59b6; color:#fff;" onclick="cheatAction('floor')">보스 바로 만나기 (다음 10층)</button>
+        </div>
+        <button class="back-btn" onclick="closeCheatModal()" style="flex: none; margin-top:15px;">창 닫기</button>
+    </div>
+
+    <div id="tutorial-overlay" class="pos-bottom">
+        <div id="tutorial-text">튜토리얼 텍스트</div>
+        <div class="tut-btn-wrap">
+            <button class="tut-btn tut-exit" onclick="exitTutorial()">중단하고 나가기</button>
+            <button class="tut-btn tut-next" id="tutorial-next-btn" onclick="nextTutorialStep()">다음 ></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // 💡 1. 튜토리얼 스크립트 
+    // ==========================================
+    const tutorialScripts = [
+        /* 0 */ "환영합니다!\n지식 타워 RPG에 오신 것을 환영합니다.\n이 게임은 <span class='hlt'>사회/과학 지식</span>으로 방해꾼을 물리치며 탑을 오르는 게임입니다.",
+        /* 1 */ "먼저 화면 상단의 <span class='hlt'>[상태창]</span>을 볼까요?\n\n<span class='hlt-cyan'>[집중력]</span>: 여러분이 버틸 수 있는 체력입니다.\n<span class='hlt-cyan'>[기억력]</span>: 퀴즈를 맞혔을 때 방해꾼을 약화시키는 힘입니다.",
+        /* 2 */ "앗! 학습 방해꾼이 나타났습니다! (꒪⌓꒪)\n도전이 어떻게 진행되는지 직접 체험해 볼까요?\n\n(아래 <span class='hlt'>'다음'</span> 버튼을 누르세요.)",
+        /* 3 */ "방해꾼의 유혹을 이겨내려면 지식 문제를 맞혀야 합니다.\n\n자, 노랗게 빛나는 정답 <span class='hlt'>[1. 이성계]</span>를 직접 클릭해 보세요!",
+        /* 4 */ "훌륭합니다! 방해꾼을 물리치면 <span class='hlt'>학습 보상</span>을 얻을 수 있습니다.",
+        /* 5 */ "(실제 게임에서는 <span class='hlt-cyan'>3개의 무작위 보상</span>이 나오며, 그 중 나에게 필요한 <span class='hlt-cyan'>1개를 신중하게 선택</span>해야 합니다!)",
+        /* 6 */ "자, 화면에 나타난 <span class='hlt'>[깜짝 장학금]</span> 보상 카드를 직접 클릭해서 획득해 보세요!",
+        /* 7 */ "보상을 얻고 나면 <span class='hlt'>[휴식 및 정비 공간]</span>으로 돌아옵니다.\n\n방금 받은 용돈으로 아이템을 사볼까요?\n노랗게 빛나는 <span class='hlt'>[아이템 구매]</span> 버튼을 눌러보세요.",
+        /* 8 */ "상점이 열렸습니다!\n<span class='hlt'>[철벽 백과사전]</span>을 직접 클릭해서 구매해 보세요.\n(방해꾼의 훼방을 막아줍니다)",
+        /* 9 */ "좋습니다!\n이번에는 <span class='hlt'>[캐릭터 변경 및 구매]</span> 버튼을 눌러 옷장을 열어보세요.",
+        /* 10 */ "새로운 캐릭터인 <span class='hlt'>[모범생]</span> 스킨의 <span class='hlt'>[장착]</span> 버튼을 눌러보세요!",
+        /* 11 */ "잘하셨습니다!\n마지막으로 <span class='hlt'>[내 가방]</span>을 열어 구매한 아이템과 상태를 확인해 보세요.",
+        /* 12 */ "가방에 방금 구매한 백과사전이 들어있군요!\n확인했으면 아래의 <span class='hlt'>[닫기]</span> 버튼을 눌러주세요.",
+        /* 13 */ "문제가 너무 어렵다면 어떻게 하냐고요?\n메인 화면의 <span class='hlt'>[공부하기]</span> 메뉴를 활용해 보세요!\n\n화면에 보이는 지식 노트의 <span class='hlt'>[항목]</span>을 직접 클릭해서 내용을 확인해 보세요.",
+        /* 14 */ "튜토리얼 완료!\n이제 모든 준비가 끝났습니다.\n\n그럼, 실전에서 만나요! 파이팅!"
+    ];
+
+    // ==========================================
+    // 💡 2. 아이템, 보상 및 캐릭터 데이터
+    // ==========================================
+    const ITEM_DB = {
+        revive: { name: "마법의 지우개", desc: "집중력 바닥날 때 절반 회복 후 부활", isPassive: false },
+        shield: { name: "철벽 백과사전", desc: "다음 1회 방해꾼의 훼방 막아냄", isPassive: false },
+        powerUp: { name: "마법의 형광펜", desc: "다음 2번 정답의 힘 상승", isPassive: false },
+        weaken: { name: "초집중 귀마개", desc: "다음 2번 방해꾼의 방해를 절반으로 줄임", isPassive: false },
+        armorBreak: { name: "족집게 빨간펜", desc: "다음 2번 정답의 힘 1.5배 상승", isPassive: false },
+        boss_art_1: { name: "전설의 금동대향로", desc: "매 층 클리어 시 체력 15 자동 회복", isPassive: true },
+        boss_art_2: { name: "성웅의 난중일기", desc: "기억력 +25 영구 상승", isPassive: true },
+        boss_art_3: { name: "수호자의 방패", desc: "딴짓 피하기 확률 +15% 영구 상승", isPassive: true },
+        boss_art_4: { name: "왕의 어보", desc: "매 층 클리어 시 추가 용돈 20G 획득", isPassive: true },
+        boss_art_5: { name: "천상열차분야지도", desc: "최대 집중력 +50, 기억력 +10 상승", isPassive: true },
+        boss_art_6: { name: "팔만대장경", desc: "딴짓 피하기 확률 +20% 영구 상승", isPassive: true },
+        boss_art_7: { name: "훈민정음 해례본", desc: "기억력 +40 영구 상승", isPassive: true },
+        boss_art_8: { name: "거북선 모형", desc: "매 층 백과사전(방어) 1회 자동 충전", isPassive: true },
+        boss_art_9: { name: "앙부일구", desc: "매 층 형광펜(공격강화) 1회 자동 충전", isPassive: true },
+        boss_art_10: { name: "비파형 동검", desc: "기억력 +50 영구 상승", isPassive: true },
+        boss_art_11: { name: "신라 금관", desc: "매 층 클리어 시 추가 용돈 50G 획득", isPassive: true },
+        boss_art_12: { name: "청자 매병", desc: "초콜릿 10개, 마법의 지우개 3개 즉시 획득", isPassive: true },
+        boss_art_13: { name: "직지심체요절", desc: "최대 집중력 +100 영구 상승", isPassive: true },
+        boss_art_14: { name: "동의보감", desc: "매 층 클리어 시 집중력 30 자동 회복", isPassive: true }
+    };
+
+    const NORMAL_REWARD_CARDS = [
+        { id: 'gold', title: '용돈 발견', desc: '특별 용돈 30G를 추가로 얻습니다.', icon: '[용돈]', action: () => { player.gold += 30; player.totalGoldEarned += 30; } },
+        { id: 'heal', title: '잠깐 휴식', desc: '집중력을 30 회복합니다.', icon: '[휴식]', action: () => { player.hp = Math.min(player.maxHp, player.hp + 30); } },
+        { id: 'atk', title: '기억력 강화', desc: '기억력이 3 증가합니다.', icon: '[기억]', action: () => { player.baseAtk += 3; } },
+        { id: 'eva', title: '집중 모드', desc: '딴짓 피하기 확률이 2% 증가합니다.', icon: '[집중]', action: () => { player.evasion += 2; } },
+        { id: 'maxhp', title: '기초 체력', desc: '최대 집중력이 10 증가합니다.', icon: '[체력]', action: () => { player.maxHp += 10; player.hp += 10; } },
+        { id: 'elite', title: '심화 학습', desc: '다음 층에서 정예 방해꾼이 등장합니다! (더 큰 보상)', icon: '[심화]', action: () => { startEliteBattle(); return 'boss'; } }
+    ];
+
+    const ELITE_REWARD_CARDS = [
+        { id: 'gold_heavy', title: '장학금 획득', desc: '특별 용돈 100G를 얻습니다.', icon: '[장학]', action: () => { player.gold += 100; player.totalGoldEarned += 100; } },
+        { id: 'atk_heavy', title: '완전 정복', desc: '기억력이 8 증가합니다.', icon: '[마스터]', action: () => { player.baseAtk += 8; } },
+        { id: 'maxhp_heavy', title: '체력 증진', desc: '최대 집중력이 30 증가합니다.', icon: '[성장]', action: () => { player.maxHp += 30; player.hp += 30; } },
+        { id: 'potion', title: '당 충전 완료', desc: '초콜릿을 2개 얻습니다.', icon: '[간식]', action: () => { player.potions += 2; } }
+    ];
+
+    const BOSS_REWARD_CARDS = Object.keys(ITEM_DB).filter(k => ITEM_DB[k].isPassive).map(k => {
+        return { id: k, title: ITEM_DB[k].name, desc: ITEM_DB[k].desc, icon: '[유물]', action: () => { player.inventory[k] = 1; } };
+    });
+
+    const TIER_COLORS = { normal: "#bdc3c7", rare: "#4fc3f7", unique: "#ce93d8", hidden: "#ffb74d", legend: "#ff1744" };
+    const TIER_NAMES = { normal: "[노멀]", rare: "[레어]", unique: "[유니크]", hidden: "[히든]", legend: "[전설]" };
+
+    const PLAYER_CHARS = [
+        { id: "char_01", name: "일반학생", tier: "normal", icon: ["(・_・)", "(・o・)"], price: 0, anim: "eye" },
+        { id: "char_02", name: "모범생", tier: "normal", icon: ["(⌐■_■)", "(⌐■-■)"], price: 50, anim: "bounce" },
+        { id: "char_03", name: "열공!열공!", tier: "normal", icon: ["(ง •̀_•́)ง", "(ง'̀-'́)ง"], price: 100, anim: "arm" },
+        { id: "char_04", name: "감기걸림", tier: "normal", icon: ["(－‸ლ)", "(－.ლ)"], price: 100, anim: "eye" },
+        { id: "char_05", name: "신입생", tier: "normal", icon: ["(❁´◡`❁)", "(❁´▽`❁)"], price: 150, anim: "bounce" },
+        { id: "char_06", name: "배탈난학생", tier: "normal", icon: ["(ꐦ ಠ皿ಠ )", "(ꐦ ಠoಠ )"], price: 200, anim: "arm" }, 
+        
+        { id: "char_07", name: "벼락치기", tier: "rare", icon: ["٩(ˊᗜˋ*)و", "٩(ˊOˋ*)و"], price: 250, anim: "bounce" },
+        { id: "char_08", name: "헤이헤이", tier: "rare", icon: ["[ -_ - ]y", "[ -o - ]y"], price: 300, anim: "eye" },
+        { id: "char_09", name: "졸려요", tier: "rare", icon: ["(*´﹃｀*)", "(*´O｀*)"], price: 300, anim: "eye" },
+        { id: "char_10", name: "급식전문가", tier: "rare", icon: ["ᕙ(⇀‸↼‶)ᕗ", "ᕙ(⇀O↼‶)ᕗ"], price: 400, anim: "arm" },
+        { id: "char_11", name: "전교 1등", tier: "rare", icon: ["(๑˃̵ᴗ˂̵)و", "(๑˃̵O˂̵)و"], price: 500, anim: "bounce" },
+        
+        { id: "char_12", name: "곰돌이", tier: "unique", icon: ["ʕ•ᴥ•ʔ", "ʕ•O•ʔ"], price: 600, anim: "swing" },
+        { id: "char_13", name: "고양이", tier: "unique", icon: ["/ᐠ｡ꞈ｡ᐟ\\", "/ᐠ｡O｡ᐟ\\"], price: 600, anim: "swing" },
+        { id: "char_14", name: "외계인", tier: "unique", icon: ["(V)(OᴥO)(V)", "(V)(O0O)(V)"], price: 700, anim: "bounce", bgm: "hub_alien" },
+        { id: "char_15", name: "로봇", tier: "unique", icon: ["┌( ಠ_ಠ)┘", "┌( ಠoಠ)┘"], price: 700, anim: "arm" },
+        { id: "char_16", name: "마법사", tier: "unique", icon: ["༼ つ ◕_◕ ༽つ", "༼ つ ◕o◕ ༽つ"], price: 800, anim: "bounce", bgm: "hub_magic" },
+        { id: "char_17", name: "유도부", tier: "unique", icon: ["(ง'̀-'́)ง", "(ง'̀o'́)ง"], price: 800, anim: "arm" },
+        { id: "char_18", name: "올빼미", tier: "unique", icon: ["[ ☾_☽ ]", "[ ☾o☽ ]"], price: 900, anim: "eye", bgm: "hub_ninja" }, 
+        { id: "char_19", name: "용사", tier: "unique", icon: ["[ ★_★ ]", "[ ★ o ★ ]"], price: 1000, anim: "bounce", bgm: "hub_legend" },
+        { id: "char_20", name: "맑눈광", tier: "unique", icon: ["( ⚆ _ ⚆ )", "( ⚆ o ⚆ )"], price: 1500, anim: "eye", bgm: "hub_zen" },
+        
+        { id: "hidden_01", name: "정복자", tier: "hidden", icon: ["▶━[ 炎_炎 ]━◀", "▷━[ 炎O炎 ]━◁"], price: -1, anim: "bounce", bgm: "hub_master", unlockDesc: "최고 기록 20층 도달 시 해금" },
+        { id: "hidden_02", name: "갑부", tier: "hidden", icon: ["$$ [ ₩_₩ ] $$", "￦￦ [ $O$ ] ￦￦"], price: -1, anim: "bounce", bgm: "hub_rich", unlockDesc: "누적 특별 용돈 1,000G 획득 시 해금" },
+        { id: "hidden_03", name: "초코덕후", tier: "hidden", icon: ["■■ ( ´﹃｀)", "□■ ( º﹃ º)"], price: -1, anim: "bounce", bgm: "hub_sweet", unlockDesc: "초콜릿 누적 10회 냠냠 시 해금" },
+        { id: "hidden_04", name: "오답달인", tier: "hidden", icon: ["✘_✘ [ ?_? ] ✘_✘", "✖_✖ [ !O! ] ✖_✖"], price: -1, anim: "bounce", bgm: "hub_study", unlockDesc: "문제 누적 10회 오답 시 해금" },
+        { id: "hidden_05", name: "방랑자", tier: "hidden", icon: ["彡 ≈(-_-)≈ 彡", "彡 ~~(0_0)~~ 彡"], price: -1, anim: "swing", bgm: "hub_wind", unlockDesc: "방해꾼 공격 누적 10회 피할 시 해금" },
+
+        { id: "hard_01", name: "불굴의 도전자", tier: "hidden", icon: ["炎 ᕙ( Ò﹏Ó)ᕗ 炎", "焱 ᕙ( Ò0Ó)ᕗ 焱"], price: -1, anim: "bounce", bgm: "hub_hard_1", unlockDesc: "하드 모드 10층 도달 시 해금" },
+        { id: "hard_02", name: "고독한 현자", tier: "hidden", icon: ["✦ ꧁( ఠ_ఠ )꧂ ✦", "✧ ꧁( ఠoఠ )꧂ ✧"], price: -1, anim: "eye", bgm: "hub_hard_2", unlockDesc: "하드 모드 15층 도달 시 해금" },
+        { id: "hard_03", name: "심연의 지배자", tier: "hidden", icon: ["▼ ◤( ◣_◢ )◥ ▼", "▲ ◣( ◣0◢ )◢ ▲"], price: -1, anim: "swing", bgm: "hub_hard_3", unlockDesc: "하드 모드 20층 도달 시 해금" },
+        { id: "hard_04", name: "역사 마스터", tier: "hidden", icon: ["[≡] ✧( ⊡_⊡ )✧ [≡]", "(=) ✦( ⊡O⊡ )✦ (=)"], price: -1, anim: "bounce", bgm: "hub_hard_4", unlockDesc: "하드 모드 25층 도달 시 해금" },
+        { id: "hard_05", name: "타워의 전설", tier: "hidden", icon: ["[★] ꧁( ✪_✪ )꧂ [★]", "[☆] ꧁( ✪O✪ )꧂ [☆]"], price: -1, anim: "bounce", bgm: "hub_hard_5", unlockDesc: "하드 모드 30층 도달 시 해금" },
+
+        { id: "legend_01", name: "컬렉터 마스터", tier: "legend", icon: ["[★] ✧( ♛_♛ )✧ [★]", "[☆] ✦( ♛O♛ )✦ [☆]"], price: -1, anim: "bounce", bgm: "hub_leg_all", unlockDesc: "모든 일반/히든 스킨 수집 시 해금" },
+        { id: "legend_02", name: "타워 정복자", tier: "legend", icon: ["[♖] ꧁( ⏣_⏣ )꧂ [♜]", "[♜] ꧁( ⏣O⏣ )꧂ [♖]"], price: -1, anim: "bounce", bgm: "hub_leg_nm", unlockDesc: "보통 모드 100층 도달 시 해금" },
+        { id: "legend_03", name: "불멸의 신", tier: "legend", icon: ["[❂] ◤( 炎O炎 )◥ [❂]", "[♨] ◣( 炎_炎 )◢ [♨]"], price: -1, anim: "swing", bgm: "hub_leg_hd", unlockDesc: "하드 모드 100층 도달 시 해금" }
+    ];
+
+    const NORMAL_MONSTERS = [
+        { name: "망각의 구름", icon: ["(꒪⌓꒪)", "(꒪0꒪)"] }, { name: "게으름 요정", icon: ["[ `皿´ ]", "[ `O´ ]"] },
+        { name: "졸음 양", icon: ["(=_=)zZ", "(-_-)zZ"] }, { name: "딴짓 슬라임", icon: ["< 0_0 >", "< 0-0 >"] },
+        { name: "혼란의 바람", icon: ["^/_\\^", "^\\_/^"] }, { name: "핑계쟁이 앵무새", icon: ["(▼皿▼)", "(▼O▼)"] },
+        { name: "잡념 먼지", icon: ["/\\(O_O)/\\", "\\/(O_O)\\/"] }, { name: "오답 유도꾼", icon: ["( ಠ_ಠ)", "( ಠoಠ)"] },
+        { name: "기억 도둑", icon: ["(￢_￢)", "(￢o￢)"] }, { name: "무기력 그림자", icon: ["[ × _ × ]", "[ × o × ]"] }
+    ];
+
+    const BOSS_MONSTERS = [
+        { name: "[보스] 나태의 장벽", icon: ["[ ■ _ ■ ]", "[ ■ o ■ ]"] }, { name: "[보스] 스마트폰 유혹", icon: ["[=□_□=]", "[=□o□=]"] },
+        { name: "[보스] 혼돈의 폭풍", icon: ["( ╬ Ò ‸ Ó)", "( ╬ Ò 0 Ó)"] }, { name: "[보스] 왜곡의 거울", icon: ["|˚–˚|", "|˚O˚|"] },
+        { name: "[보스] 무지의 안개", icon: ["( ╰ _ ╯ )", "( ╰ o ╯ )"] }, { name: "[보스] 개념 지우개", icon: ["( 炎 _ 炎 )", "( 炎 o 炎 )"] },
+        { name: "[보스] 시간 낭비꾼", icon: ["( ﾟДﾟ;)", "( ﾟOﾟ;)"] }, { name: "[보스] 망각의 늪", icon: ["[  ∞  ]", "[  8  ]"] },
+        { name: "[보스] 피노키오", icon: ["( 눈 _ 눈 )", "( 눈 o 눈 )"] }, { name: "[보스] 백지화 현상", icon: ["( ꒪o꒪ )", "( ꒪0꒪ )"] }
+    ];
+
+    const ELITE_MONSTERS = [
+        { name: "벼락치기 함정", icon: ["( ✧ _ ✧ )", "( ✧ o ✧ )"] }, { name: "수면 마법사", icon: ["( ˘ω˘ )zZ", "( -ω- )zZ"] },
+        { name: "도파민 함정", icon: ["( O _ O )", "( O 0 O )"] }, { name: "숏폼 요정", icon: ["( > ▽ < )", "( > O < )"] },
+        { name: "집중력 브레이커", icon: ["( ╯°□°)╯", "( ╯°O°)╯"] }
+    ];
+
+    // ==========================================
+    // 💡 3. 전역 상태 및 데이터 구조
+    // ==========================================
+    let quizBank = [];
+    let studyBank = [];
+    
+    let treeData = {}; 
+    let gradesList = [];
+    let subjectsList = [];
+
+    let activeQuizBank = [];
+    
+    let player = { 
+        currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, 
+        gold: 0, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, potions: 3, 
+        totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0, bossBag: [] 
+    };
+    let monster = null;
+    let activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0, revive: 0 };
+    let savedHighScore = 1;
+    let isTutorialMode = false;
+    let tutorialStep = 0;
+
+    let textArtFrame = 0;
+    let currentDifficulty = 'normal'; 
+
+    let curGameGrade = '3학년'; // 기본값 3학년
+    let curGameSemester = 'all'; 
+    let curGameSubject = 'all';
+    
+    let curStudyGrade = '3학년'; // 기본값 3학년
+    let curStudySemester = 'all';
+    let curStudySubject = 'all';
+    
+    setInterval(() => {
+        try {
+            textArtFrame = (textArtFrame + 1) % 2;
+            
+            const pArea = document.getElementById('player-area');
+            if (pArea && pArea.style.display !== 'none' && player && player.currentChar) {
+                const pImg = document.getElementById('player-image-ui');
+                const charData = PLAYER_CHARS.find(c => c.id === player.currentChar) || PLAYER_CHARS[0];
+                
+                if(pImg) {
+                    pImg.innerText = Array.isArray(charData.icon) ? charData.icon[textArtFrame] : charData.icon;
+                    pImg.style.transform = "none";
+                    if (charData.anim === "swing") pImg.style.transform = `rotate(${textArtFrame === 0 ? -5 : 5}deg)`;
+                    else if (charData.anim === "bounce") pImg.style.transform = `translateY(${textArtFrame === 0 ? 0 : -8}px)`;
+                    else if (charData.anim === "arm") pImg.style.transform = `scale(${textArtFrame === 0 ? 1 : 1.08})`;
+                }
+            }
+
+            const mArea = document.getElementById('monster-area');
+            if (mArea && mArea.style.display !== 'none' && monster) {
+                const mImg = document.getElementById('monster-image');
+                if (mImg && mImg.dataset.isText === "true") {
+                    mImg.innerText = Array.isArray(monster.icon) ? monster.icon[textArtFrame] : monster.icon;
+                    if (monster.isBoss) mImg.style.transform = `scale(${textArtFrame === 0 ? 1 : 1.05})`;
+                    else mImg.style.transform = `translateY(${textArtFrame === 0 ? 0 : -5}px)`;
+                }
+            }
+        } catch(e) { }
+    }, 500);
+
+    // ==========================================
+    // 💡 4. 사운드 시스템
+    // ==========================================
+    let audioCtx = null; 
+    let bgmInterval = null; 
+    let isMuted = true; 
+    let currentBgmMode = 'title'; 
+    let noteIndex = 0;
+
+    const MELODIES = {
+        title: { notes: [261.6, 293.7, 329.6, 261.6, 261.6, 293.7, 329.6, 261.6, 349.2, 392.0, 440.0, 349.2, 349.2, 392.0, 440.0, 349.2, 0, 0, 0, 0], tempo: 360, vol: 0.04 },
+        hub: { notes: [220.0, 261.6, 329.6, 261.6, 220.0, 261.6, 329.6, 261.6, 196.0, 246.9, 293.7, 261.6, 196.0, 246.9, 293.7, 261.6, 0, 0, 0, 0], tempo: 400, vol: 0.04 },
+        hub_alien: { notes: [349.2, 466.2, 349.2, 233.1, 0, 466.2, 233.1, 0, 0, 0], tempo: 250, vol: 0.04 }, 
+        hub_magic: { notes: [329.6, 440.0, 523.3, 659.3, 0, 523.3, 440.0, 0, 0, 0], tempo: 400, vol: 0.04 }, 
+        hub_ninja: { notes: [440.0, 0, 415.3, 0, 440.0, 0, 329.6, 0, 0, 0], tempo: 300, vol: 0.04 }, 
+        hub_legend: { notes: [523.3, 0, 392.0, 0, 523.3, 0, 659.3, 0, 0, 0], tempo: 350, vol: 0.04 }, 
+        hub_zen: { notes: [261.6, 293.7, 329.6, 392.0, 440.0, 0, 0, 0, 0, 0], tempo: 600, vol: 0.04 }, 
+        hub_master: { notes: [523.3, 0, 659.3, 0, 784.0, 0, 1046.5, 0, 0, 0, 0], tempo: 500, vol: 0.04 },
+        hub_rich: { notes: [392.0, 0, 493.9, 0, 587.3, 0, 784.0, 0, 0, 0, 0], tempo: 450, vol: 0.04 },
+        hub_sweet: { notes: [523.3, 0, 587.3, 0, 659.3, 0, 0, 0, 0, 0], tempo: 500, vol: 0.04 },
+        hub_study: { notes: [329.6, 0, 0, 0, 440.0, 0, 0, 0, 0, 0], tempo: 600, vol: 0.04 },
+        hub_wind: { notes: [659.3, 0, 0, 0, 587.3, 0, 0, 0, 0, 0], tempo: 550, vol: 0.04 },
+        hub_hard_1: { notes: [293.7, 329.6, 349.2, 0, 392.0, 0, 349.2, 0, 0, 0, 0], tempo: 300, vol: 0.04 },
+        hub_hard_2: { notes: [220.0, 0, 261.6, 0, 329.6, 0, 440.0, 0, 0, 0, 0], tempo: 400, vol: 0.04 },
+        hub_hard_3: { notes: [196.0, 220.0, 246.9, 0, 261.6, 0, 246.9, 0, 0, 0, 0], tempo: 250, vol: 0.04 },
+        hub_hard_4: { notes: [523.3, 392.0, 440.0, 349.2, 0, 0, 0, 0, 0, 0], tempo: 350, vol: 0.04 },
+        hub_hard_5: { notes: [659.3, 0, 523.3, 0, 784.0, 0, 1046.5, 0, 0, 0, 0], tempo: 450, vol: 0.04 },
+        hub_leg_all: { notes: [523.3, 659.3, 784.0, 1046.5, 784.0, 659.3, 523.3, 0, 0, 0, 0], tempo: 250, vol: 0.05 },
+        hub_leg_nm: { notes: [440.0, 523.3, 659.3, 880.0, 0, 0, 0, 0, 0], tempo: 300, vol: 0.05 },
+        hub_leg_hd: { notes: [349.2, 466.2, 523.3, 698.4, 0, 0, 0, 0, 0], tempo: 350, vol: 0.05 },
+        normal: { notes: [261.6, 0, 329.6, 0, 392.0, 0, 329.6, 0, 349.2, 0, 293.7, 0, 440.0, 0, 349.2, 0, 0, 0, 0, 0], tempo: 320, vol: 0.04 },
+        elite: { notes: [293.7, 349.2, 440.0, 349.2, 293.7, 349.2, 440.0, 349.2, 329.6, 392.0, 493.9, 392.0, 329.6, 392.0, 493.9, 392.0, 0, 0, 0, 0], tempo: 300, vol: 0.04 },
+        boss: { notes: [130.8, 0, 130.8, 0, 155.6, 0, 155.6, 0, 196.0, 0, 196.0, 0, 155.6, 0, 155.6, 0, 0, 0, 0], tempo: 400, vol: 0.05 },
+        danger: { notes: [329.6, 0, 0, 0, 311.1, 0, 0, 0, 329.6, 0, 0, 0, 311.1, 0, 0, 0, 0, 0, 0], tempo: 280, vol: 0.04 },
+        victory: { notes: [261.6, 329.6, 392.0, 523.3, 0, 0, 0, 0], tempo: 300, vol: 0.05 },
+        gameover: { notes: [392.0, 329.6, 261.6, 196.0, 0, 0, 0, 0], tempo: 600, vol: 0.05 }
+    };
+
+    function playRetroBeep() {
+        if (!audioCtx || isMuted) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume(); 
+        
+        const modeData = MELODIES[currentBgmMode]; 
+        const freq = modeData.notes[noteIndex];
+        
+        if (freq > 0) {
+            const osc = audioCtx.createOscillator(); 
+            const gain = audioCtx.createGain(); 
+            osc.type = 'square'; 
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime); 
+            gain.gain.setValueAtTime(0, audioCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(modeData.vol, audioCtx.currentTime + 0.01); 
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25); 
+            osc.connect(gain); 
+            gain.connect(audioCtx.destination); 
+            osc.start(); 
+            osc.stop(audioCtx.currentTime + 0.3); 
+        }
+        noteIndex = (noteIndex + 1) % modeData.notes.length;
+    }
+
+    function changeBgmMode(newMode) {
+        if (currentBgmMode === newMode) return;
+        currentBgmMode = newMode; 
+        noteIndex = 0; 
+        if (bgmInterval) { 
+            clearInterval(bgmInterval); 
+            if (!isMuted) bgmInterval = setInterval(playRetroBeep, MELODIES[currentBgmMode].tempo); 
+        }
+    }
+
+    function toggleBGM() {
+        const btn = document.getElementById('sound-btn'); 
+        isMuted = !isMuted;
+        if (isMuted) { 
+            if(bgmInterval){ clearInterval(bgmInterval); bgmInterval = null; } 
+            btn.innerText = "음악 끔"; 
+            btn.style.backgroundColor = "#616161"; 
+        } else { 
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); 
+            btn.innerText = "음악 켬"; 
+            btn.style.backgroundColor = "#e65100"; 
+            if(!bgmInterval) bgmInterval = setInterval(playRetroBeep, MELODIES[currentBgmMode].tempo); 
+        }
+    }
+
+    function checkAndApplyBGM() {
+        if (player && player.hp > 0 && player.hp <= player.maxHp * 0.3) changeBgmMode('danger');
+        else if (monster && monster.isBoss) changeBgmMode('boss');
+        else if (monster && monster.isElite) changeBgmMode('elite');
+        else if (monster) changeBgmMode('normal');
+        else { 
+            let charData = PLAYER_CHARS.find(c => c.id === player.currentChar); 
+            if (charData && charData.bgm) { changeBgmMode(charData.bgm); } 
+            else { changeBgmMode('hub'); } 
+        }
+    }
+
+    function initAudio() { 
+        if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } 
+        if (audioCtx.state === 'suspended') audioCtx.resume(); 
+    }
+
+    function playBGM() { 
+        if (isMuted) return; 
+        initAudio(); 
+        if (!bgmInterval) { bgmInterval = setInterval(playRetroBeep, MELODIES[currentBgmMode].tempo); } 
+    }
+
+    function stopBGM() {
+        if (bgmInterval) {
+            clearInterval(bgmInterval);
+            bgmInterval = null;
+        }
+    }
+
+    // ==========================================
+    // 💡 5. 데이터 파싱
+    // ==========================================
+    function getSafeStorage(key, fallback) { 
+        try { 
+            let val = localStorage.getItem(key); 
+            return val !== null ? val : fallback; 
+        } catch(e) { return fallback; } 
+    }
+
+    function setSafeStorage(key, value) { 
+        try { localStorage.setItem(key, value); } catch(e) { } 
+    }
+
+    function getGlobalData() {
+        const globalStr = getSafeStorage('historyTowerGlobal', null);
+        if (globalStr) { 
+            try { return JSON.parse(globalStr); } catch(e) {} 
+        }
+        const oldSave = getSafeStorage('historyTowerSave', null);
+        if (oldSave) { 
+            try { 
+                const p = JSON.parse(oldSave).player; 
+                if (p) { 
+                    return { 
+                        ownedChars: p.ownedChars || ["char_01"], 
+                        currentChar: p.currentChar || "char_01", 
+                        totalGoldEarned: p.totalGoldEarned || 0, 
+                        totalPotionsUsed: p.totalPotionsUsed || 0, 
+                        totalWrongAnswers: p.totalWrongAnswers || 0, 
+                        totalEvasions: p.totalEvasions || 0 
+                    }; 
+                } 
+            } catch(e) {} 
+        }
+        return { 
+            ownedChars: ["char_01"], currentChar: "char_01", 
+            totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0 
+        };
+    }
+
+    function checkLoadButton() {
+        const saved = getSafeStorage('historyTowerSave', null); 
+        const btn = document.getElementById('btn-continue'); 
+        if (!btn) return;
+        if (saved) { 
+            try { 
+                const data = JSON.parse(saved); 
+                if (data.player && data.player.hp > 0) { btn.style.display = 'block'; return; } 
+            } catch(e) {} 
+        }
+        btn.style.display = 'none';
+    }
+
+    function saveGame(isManual = false) {
+        if (isTutorialMode) { 
+            if (isManual) addLog("[안내] 튜토리얼 중에는 저장할 수 없습니다.", "#ffeb3b"); 
+            return; 
+        }
+        const globalData = { 
+            ownedChars: player.ownedChars, currentChar: player.currentChar, 
+            totalGoldEarned: player.totalGoldEarned, totalPotionsUsed: player.totalPotionsUsed, 
+            totalWrongAnswers: player.totalWrongAnswers, totalEvasions: player.totalEvasions 
+        };
+        setSafeStorage('historyTowerGlobal', JSON.stringify(globalData)); 
+        setSafeStorage('historyTowerSave', JSON.stringify({ player: player, effects: activeEffects }));
+        if (isManual) { 
+            addLog("게임이 성공적으로 저장되었습니다.", "#a5d6a7"); 
+            alert("현재 진행 상황이 저장되었습니다."); 
+        } else { 
+            addLog("[시스템] 진행 상황이 자동 저장되었습니다.", "#7f8c8d"); 
+        }
+        checkLoadButton();
+    }
+
+    function resetAllData() { 
+        if(confirm("모든 기록이 완전히 초기화됩니다. 계속할까요?")) { 
+            try { localStorage.clear(); } catch(e) {} 
+            location.reload(); 
+        } 
+    }
+
+    function parseDataString(rawData, mode) {
+        const lines = rawData.split('\n');
+
+        lines.forEach(l => {
+            let ln = l.trim(); 
+            if (!ln || ln.startsWith('//')) return;
+            
+            if (ln.startsWith('[') && ln.endsWith(']')) { 
+                let content = ln.slice(1, -1);
+                let parts = content.split('|').map(x => x.trim());
+                
+                let fullText = content; 
+                let cg = "3학년", cs = "공통", cc = "일반", cu = "기본";
+
+                if (fullText.includes('3학년')) cg = '3학년';
+                else if (fullText.includes('4학년')) cg = '4학년';
+                else if (fullText.includes('5학년')) cg = '5학년';
+                else if (fullText.includes('6학년') || fullText.includes('보완')) cg = '6학년';
+
+                if (fullText.includes('사회')) cs = '사회';
+                else if (fullText.includes('과학')) cs = '과학';
+
+                if (parts.length >= 4) {
+                    cc = parts[2]; 
+                    cu = parts[3]; 
+                } else if (parts.length === 3) {
+                    cc = parts[2]; 
+                    cu = "기본";
+                } else if (parts.length === 2) {
+                    cc = parts[1];
+                    cu = "기본";
+                } else {
+                    cc = fullText;
+                    cu = "기본";
+                }
+                
+                let semStr = "공통";
+                if (fullText.includes('1학기') || fullText.includes('보완')) semStr = "1학기";
+                else if (fullText.includes('2학기')) semStr = "2학기";
+
+                if (semStr !== "공통" && !cc.includes('학기') && !cc.includes('보완')) {
+                    cc = `[${semStr}] ` + cc;
+                }
+
+                window.tempParsedHeader = { cg, cs, cc, cu }; 
+                
+                if(!treeData[cg]) treeData[cg] = {};
+                if(!treeData[cg][cs]) treeData[cg][cs] = {};
+                if(!treeData[cg][cs][cc]) treeData[cg][cs][cc] = [];
+                if(!treeData[cg][cs][cc].includes(cu)) treeData[cg][cs][cc].push(cu);
+                
+                if(!gradesList.includes(cg)) gradesList.push(cg);
+                if(!subjectsList.includes(cs)) subjectsList.push(cs);
+            } else { 
+                let p = ln.split('|').map(x => x.trim()); 
+                let { cg, cs, cc, cu } = window.tempParsedHeader || { cg: "3학년", cs: "공통", cc: "일반", cu: "기본" };
+
+                if (mode === 'quiz' && p.length >= 5) {
+                    quizBank.push({ grade: cg, subject: cs, chapter: cc, unit: cu, q: p[0], options: [p[1], p[2], p[3]], answer: parseInt(p[4]) - 1 }); 
+                } else if (mode === 'study') {
+                    let idx = ln.indexOf('|');
+                    if (idx !== -1) {
+                        let keyword = ln.substring(0, idx).trim();
+                        let desc = ln.substring(idx + 1).trim(); 
+                        if(keyword && desc) {
+                            studyBank.push({ grade: cg, subject: cs, chapter: cc, unit: cu, keyword: keyword, desc: desc }); 
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function parseAllData() {
+        try {
+            savedHighScore = parseInt(getSafeStorage('historyTowerMaxFloor', 1), 10);
+            if (isNaN(savedHighScore)) savedHighScore = 1;
+            const hsEl = document.getElementById('high-score-ui'); 
+            if(hsEl) hsEl.innerText = savedHighScore;
+
+            quizBank = [];
+            studyBank = [];
+            treeData = {}; 
+            gradesList = [];
+            subjectsList = [];
+            window.tempParsedHeader = null;
+
+            if (typeof rawQuizData !== 'undefined') parseDataString(rawQuizData, 'quiz');
+            if (typeof rawStudyData !== 'undefined') parseDataString(rawStudyData, 'study');
+
+            if (quizBank.length === 0) {
+                quizBank.push({ grade: "3학년", subject: "기본", chapter: "일반", unit: "기본문제", q: "조선을 건국한 왕은 누구일까요?", options: ["이성계", "왕건", "이순신"], answer: 0 });
+                treeData = { "3학년": { "기본": { "일반": ["기본문제"] } } }; 
+                gradesList = ["3학년"]; 
+                subjectsList = ["기본"];
+                document.getElementById('data-status').innerText = "데이터 없음 (샘플 모드)"; 
+                document.getElementById('data-status').style.color = "#ffb74d";
+            } else {
+                document.getElementById('data-status').innerText = "지식 데이터 준비 완료";
+            }
+
+            initSelectOptions();
+            checkLoadButton();
+            changeBgmMode('title');
+        } catch(err) { 
+            console.error(err); 
+            alert("게임 데이터를 불러오는 중 오류가 발생했습니다."); 
+        }
+    }
+
+    function initSelectOptions() {
+        gradesList.sort(); 
+        subjectsList.sort();
+        
+        setGameGrade('3학년');
+        setGameSemester('all'); 
+        setGameSubject('all');
+        setStudyGrade('3학년');
+        setStudySubject('all');
+        setStudySemester('all'); 
+    }
+
+    function setGameGrade(g) {
+        curGameGrade = g;
+        ['3', '4', '5', '6'].forEach(gr => {
+            let el = document.getElementById('g-grade-' + gr);
+            if(el) el.style.backgroundColor = (g === gr+'학년') ? '#e65100' : '#616161';
+        });
+        updateChapterOptions();
+    }
+    
+    function setGameSemester(sem) {
+        curGameSemester = sem;
+        document.getElementById('g-sem-1').style.backgroundColor = (sem === '1학기') ? '#8e44ad' : '#616161';
+        document.getElementById('g-sem-2').style.backgroundColor = (sem === '2학기') ? '#8e44ad' : '#616161';
+        document.getElementById('g-sem-all').style.backgroundColor = (sem === 'all') ? '#8e44ad' : '#616161';
+        updateChapterOptions();
+    }
+
+    function setGameSubject(s) {
+        curGameSubject = s;
+        document.getElementById('g-subj-soc').style.backgroundColor = (s === '사회') ? '#0277bd' : '#616161';
+        document.getElementById('g-subj-sci').style.backgroundColor = (s === '과학') ? '#0277bd' : '#616161';
+        document.getElementById('g-subj-all').style.backgroundColor = (s === 'all') ? '#0277bd' : '#616161';
+        updateChapterOptions();
+    }
+
+    function updateChapterOptions() {
+        let chapWrap = document.getElementById('chapter-range-wrapper');
+        let chapSel = document.getElementById('chapter-select');
+        let unitWrap = document.getElementById('sub-unit-range-wrapper');
+        
+        let chapMap = treeData[curGameGrade]?.[curGameSubject];
+        
+        if (curGameGrade !== 'all' && curGameSubject !== 'all' && chapMap) {
+            let chapters = Object.keys(chapMap).filter(c => {
+                if (curGameSemester === '1학기') return c.includes('1학기') || c.includes('보완');
+                if (curGameSemester === '2학기') return c.includes('2학기');
+                return true;
+            });
+
+            if (chapters.length > 0) {
+                chapters.sort((a, b) => a.localeCompare(b, 'ko', { numeric: true }));
+
+                chapWrap.style.display = 'block';
+                let html = '<option value="all">전체 단원</option>';
+                chapters.forEach(c => {
+                    let cleanName = c.replace(/^(?:\[[0-9]학기\]\s*|(?:[0-9]학기|보완)\s*)[0-9]+\.\s*/, '').replace(/^보완\.\s*/, '');
+                    html += `<option value="${c}">${cleanName}</option>`;
+                });
+                chapSel.innerHTML = html;
+            } else {
+                chapWrap.style.display = 'none';
+                unitWrap.style.display = 'none';
+            }
+        } else {
+            chapWrap.style.display = 'none';
+            unitWrap.style.display = 'none';
+        }
+        updateSubUnitOptions();
+    }
+
+    function updateSubUnitOptions() {
+        let chap = document.getElementById('chapter-select').value;
+        let unitWrap = document.getElementById('sub-unit-range-wrapper');
+        let startSel = document.getElementById('start-category');
+        let endSel = document.getElementById('end-category');
+        
+        let unitList = treeData[curGameGrade]?.[curGameSubject]?.[chap];
+        
+        if (curGameGrade !== 'all' && curGameSubject !== 'all' && chap !== 'all' && unitList) {
+            unitWrap.style.display = 'block';
+            let html = '';
+            unitList.forEach((u, i) => { 
+                html += `<option value="${i}">${u}</option>`;
+            });
+            startSel.innerHTML = html;
+            endSel.innerHTML = html;
+            if(unitList.length > 0) endSel.value = unitList.length - 1;
+        } else {
+            unitWrap.style.display = 'none';
+        }
+    }
+
+    // ==========================================
+    // 💡 6. 메인 게임 흐름 제어
+    // ==========================================
+    
+    function updatePlayerAreaUI() {
+        let charData = PLAYER_CHARS.find(c => c.id === player.currentChar) || PLAYER_CHARS[0];
+        document.getElementById('player-name-ui').innerText = charData.name;
+        document.getElementById('player-image-ui').innerText = Array.isArray(charData.icon) ? charData.icon[0] : charData.icon;
+    }
+
+    function updateMonsterImageUI(m) {
+        const mImg = document.getElementById('monster-image');
+        if(mImg) {
+            mImg.innerText = Array.isArray(m.icon) ? m.icon[0] : m.icon;
+            if(m.isBoss) mImg.style.color = "#f4ffb3";
+            else if(m.isElite) mImg.style.color = "#e6b3ff";
+            else mImg.style.color = "#ffb74d";
+        }
+    }
+    
+    function startTutorial() {
+        isTutorialMode = true;
+        tutorialStep = 0;
+        
+        player = { 
+            currentChar: "char_01", ownedChars: ["char_01"], hp: 100, maxHp: 100, 
+            gold: 0, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, potions: 3, 
+            totalGoldEarned: 0, totalPotionsUsed: 0, totalWrongAnswers: 0, totalEvasions: 0, bossBag: [] 
+        };
+        activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0, revive: 0 };
+        monster = { name: "튜토리얼 방해꾼", icon: "(꒪⌓꒪)", hp: 15, maxHp: 15, atk: 5, isBoss: false };
+        
+        document.getElementById('title-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
+        document.getElementById('main-screen').style.display = 'flex';
+        document.getElementById('monster-area').style.display = 'flex';
+        document.getElementById('player-area').style.display = 'none';
+        document.getElementById('hub-ui').style.display = 'none';
+        document.getElementById('battle-ui').style.display = 'grid';
+        
+        updatePlayerAreaUI();
+        updateMonsterImageUI(monster);
+        updateUI();
+        
+        document.getElementById('tutorial-overlay').style.display = 'flex';
+        updateTutorialUI();
+    }
+
+    function openCategoryScreen() {
+        document.getElementById('title-screen').style.display = 'none';
+        document.getElementById('range-screen').style.display = 'flex';
+        document.getElementById('category-box').style.display = 'block';
+        document.getElementById('difficulty-box').style.display = 'none';
+        
+        setGameGrade('3학년');
+        setGameSemester('all');
+        setGameSubject('all');
+    }
+    
+    function closeRangeScreen() { 
+        document.getElementById('range-screen').style.display = 'none'; 
+        document.getElementById('title-screen').style.display = 'flex'; 
+    }
+    
+    function backToCategoryScreen() { 
+        document.getElementById('difficulty-box').style.display = 'none'; 
+        document.getElementById('category-box').style.display = 'block'; 
+    }
+    
+    function goToDifficultyScreen() {
+        let unitWrap = document.getElementById('sub-unit-range-wrapper');
+        if (unitWrap.style.display === 'block') {
+            let startCat = document.getElementById('start-category');
+            let endCat = document.getElementById('end-category');
+            if (startCat.options.length > 0 && endCat.options.length > 0) {
+                let sIdx = parseInt(startCat.value);
+                let eIdx = parseInt(endCat.value);
+                if (sIdx > eIdx) return alert("소단원 범위가 잘못되었습니다. 시작 단원이 끝 단원보다 앞서야 합니다.");
+            }
+        }
+
+        document.getElementById('category-box').style.display = 'none';
+        document.getElementById('difficulty-box').style.display = 'block';
+    }
+    
+    function startGameWithDifficulty(diff) { 
+        currentDifficulty = diff; 
+        startCustomGame(); 
+    }
+    
+    function showHelp() { 
+        if (isTutorialMode) return; 
+        alert("[ 🏰 지식 타워 초보자 가이드 ]\n\n⚔️ 배틀 방법:\n사회/과학 문제를 맞히면 방해꾼의 '에너지'를 깎을 수 있어요!\n반대로 틀리면 내 '집중력(체력)'이 떨어지니 조심하세요.\n\n💡 내 상태 설명:\n- 집중력 : 나의 체력이에요. 0이 되면 게임이 끝나요.\n- 기억력 : 퀴즈를 맞혔을 때 방해꾼의 에너지를 더 많이 깎는 힘!\n- 딴짓 피하기 : 방해꾼의 공격을 요리조리 피할 확률이에요."); 
+    }
+    
+    function addLog(msg, color="#fff") { 
+        const box = document.getElementById('log-box'); 
+        if(!box) return; 
+        const p = document.createElement('p'); 
+        p.style.color = color; 
+        p.innerHTML = msg; 
+        box.appendChild(p); 
+        box.scrollTop = box.scrollHeight; 
+    }
+
+    function checkHiddenUnlocks() {
+        let newUnlocks = false;
+        
+        if (savedHighScore >= 20 && !player.ownedChars.includes('hidden_01')) { player.ownedChars.push('hidden_01'); addLog("[해금] 히든 스킨 '정복자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        if (player.totalGoldEarned >= 1000 && !player.ownedChars.includes('hidden_02')) { player.ownedChars.push('hidden_02'); addLog("[해금] 히든 스킨 '갑부' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        if (player.totalPotionsUsed >= 10 && !player.ownedChars.includes('hidden_03')) { player.ownedChars.push('hidden_03'); addLog("[해금] 히든 스킨 '초코덕후' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        if (player.totalWrongAnswers >= 10 && !player.ownedChars.includes('hidden_04')) { player.ownedChars.push('hidden_04'); addLog("[해금] 히든 스킨 '오답달인' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        if (player.totalEvasions >= 10 && !player.ownedChars.includes('hidden_05')) { player.ownedChars.push('hidden_05'); addLog("[해금] 히든 스킨 '방랑자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        
+        if (currentDifficulty === 'hard') {
+            if (player.floor >= 10 && !player.ownedChars.includes('hard_01')) { player.ownedChars.push('hard_01'); addLog("[해금] 하드 전용 스킨 '불굴의 도전자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+            if (player.floor >= 15 && !player.ownedChars.includes('hard_02')) { player.ownedChars.push('hard_02'); addLog("[해금] 하드 전용 스킨 '고독한 현자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+            if (player.floor >= 20 && !player.ownedChars.includes('hard_03')) { player.ownedChars.push('hard_03'); addLog("[해금] 하드 전용 스킨 '심연의 지배자' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+            if (player.floor >= 25 && !player.ownedChars.includes('hard_04')) { player.ownedChars.push('hard_04'); addLog("[해금] 하드 전용 스킨 '역사 마스터' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+            if (player.floor >= 30 && !player.ownedChars.includes('hard_05')) { player.ownedChars.push('hard_05'); addLog("[해금] 하드 전용 스킨 '타워의 전설' 획득!", TIER_COLORS.hidden); newUnlocks = true; }
+        }
+        if (currentDifficulty === 'normal' && player.floor >= 100 && !player.ownedChars.includes('legend_02')) { player.ownedChars.push('legend_02'); addLog("[해금] 전설 스킨 '타워 정복자' 획득!", TIER_COLORS.legend); newUnlocks = true; }
+        if (currentDifficulty === 'hard' && player.floor >= 100 && !player.ownedChars.includes('legend_03')) { player.ownedChars.push('legend_03'); addLog("[해금] 전설 스킨 '불멸의 신' 획득!", TIER_COLORS.legend); newUnlocks = true; }
+
+        let nonLegendIds = PLAYER_CHARS.filter(c => c.tier !== 'legend').map(c => c.id);
+        let hasAllNonLegends = nonLegendIds.every(id => player.ownedChars.includes(id));
+        if (hasAllNonLegends && !player.ownedChars.includes('legend_01')) { player.ownedChars.push('legend_01'); addLog("[해금] 전설 스킨 '컬렉터 마스터' 획득!", TIER_COLORS.legend); newUnlocks = true; }
+        
+        if (newUnlocks) saveGame(false);
+    }
+
+    function startCustomGame() {
+        let chap = document.getElementById('chapter-select').value;
+        let unitWrap = document.getElementById('sub-unit-range-wrapper');
+
+        activeQuizBank = quizBank.filter(q => {
+            let matchG = (curGameGrade === 'all' || q.grade === curGameGrade);
+            let matchS = (curGameSubject === 'all' || q.subject === curGameSubject);
+            let matchC = (chap === 'all' || q.chapter === chap);
+            let matchSem = true;
+            
+            if (curGameSemester === '1학기') matchSem = q.chapter.includes('1학기') || q.chapter.includes('보완');
+            else if (curGameSemester === '2학기') matchSem = q.chapter.includes('2학기');
+            
+            return matchG && matchS && matchC && matchSem;
+        });
+        
+        if (unitWrap.style.display === 'block') {
+            let startCat = document.getElementById('start-category');
+            let endCat = document.getElementById('end-category');
+            
+            if (startCat && endCat && startCat.value && endCat.value) {
+                let sIdx = parseInt(startCat.value);
+                let eIdx = parseInt(endCat.value);
+                
+                let unitList = treeData[curGameGrade]?.[curGameSubject]?.[chap];
+                if (unitList && Array.isArray(unitList)) {
+                    let units = unitList.slice(sIdx, eIdx + 1);
+                    activeQuizBank = activeQuizBank.filter(q => units.includes(q.unit));
+                }
+            }
+        }
+
+        if (activeQuizBank.length === 0) {
+            alert("선택한 범위에 문제가 없어 전체 문제로 진행합니다.");
+            activeQuizBank = quizBank;
+        }
+        
+        initAudio(); 
+        playBGM(); 
+        
+        document.getElementById('range-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
+        document.getElementById('main-screen').style.display = 'flex'; 
+        
+        const gData = getGlobalData();
+        let startHp = currentDifficulty === 'easy' ? 150 : 100;
+        
+        player = { 
+            hp: startHp, maxHp: startHp, gold: 50, potions: 3, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, 
+            currentChar: gData.currentChar, ownedChars: gData.ownedChars, 
+            totalGoldEarned: gData.totalGoldEarned, totalPotionsUsed: gData.totalPotionsUsed, 
+            totalWrongAnswers: gData.totalWrongAnswers, totalEvasions: gData.totalEvasions,
+            bossBag: Array.from({length: BOSS_MONSTERS.length}, (_, i) => i).sort(() => Math.random() - 0.5)
+        };
+        activeEffects = { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0, revive: 0 };
+        
+        const logBox = document.getElementById('log-box'); 
+        if(logBox) logBox.innerHTML = ""; 
+        
+        let diffText = currentDifficulty === 'easy' ? "쉬움" : currentDifficulty === 'hard' ? "어려움" : "보통";
+        addLog(`[안내] 지식 타워에 입장했습니다! (난이도: ${diffText})`, "#ffd700"); 
+        
+        enterHub();
+    }
+
+    function loadGameFromTitle() {
+        let saved = getSafeStorage('historyTowerSave', null);
+        if (!saved) return alert("저장된 게임 데이터가 없습니다.");
+        
+        try {
+            let data = JSON.parse(saved);
+            player = Object.assign({ 
+                hp: 100, maxHp: 100, gold: 0, potions: 3, floor: 1, inventory: {}, baseAtk: 15, evasion: 0, 
+                currentChar: "char_01", ownedChars: ["char_01"], totalGoldEarned: 0, totalPotionsUsed: 0, 
+                totalWrongAnswers: 0, totalEvasions: 0, bossBag: [] 
+            }, data.player);
+            
+            if (player.baseAtk < 15) player.baseAtk = 15; 
+            
+            activeEffects = data.effects || { shield: 0, powerUp: 0, weaken: 0, armorBreak: 0, revive: 0 };
+            if(activeEffects.revive === undefined) activeEffects.revive = 0;
+            
+            activeQuizBank = quizBank; 
+            
+            initAudio(); 
+            playBGM();
+            
+            document.getElementById('title-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            document.getElementById('main-screen').style.display = 'flex'; 
+            
+            const logBox = document.getElementById('log-box'); 
+            if(logBox) logBox.innerHTML = ""; 
+            
+            addLog("저장된 게임을 불러왔습니다."); 
+            enterHub();
+        } catch (e) { alert("데이터를 불러오는 중 오류가 발생했습니다."); }
+    }
+
+    function confirmReturnToTitle() {
+        if (isTutorialMode) return addLog("[안내] 튜토리얼 중단은 안내창의 [중단하고 나가기]를 이용하세요.", "#ffeb3b");
+        
+        if (confirm("타이틀 화면으로 돌아갑니다. 저장하지 않은 진행 상황은 모두 사라집니다.")) {
+            monster = null; 
+            changeBgmMode('title'); 
+            document.getElementById('game-container').style.display = 'none'; 
+            document.getElementById('title-screen').style.display = 'flex'; 
+            checkLoadButton();
+        }
+    }
+
+    function enterHub() {
+        monster = null; 
+        document.getElementById('main-screen').style.display = 'flex'; 
+        document.getElementById('monster-area').style.display = 'none'; 
+        document.getElementById('player-area').style.display = 'flex'; 
+        document.getElementById('battle-ui').style.display = 'none'; 
+        document.getElementById('quiz-box').style.display = 'none'; 
+        document.getElementById('options-ui').style.display = 'none'; 
+        document.getElementById('shop-ui').style.display = 'none'; 
+        document.getElementById('hub-ui').style.display = 'grid'; 
+        
+        addLog("------------------------------------", "#7f8c8d"); 
+        addLog("[안내] 휴식 공간에 입장했습니다.", "#a5d6a7"); 
+        
+        updatePlayerAreaUI(); 
+        checkAndApplyBGM(); 
+        updateUI(); 
+    }
+
+    function updateUI() {
+        if(!player) return;
+        const uiFloor = document.getElementById('floor-ui'); 
+        if (uiFloor) uiFloor.innerText = player.floor + "F"; 
+        
+        const uiHp = document.getElementById('hp-ui'); 
+        if (uiHp) uiHp.innerText = player.hp + "/" + player.maxHp;
+        
+        const diffBadge = document.getElementById('diff-badge');
+        if (diffBadge) {
+            const diffInfo = { 
+                'easy': { text: "[쉬움]", color: "#4caf50" }, 
+                'normal': { text: "[보통]", color: "#f39c12" }, 
+                'hard': { text: "[어려움]", color: "#ff5252" }, 
+                'tutorial': { text: "[튜토리얼]", color: "#00e676" } 
+            };
+            const info = diffInfo[currentDifficulty] || diffInfo['normal']; 
+            diffBadge.innerText = info.text; 
+            diffBadge.style.color = info.color;
+        }
+
+        const hpBox = document.getElementById('hp-container');
+        if (hpBox) { 
+            if (player.hp > 0 && player.hp <= player.maxHp * 0.3) hpBox.classList.add('hp-danger'); 
+            else hpBox.classList.remove('hp-danger'); 
+        }
+
+        const uiGold = document.getElementById('gold-ui'); 
+        if (uiGold) uiGold.innerText = player.gold; 
+        
+        const uiPotion = document.getElementById('potion-ui'); 
+        if (uiPotion) uiPotion.innerText = player.potions;
+        
+        const uiAtk = document.getElementById('atk-ui'); 
+        if (uiAtk) uiAtk.innerText = player.baseAtk; 
+        
+        const uiEva = document.getElementById('eva-ui'); 
+        if (uiEva) uiEva.innerText = player.evasion + "%";
+        
+        let buffText = [];
+        if (activeEffects.shield > 0) buffText.push(`백과사전(${activeEffects.shield}회)`);
+        if (activeEffects.powerUp > 0) buffText.push(`형광펜(${activeEffects.powerUp}회)`);
+        if (activeEffects.weaken > 0) buffText.push(`귀마개(${activeEffects.weaken}회)`);
+        if (activeEffects.armorBreak > 0) buffText.push(`빨간펜(${activeEffects.armorBreak}회)`);
+        if (activeEffects.revive > 0) buffText.push(`지우개(${activeEffects.revive}개)`);
+        
+        const uiBuff = document.getElementById('buff-ui'); 
+        if (uiBuff) uiBuff.innerText = buffText.length > 0 ? buffText.join(" / ") : "적용 효과 없음";
+
+        if (!['victory', 'gameover', 'title'].includes(currentBgmMode)) checkAndApplyBGM();
+    }
+
+    function startBattle() {
+        if (isTutorialMode) return addLog("[안내] 튜토리얼 중입니다! 안내창을 확인해주세요.", "#ffeb3b");
+        
+        document.getElementById('hub-ui').style.display = 'none'; 
+        document.getElementById('battle-ui').style.display = 'grid'; 
+        document.getElementById('player-area').style.display = 'none'; 
+        document.getElementById('monster-area').style.display = 'flex';
+        
+        let isBoss = (player.floor % 10 === 0); 
+        let baseHp = Math.floor((30 + (player.floor * 10)) / 4); 
+        let mHp = Math.max(10, baseHp); 
+        let mAtk = 5 + Math.floor(player.floor / 2); 
+        
+        if (currentDifficulty === 'easy') {
+            mAtk = Math.max(1, Math.floor(mAtk * 0.7)); 
+        } else if (currentDifficulty === 'hard') { 
+            mHp = Math.floor(mHp * 1.4); 
+            mAtk = Math.floor(mAtk * 1.5); 
+        }
+        
+        let baseM;
+        if (isBoss) { 
+            if (!player.bossBag || player.bossBag.length === 0) {
+                player.bossBag = Array.from({length: BOSS_MONSTERS.length}, (_, i) => i).sort(() => Math.random() - 0.5);
+            }
+            let bossIdx = player.bossBag.pop(); 
+            baseM = BOSS_MONSTERS[bossIdx]; 
+            mHp = Math.floor(mHp * 2.5); 
+            mAtk = Math.floor(mAtk * 1.5);
+        } else { 
+            baseM = NORMAL_MONSTERS[Math.floor(Math.random() * NORMAL_MONSTERS.length)]; 
+        }
+
+        monster = { 
+            name: isBoss ? baseM.name : `Lv.${player.floor} ${baseM.name}`, 
+            icon: baseM.icon, image: baseM.image, hp: mHp, maxHp: mHp, atk: mAtk, 
+            isBoss: isBoss, isElite: false 
+        };
+        
+        const mNameEl = document.getElementById('monster-name'); 
+        mNameEl.innerText = monster.name; 
+        mNameEl.classList.remove('name-normal', 'name-elite', 'name-boss');
+        
+        if (isBoss) mNameEl.classList.add('name-boss'); 
+        else mNameEl.classList.add('name-normal');
+
+        document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`; 
+        updateMonsterImageUI(monster); 
+        
+        addLog("------------------------------------", "#7f8c8d"); 
+        addLog(isBoss ? `[경고] 대왕 방해꾼 출현!` : `[도전] 학습 방해꾼이 나타났습니다.`, isBoss ? "#e2ffb0" : "#ff4081"); 
+        addLog("[안내] 집중력이 다 떨어지면 공부를 할 수 없으니 조심하자!", "#ffd700"); 
+        
+        checkAndApplyBGM(); 
+        updateUI(); 
+    }
+
+    function startEliteBattle() {
+        document.getElementById('hub-ui').style.display = 'none'; 
+        document.getElementById('battle-ui').style.display = 'grid'; 
+        document.getElementById('player-area').style.display = 'none'; 
+        document.getElementById('monster-area').style.display = 'flex';
+        
+        let baseM = ELITE_MONSTERS[Math.floor(Math.random() * ELITE_MONSTERS.length)];
+        let baseHp = Math.floor((30 + (player.floor * 10)) / 4); 
+        let mHp = Math.max(10, baseHp); 
+        let mAtk = 5 + Math.floor(player.floor / 2);
+        
+        if (currentDifficulty === 'easy') {
+            mAtk = Math.max(1, Math.floor(mAtk * 0.7)); 
+        } else if (currentDifficulty === 'hard') { 
+            mHp = Math.floor(mHp * 1.2); 
+            mAtk = Math.floor(mAtk * 1.5); 
+        }
+        
+        monster = { 
+            name: `[정예] ${baseM.name}`, icon: baseM.icon, image: baseM.image, 
+            hp: Math.floor(mHp * 1.5), maxHp: Math.floor(mHp * 1.5), atk: Math.floor(mAtk * 1.2), 
+            isBoss: false, isElite: true 
+        };
+        
+        const mNameEl = document.getElementById('monster-name'); 
+        mNameEl.innerText = monster.name; 
+        mNameEl.classList.remove('name-normal', 'name-elite', 'name-boss'); 
+        mNameEl.classList.add('name-elite');
+        
+        document.getElementById('monster-hp').innerText = `${monster.hp}/${monster.maxHp}`; 
+        updateMonsterImageUI(monster); 
+        
+        addLog("------------------------------------", "#7f8c8d"); 
+        addLog(`[위험] 심화 방해꾼이 나타났습니다!`, "#e6b3ff"); 
+        addLog("[안내] 집중력이 다 떨어지면 공부를 할 수 없으니 조심하자!", "#b2ebf2"); 
+        
+        checkAndApplyBGM(); 
+        updateUI();
+    }
+
+    function loadQuiz() {
+        if (activeQuizBank.length === 0) { 
+            addLog("출제 범위에 문제가 없습니다."); 
+            enterHub(); 
+            return; 
+        }
+        
+        document.getElementById('battle-ui').style.display = 'none'; 
+        document.getElementById('quiz-box').style.display = 'block'; 
+        document.getElementById('options-ui').style.display = 'grid'; 
+        addLog("▶ <b>[나의 턴]</b> 어서 방해꾼을 몰아내자!", "#4dd0e1");
+
+        let rIdx = Math.floor(Math.random() * activeQuizBank.length); 
+        let currentQuiz = activeQuizBank[rIdx];
+        
+        document.getElementById('quiz-box').innerText = `[${currentQuiz.subject}] ${currentQuiz.q}`;
+        
+        const opt = document.getElementById('options-ui'); 
+        opt.innerHTML = "";
+        
+        let shuffledOptions = currentQuiz.options.map((o, i) => { 
+            return { text: o, isCorrect: i === currentQuiz.answer }; 
+        });
+        shuffledOptions.sort(() => Math.random() - 0.5);
+
+        shuffledOptions.forEach((obj) => {
+            let b = document.createElement('button'); 
+            b.className = "option-btn"; 
+            b.innerText = obj.text;
+            b.onclick = () => checkAnswer(obj.isCorrect, currentQuiz.options[currentQuiz.answer]); 
+            opt.appendChild(b);
+        });
+    }
+
+    function checkAnswer(isCorrect, ansStr) {
+        document.getElementById('quiz-box').style.display = 'none'; 
+        document.getElementById('options-ui').style.display = 'none';
+        
+        if (isCorrect) {
+            let dmg = player.baseAtk; 
+            if (activeEffects.powerUp > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.powerUp--; } 
+            if (activeEffects.armorBreak > 0) { dmg = Math.floor(dmg * 1.5); activeEffects.armorBreak--; }
+            
+            monster.hp -= dmg; 
+            addLog(`[정답] 방해꾼의 에너지를 ${dmg}만큼 깎았습니다!`, "#00e676"); 
+            document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`; 
+            updateUI(); 
+            
+            if (monster.hp <= 0) return winBattle();
+        } else { 
+            addLog(`[오답] 정답은 '${ansStr}' 입니다.`, "#ff7043"); 
+            player.totalWrongAnswers++; 
+            checkHiddenUnlocks(); 
+            updateUI(); 
+        }
+
+        setTimeout(() => {
+            addLog("▶ <b>[방해꾼의 턴]</b>", "#ff6b6b");
+            
+            setTimeout(() => {
+                if (Math.random() * 100 < player.evasion) { 
+                    addLog(`[집중] 방해꾼의 훼방을 완벽히 차단했습니다!`, "#81c784"); 
+                    player.totalEvasions++; 
+                    checkHiddenUnlocks(); 
+                } 
+                else if (activeEffects.shield > 0) { 
+                    addLog(`[방어] 훼방을 성공적으로 막아냈습니다!`, "#4dd0e1"); 
+                    activeEffects.shield--; 
+                } 
+                else { 
+                    let dmg = monster.atk; 
+                    if (activeEffects.weaken > 0) { dmg = Math.floor(dmg / 2); activeEffects.weaken--; } 
+                    
+                    player.hp -= dmg; 
+                    addLog(`[방해받음] 아차! 집중력이 ${dmg} 떨어졌습니다.`, "#ff5252"); 
+                    
+                    if (player.hp <= 0) { 
+                        updateUI(); 
+                        return checkDeath(); 
+                    } 
+                }
+                
+                document.getElementById('monster-hp').innerText = `${Math.max(0, monster.hp)}/${monster.maxHp}`; 
+                updateUI(); 
+                document.getElementById('battle-ui').style.display = 'grid'; 
+            }, 1000); 
+        }, 1000); 
+    }
+
+    function winBattle() {
+        document.getElementById('monster-hp').innerText = `0/${monster.maxHp}`; 
+        
+        if (isTutorialMode) {
+            return;
+        }
+
+        addLog(`[성공] 방해꾼을 완벽히 물리쳤습니다!`, "#ffd700");
+        
+        if (monster && monster.isBoss) { 
+            player.hp = player.maxHp; 
+            addLog(`[보스 처치] 집중력을 모두 회복했습니다!`, "#64b5f6"); 
+        }
+        
+        if (player.inventory['boss_art_1']) { 
+            player.hp = Math.min(player.maxHp, player.hp + 15); 
+            addLog(`[패시브] 금동대향로의 기운으로 체력 15 회복!`, "#ff4081"); 
+        }
+        if (player.inventory['boss_art_14']) { 
+            player.hp = Math.min(player.maxHp, player.hp + 30); 
+            addLog(`[패시브] 동의보감의 비방으로 체력 30 회복!`, "#ff4081"); 
+        }
+        if (player.inventory['boss_art_8']) { 
+            activeEffects.shield++; 
+            addLog(`[패시브] 거북선의 가호로 백과사전(방어) 1회 충전!`, "#ff4081"); 
+        }
+        if (player.inventory['boss_art_9']) { 
+            activeEffects.powerUp++; 
+            addLog(`[패시브] 앙부일구의 기록으로 형광펜(강화) 1회 충전!`, "#ff4081"); 
+        }
+
+        let gold = 10 + Math.floor(Math.random() * 10) + player.floor;
+        
+        if (player.inventory['boss_art_4']) { 
+            gold += 20; 
+            addLog(`[패시브] 왕의 어보 효과로 20G 추가 획득!`, "#ff4081"); 
+        }
+        if (player.inventory['boss_art_11']) { 
+            gold += 50; 
+            addLog(`[패시브] 신라 금관의 광채로 50G 추가 획득!`, "#ff4081"); 
+        }
+
+        player.gold += gold; 
+        player.totalGoldEarned += gold; 
+        player.floor++; 
+        updateUI();
+        
+        if (player.floor > savedHighScore) { 
+            savedHighScore = player.floor; 
+            setSafeStorage('historyTowerMaxFloor', savedHighScore); 
+            const hsUi = document.getElementById('high-score-ui'); 
+            if(hsUi) hsUi.innerText = savedHighScore; 
+        }
+        
+        checkHiddenUnlocks(); 
+        setTimeout(showRewardScreen, 1000);
+    }
+
+    function checkDeath() {
+        updateUI();
+        
+        if (activeEffects.revive > 0) { 
+            activeEffects.revive--; 
+            player.hp = Math.floor(player.maxHp / 2); 
+            addLog("[부활] 적용해둔 마법의 지우개로 집중력을 회복했습니다!", "#ffd700"); 
+            updateUI(); 
+            document.getElementById('battle-ui').style.display = 'grid'; 
+        } 
+        else if (player.inventory['revive'] > 0) { 
+            player.inventory['revive']--; 
+            player.hp = Math.floor(player.maxHp / 2); 
+            addLog("[부활] 가방 속 마법의 지우개로 집중력을 회복했습니다!", "#ffd700"); 
+            updateUI(); 
+            document.getElementById('battle-ui').style.display = 'grid'; 
+        } 
+        else {
+            addLog("[휴식] 집중력을 모두 사용했습니다.", "#c62828"); 
+            monster = null; 
+            changeBgmMode('gameover'); 
+            localStorage.removeItem('historyTowerSave'); 
+            checkLoadButton();
+            
+            alert(`도전 종료!\n도달 층수: ${player.floor}층\n수고하셨습니다. 잠시 휴식을 취해보세요!`);
+            document.getElementById('game-container').style.display = 'none'; 
+            document.getElementById('title-screen').style.display = 'flex';
+        }
+    }
+
+    // ==========================================
+    // 💡 11. 공부하기 패널 렌더링 (트리형 아코디언 UI 완벽 구현)
+    // ==========================================
+    function setStudyGrade(g) {
+        curStudyGrade = g;
+        ['3', '4', '5', '6'].forEach(gr => {
+            let el = document.getElementById('s-grade-' + gr);
+            if(el) el.style.backgroundColor = (g === gr+'학년') ? '#e65100' : '#616161';
+        });
+        renderStudyData();
+    }
+    
+    function setStudySemester(sem) {
+        curStudySemester = sem;
+        document.getElementById('s-sem-1').style.backgroundColor = (sem === '1학기') ? '#8e44ad' : '#616161';
+        document.getElementById('s-sem-2').style.backgroundColor = (sem === '2학기') ? '#8e44ad' : '#616161';
+        document.getElementById('s-sem-all').style.backgroundColor = (sem === 'all') ? '#8e44ad' : '#616161';
+        renderStudyData();
+    }
+
+    function setStudySubject(s) {
+        curStudySubject = s;
+        document.getElementById('s-subj-soc').style.backgroundColor = (s === '사회') ? '#0277bd' : '#616161';
+        document.getElementById('s-subj-sci').style.backgroundColor = (s === '과학') ? '#0277bd' : '#616161';
+        document.getElementById('s-subj-all').style.backgroundColor = (s === 'all') ? '#0277bd' : '#616161';
+        renderStudyData();
+    }
+
+    function openStudyScreen() { 
+        document.getElementById('title-screen').style.display = 'none'; 
+        document.getElementById('study-screen').style.display = 'flex'; 
+        setStudyGrade('3학년'); 
+        setStudySubject('all');
+        setStudySemester('all'); 
+    }
+    
+    function closeStudyScreen() { 
+        if (isTutorialMode) return addLog("[안내] 튜토리얼 중입니다! 지시를 따라주세요.", "#ffeb3b"); 
+        document.getElementById('study-screen').style.display = 'none'; 
+        document.getElementById('title-screen').style.display = 'flex'; 
+    }
+
+    function renderStudyData() {
+        const content = document.getElementById('study-content');
+        if (!content) return;
+        content.innerHTML = "";
+        
+        let filteredStudy = studyBank.filter(item => {
+            let matchG = (curStudyGrade === 'all' || item.grade === curStudyGrade);
+            let matchS = (curStudySubject === 'all' || item.subject === curStudySubject);
+            let matchSem = true;
+            
+            if (curStudySemester === '1학기') matchSem = item.chapter.includes('1학기') || item.chapter.includes('보완');
+            else if (curStudySemester === '2학기') matchSem = item.chapter.includes('2학기');
+            
+            return matchG && matchS && matchSem;
+        });
+        
+        if (filteredStudy.length === 0) {
+            content.innerHTML = "<p style='text-align:center; margin-top: 20px; color:#bdc3c7;'>해당 조건의 데이터가 없습니다.</p>"; 
+            return;
+        }
+
+        let chapters = [...new Set(filteredStudy.map(item => item.chapter))];
+
+        chapters.forEach(c => {
+            let chapItems = filteredStudy.filter(item => item.chapter === c);
+            let units = [...new Set(chapItems.map(item => item.unit))];
+
+            let cleanChapter = c.replace(/^(?:\[[0-9]학기\]\s*|(?:[0-9]학기|보완)\s*)[0-9]+\.\s*/, '').replace(/^보완\.\s*/, ''); 
+            
+            // 1. [대단원] 헤더
+            let header = document.createElement('div'); 
+            header.className = 'category-header'; 
+            header.innerHTML = `<span style="flex:1;">[대단원] ${cleanChapter}</span> <span class="toggle-icon">▼</span>`;
+            
+            let list = document.createElement('div'); 
+            list.className = 'category-content';
+            list.style.display = "none";
+            list.style.padding = "15px 10px";
+            list.style.backgroundColor = "#1e2b38";
+            list.style.border = "2px solid #e65100";
+            list.style.borderTop = "none";
+            list.style.borderRadius = "0 0 8px 8px";
+            list.style.marginTop = "0";
+            
+            units.forEach(u => {
+                let targetContainer = list;
+                let isScienceOrNoSub = (u === '기본');
+
+                if (!isScienceOrNoSub) {
+                    // 2. [소단원] 블록 (사회 전용)
+                    let unitHeader = document.createElement('div');
+                    unitHeader.className = 'category-header';
+                    unitHeader.style.backgroundColor = "#e67e22"; 
+                    unitHeader.style.marginTop = "0";
+                    unitHeader.style.marginBottom = "5px";
+                    unitHeader.style.padding = "12px";
+                    unitHeader.innerHTML = `<span style="flex:1;">[소단원] ${u}</span> <span class="toggle-icon">▼</span>`;
+
+                    let unitContent = document.createElement('div');
+                    unitContent.className = 'category-content';
+                    unitContent.style.borderColor = "#e67e22";
+                    unitContent.style.display = "none";
+
+                    unitHeader.onclick = function(e) {
+                        e.stopPropagation();
+                        if(unitContent.style.display === 'block') {
+                            unitContent.style.display = 'none';
+                            this.querySelector('.toggle-icon').innerText = "▼";
+                        } else {
+                            unitContent.style.display = 'block';
+                            this.querySelector('.toggle-icon').innerText = "▲";
+                        }
+                    };
+
+                    targetContainer.appendChild(unitHeader);
+                    targetContainer.appendChild(unitContent);
+                    targetContainer = unitContent;
+                }
+
+                chapItems.filter(item => item.unit === u).forEach(item => {
+                    // 3. [핵심개념] 아이템 블록
+                    let studyItem = document.createElement('div'); 
+                    studyItem.className = 'study-item';
+                    
+                    // 4. 클릭 가능한 핵심개념 헤더
+                    let keywordDiv = document.createElement('div');
+                    keywordDiv.className = 'study-keyword';
+                    keywordDiv.innerHTML = `<span>[핵심개념] ${item.keyword}</span> <span class="toggle-icon">+</span>`;
+
+                    // 5. 숨겨진 개념설명 (차시 정보 포함)
+                    let descDiv = document.createElement('div');
+                    descDiv.className = 'study-desc';
+                    let formattedDesc = item.desc.replace(/\(차시: (.*?)\)$/, '<br><br><span style="color:#ffb74d; font-size:0.85rem;">※ 출처: $1</span>');
+                    descDiv.innerHTML = formattedDesc;
+
+                    keywordDiv.onclick = function(e) {
+                        e.stopPropagation();
+                        if(descDiv.style.display === 'block') {
+                            descDiv.style.display = 'none';
+                            this.querySelector('.toggle-icon').innerText = "+";
+                            this.style.color = "#4dd0e1";
+                        } else {
+                            descDiv.style.display = 'block';
+                            this.querySelector('.toggle-icon').innerText = "-";
+                            this.style.color = "#ffd700";
+                        }
+                    };
+
+                    studyItem.appendChild(keywordDiv);
+                    studyItem.appendChild(descDiv);
+                    targetContainer.appendChild(studyItem);
+                });
+            });
+            
+            header.onclick = function() {
+                if(list.style.display === 'block') { 
+                    list.style.display = 'none'; 
+                    this.querySelector('.toggle-icon').innerText = "▼";
+                } 
+                else { 
+                    list.style.display = 'block'; 
+                    this.querySelector('.toggle-icon').innerText = "▲";
+                }
+            };
+            content.appendChild(header); 
+            content.appendChild(list);
+        });
+    }
+
+    function showRewardScreen() {
+        document.getElementById('main-screen').style.display = 'none'; 
+        document.getElementById('hub-ui').style.display = 'none'; 
+        document.getElementById('battle-ui').style.display = 'none'; 
+        document.getElementById('reward-screen').style.display = 'flex'; 
+        changeBgmMode('victory'); 
+        
+        const container = document.getElementById('reward-cards-container'); 
+        container.innerHTML = "";
+        
+        let shuffled = []; 
+        let borderCol = '#f39c12';
+        
+        if (monster.isBoss) { 
+            borderCol = '#ff4081'; 
+            let chosenCards = []; 
+            while (chosenCards.length < 3) { 
+                let r = Math.random(); 
+                let poolChoices; 
+                let validBoss = BOSS_REWARD_CARDS.filter(c => !player.inventory[c.id] && !chosenCards.some(x => x.id === c.id)); 
+                let validElite = ELITE_REWARD_CARDS.filter(c => !chosenCards.some(x => x.id === c.id)); 
+                let validNormal = NORMAL_REWARD_CARDS.filter(c => c.id !== 'elite' && !chosenCards.some(x => x.id === c.id)); 
+                
+                if (r < 0.20 && validBoss.length > 0) poolChoices = validBoss; 
+                else if (r < 0.50 && validElite.length > 0) poolChoices = validElite; 
+                else poolChoices = validNormal; 
+                
+                if (!poolChoices || poolChoices.length === 0) poolChoices = validNormal; 
+                
+                let card = poolChoices[Math.floor(Math.random() * poolChoices.length)]; 
+                if (card) chosenCards.push(card); 
+            } 
+            shuffled = chosenCards; 
+        } 
+        else if (monster.isElite) { 
+            borderCol = '#b388ff'; 
+            shuffled = [...ELITE_REWARD_CARDS].sort(() => 0.5 - Math.random()).slice(0, 3); 
+        } 
+        else { 
+            let pool = NORMAL_REWARD_CARDS; 
+            if (player.floor % 10 === 0) pool = NORMAL_REWARD_CARDS.filter(r => r.id !== 'elite'); 
+            shuffled = [...pool].sort(() => 0.5 - Math.random()).slice(0, 3); 
+        }
+        
+        shuffled.forEach(r => { 
+            let card = document.createElement('div'); 
+            card.className = "reward-card"; 
+            card.style.border = `3px solid ${borderCol}`; 
+            card.innerHTML = `
+                <div class="reward-icon">${r.icon}</div>
+                <div class="reward-text-wrap">
+                    <div class="reward-title" style="color:${borderCol};">${r.title}</div>
+                    <div class="reward-desc">${r.desc}</div>
+                </div>
+            `; 
+            card.onclick = () => { 
+                let res = r.action(); 
+                document.getElementById('reward-screen').style.display = 'none'; 
+                document.getElementById('main-screen').style.display = 'flex'; 
+                if (res !== 'boss') enterHub(); 
+            }; 
+            container.appendChild(card); 
+        });
+    }
+
+    function openShop() { 
+        if (isTutorialMode && tutorialStep !== 7) return addLog("[안내] 지금은 누를 수 없습니다! 안내창을 확인해주세요.", "#ffeb3b"); 
+        
+        document.getElementById('hub-ui').style.display = 'none'; 
+        document.getElementById('shop-ui').style.display = 'grid'; 
+        addLog("[상점] 매점에 입장했습니다.", "#b2ebf2"); 
+        
+        if(isTutorialMode && tutorialStep === 7) { 
+            document.getElementById('hub-btn-shop').style.animation = "none"; 
+            tutorialStep++; 
+            updateTutorialUI(); 
+        } 
+    }
+
+    function closeShop() { 
+        if (isTutorialMode) return addLog("[안내] 아이템을 구매해야 상점을 나갈 수 있습니다.", "#ffeb3b"); 
+        document.getElementById('shop-ui').style.display = 'none'; 
+        document.getElementById('hub-ui').style.display = 'grid'; 
+    }
+
+    function buyItem(type) { 
+        const prices = { potion: 30, shield: 50, powerUp: 50, maxhp: 100 }; 
+        
+        if (isTutorialMode) { 
+            if (tutorialStep !== 8 || type !== 'shield') { 
+                return addLog("[안내] 튜토리얼 중입니다! [철벽 백과사전]을 클릭해주세요.", "#ffeb3b"); 
+            } 
+        } 
+        
+        if (player.gold >= prices[type]) { 
+            player.gold -= prices[type]; 
+            
+            if (type === 'potion') player.potions++; 
+            else if (type === 'maxhp') { player.maxHp += 20; player.hp += 20; } 
+            else player.inventory[type] = (player.inventory[type] || 0) + 1; 
+            
+            addLog(`[상점] ${ITEM_DB[type] ? ITEM_DB[type].name : '아이템'} 구매 완료!`, "#a5d6a7"); 
+            updateUI(); 
+            
+            if(isTutorialMode && tutorialStep === 8 && type === 'shield') { 
+                document.getElementById('shop-btn-shield').style.animation = "none"; 
+                document.getElementById('shop-ui').style.display = 'none'; 
+                document.getElementById('hub-ui').style.display = 'grid'; 
+                tutorialStep++; 
+                updateTutorialUI(); 
+            } 
+        } else { 
+            alert("특별 용돈이 부족합니다."); 
+        } 
+    }
+
+    function usePotion() { 
+        if (isTutorialMode) return addLog("[안내] 튜토리얼 중에는 초콜릿을 쓸 수 없습니다.", "#ffeb3b"); 
+        
+        if (player.potions > 0) { 
+            if (player.hp >= player.maxHp) return alert("집중력이 이미 가득 차 있습니다."); 
+            
+            player.potions--; 
+            player.hp = Math.min(player.maxHp, player.hp + 40); 
+            player.totalPotionsUsed++; 
+            checkHiddenUnlocks(); 
+            
+            addLog("[회복] 달콤한 초콜릿을 먹었습니다.", "#a5d6a7"); 
+            updateUI(); 
+        } else { 
+            alert("초콜릿이 없습니다!"); 
+        } 
+    }
+
+    function openInventory() { 
+        if (isTutorialMode && tutorialStep !== 11) return addLog("[안내] 지금은 누를 수 없습니다! 안내창을 확인해주세요.", "#ffeb3b"); 
+        
+        document.getElementById('inventory-modal').style.display = 'flex'; 
+        const list = document.getElementById('inventory-list'); 
+        list.innerHTML = ""; 
+        let hasItem = false; 
+        
+        for (let k in player.inventory) { 
+            if (player.inventory[k] > 0) { 
+                hasItem = true; 
+                let item = ITEM_DB[k]; 
+                if (!item) continue; 
+                
+                let btnHtml = item.isPassive ? `<button class="action-btn equipped" style="background-color:#7f8c8d; cursor:default;">영구적용</button>` : `<button class="action-btn" onclick="useInventoryItem('${k}')">사용</button>`; 
+                let div = document.createElement('div'); 
+                div.className = "list-item"; 
+                div.innerHTML = `
+                    <div class="list-item-info">
+                        <div class="list-item-text-wrap">
+                            <div class="list-item-title">${item.name} x${player.inventory[k]}</div>
+                            <div class="list-item-desc">${item.desc}</div>
+                        </div>
+                    </div>
+                    ${btnHtml}
+                `; 
+                list.appendChild(div); 
+            } 
+        } 
+        
+        if (!hasItem) list.innerHTML = "<p style='color:#bdc3c7;text-align:center;'>가방이 비어있습니다.</p>"; 
+        
+        if(isTutorialMode && tutorialStep === 11) { 
+            document.getElementById('hub-btn-bag').style.animation = "none"; 
+            document.getElementById('btn-close-bag').style.animation = "hintPulse 1.5s infinite"; 
+            tutorialStep++; 
+            updateTutorialUI(); 
+        } 
+    }
+
+    function closeInventory() { 
+        if (isTutorialMode && tutorialStep < 12) return; 
+        document.getElementById('inventory-modal').style.display = 'none'; 
+        
+        if(isTutorialMode && tutorialStep === 12) { 
+            document.getElementById('btn-close-bag').style.animation = "none"; 
+            tutorialStep++; 
+            updateTutorialUI(); 
+        } 
+    }
+
+    function useInventoryItem(key) { 
+        if (isTutorialMode) return addLog("[안내] 튜토리얼 중에는 아이템을 눈으로 확인만 해주세요!", "#ffeb3b"); 
+        
+        if (player.inventory[key] > 0) { 
+            player.inventory[key]--; 
+            
+            if (key === 'shield') activeEffects.shield++; 
+            else if (key === 'powerUp') activeEffects.powerUp += 2; 
+            else if (key === 'weaken') activeEffects.weaken += 2; 
+            else if (key === 'armorBreak') activeEffects.armorBreak += 2; 
+            else if (key === 'revive') activeEffects.revive++; 
+            
+            addLog(`[사용] ${ITEM_DB[key].name} 적용 완료!`, "#e65100"); 
+            updateUI(); 
+            openInventory(); 
+        } 
+    }
+
+    function openCharacterRoom() { 
+        if (isTutorialMode && tutorialStep !== 9) return addLog("[안내] 지금은 누를 수 없습니다! 안내창을 확인해주세요.", "#ffeb3b"); 
+        
+        document.getElementById('character-modal').style.display = 'flex'; 
+        const list = document.getElementById('character-list'); 
+        list.innerHTML = ""; 
+        
+        PLAYER_CHARS.forEach(c => { 
+            const isOwned = player.ownedChars.includes(c.id); 
+            const isEq = player.currentChar === c.id; 
+            let btn = ""; 
+            
+            if (isEq) {
+                btn = `<button class="action-btn equipped">장착중</button>`; 
+            } else if (isOwned) {
+                btn = `<button class="action-btn" onclick="buyOrEquipChar('${c.id}')">장착</button>`; 
+            } else { 
+                if (c.price === -1) btn = `<div class="hidden-condition">[히든]<br>${c.unlockDesc}</div>`; 
+                else btn = `<button class="action-btn" style="background:#0277bd;" onclick="buyOrEquipChar('${c.id}')">${c.price}G 구매</button>`; 
+            } 
+            
+            let displayName = (c.price === -1 && !isOwned) ? "???" : `${TIER_NAMES[c.tier]} ${c.name}`; 
+            let displayIcon = (c.price === -1 && !isOwned) ? "[ ?_? ]" : c.icon[0]; 
+            let nameStyleColor = isOwned ? (TIER_COLORS[c.tier] || '#bdc3c7') : '#ccc'; 
+            
+            let div = document.createElement('div'); 
+            div.className = "list-item"; 
+            div.innerHTML = `
+                <div class="list-item-info">
+                    <div class="list-item-icon" style="color:${nameStyleColor}; font-size: 1.1rem; border: 1px solid ${nameStyleColor}55;">${displayIcon}</div>
+                    <div style="margin-left:10px; color:${nameStyleColor}; font-weight:bold; font-size: 0.9rem;">${displayName}</div>
+                </div>
+                ${btn}
+            `; 
+            list.appendChild(div); 
+        }); 
+        
+        if(isTutorialMode && tutorialStep === 9) { 
+            document.getElementById('hub-btn-char').style.animation = "none"; 
+            tutorialStep++; 
+            updateTutorialUI(); 
+            setTimeout(() => { 
+                let btns = document.getElementById('character-list').querySelectorAll('.action-btn'); 
+                if(btns.length > 1) btns[1].style.animation = "hintPulse 1.5s infinite"; 
+            }, 50); 
+        } 
+    }
+
+    function buyOrEquipChar(id) { 
+        if (isTutorialMode) { 
+            if (tutorialStep !== 10 || id !== 'char_02') return addLog("[안내] 튜토리얼 중입니다! [모범생] 스킨의 장착 버튼을 눌러주세요.", "#ffeb3b"); 
+        } 
+        
+        const char = PLAYER_CHARS.find(c => c.id === id); 
+        
+        if (player.ownedChars.includes(id)) { 
+            player.currentChar = id; 
+            addLog(`[옷장] ${char.name} 스킨을 장착했습니다!`, "#4dd0e1"); 
+        } else { 
+            if (char.price !== -1 && player.gold >= char.price) { 
+                player.gold -= char.price; 
+                player.ownedChars.push(id); 
+                player.currentChar = id; 
+                addLog(`[구매] ${char.name} 스킨을 획득했습니다!`, "#a5d6a7"); 
+                checkHiddenUnlocks(); 
+            } else if (char.price !== -1) {
+                return alert("특별 용돈이 부족합니다."); 
+            }
+        } 
+        
+        updatePlayerAreaUI(); 
+        checkAndApplyBGM(); 
+        updateUI(); 
+        
+        if(isTutorialMode && tutorialStep === 10 && id === 'char_02') { 
+            let btns = document.getElementById('character-list').querySelectorAll('.action-btn'); 
+            if(btns.length > 1) btns[1].style.animation = "none"; 
+            document.getElementById('character-modal').style.display = 'none'; 
+            tutorialStep++; 
+            updateTutorialUI(); 
+        } else { 
+            openCharacterRoom(); 
+        } 
+    }
+
+    function closeCharacterRoom() { 
+        if (isTutorialMode) return addLog("[안내] 스킨을 먼저 장착해야 나갈 수 있습니다.", "#ffeb3b"); 
+        document.getElementById('character-modal').style.display = 'none'; 
+    }
+
+    function openCheatModal() { 
+        if (isTutorialMode) return addLog("[안내] 튜토리얼 중에는 치트를 쓸 수 없습니다.", "#ffeb3b"); 
+        if(document.getElementById('title-screen').style.display !== 'none') return alert("게임 시작 후 이용해주세요!"); 
+        document.getElementById('cheat-modal').style.display = 'flex'; 
+    }
+
+    function closeCheatModal() { 
+        document.getElementById('cheat-modal').style.display = 'none'; 
+    }
+
+    function cheatAction(t) { 
+        if (!player || !player.hp) return; 
+        if (t === 'gold') { 
+            player.gold += 10000; player.totalGoldEarned += 10000; 
+            addLog("[치트] 용돈 +10000", "#e040fb"); 
+        } else if (t === 'chars') { 
+            player.ownedChars = PLAYER_CHARS.map(c => c.id); 
+            addLog("[치트] 모든 스킨 해금 완료", "#e040fb"); 
+        } else if (t === 'items') { 
+            for (let k in ITEM_DB) { 
+                if (!ITEM_DB[k].isPassive) { player.inventory[k] = (player.inventory[k] || 0) + 1; } 
+            } 
+            player.potions += 1; 
+            addLog("[치트] 초콜릿 포함 모든 사용 아이템 1개씩 획득!", "#3498db"); 
+        } else if (t === 'stats') { 
+            player.maxHp += 1000; player.hp = player.maxHp; player.baseAtk += 100; 
+            addLog("[치트] 집중력/기억력 대폭 상승", "#e040fb"); 
+        } else if (t === 'floor') { 
+            let nextBossFloor = Math.floor((player.floor - 1) / 10) * 10 + 10; 
+            let inBattle = document.getElementById('monster-area').style.display !== 'none'; 
+            if (inBattle) { 
+                player.floor = nextBossFloor - 1; 
+                addLog(`[치트] ${nextBossFloor}층 보스 앞으로 이동!`, "#e040fb"); 
+                monster.hp = 0; 
+                document.getElementById('quiz-box').style.display = 'none'; 
+                document.getElementById('options-ui').style.display = 'none'; 
+                closeCheatModal(); 
+                return winBattle(); 
+            } else { 
+                player.floor = nextBossFloor; 
+                addLog(`[치트] ${nextBossFloor}층 보스 앞으로 이동!`, "#e040fb"); 
+            } 
+        } 
+        checkHiddenUnlocks(); updateUI(); updatePlayerAreaUI(); closeCheatModal(); 
+    }
+
+    window.onload = parseAllData;
+
+    function updateTutorialUI() {
+        if (tutorialStep >= tutorialScripts.length) return exitTutorial();
+        const tutText = document.getElementById('tutorial-text'); 
+        tutText.innerHTML = tutorialScripts[tutorialStep];
+        
+        const nextBtn = document.getElementById('tutorial-next-btn'); 
+        const overlay = document.getElementById('tutorial-overlay');
+        overlay.className = ''; 
+        
+        if (tutorialStep === 3) {
+            overlay.classList.add('pos-quiz'); 
+            if(nextBtn) nextBtn.style.display = 'none'; 
+            
+            document.getElementById('battle-ui').style.display = 'none'; // 수정됨: 배틀 UI 잔상 방지
+            
+            document.getElementById('quiz-box').style.display = 'block'; 
+            document.getElementById('quiz-box').innerText = "[모의 문제]\n조선을 건국한 왕은?";
+            addLog("▶ <b>[나의 턴]</b> 어서 방해꾼을 몰아내자!", "#4dd0e1"); 
+            
+            const opt = document.getElementById('options-ui'); 
+            if(opt) { 
+                opt.style.display = 'grid'; 
+                opt.innerHTML = ""; 
+                ["이성계 (정답!)", "왕건", "이순신"].forEach((o, i) => { 
+                    let b = document.createElement("button"); 
+                    b.className = "option-btn"; 
+                    b.innerText = o; 
+                    if (i === 0) b.classList.add("hint-btn"); 
+                    b.onclick = () => { 
+                        if (i === 0) { 
+                            document.getElementById('quiz-box').style.display = 'none'; 
+                            document.getElementById('options-ui').style.display = 'none'; 
+                            monster.hp = 0; 
+                            
+                            const oldDiff = currentDifficulty; 
+                            currentDifficulty = 'tutorial'; 
+                            updateUI(); 
+                            currentDifficulty = oldDiff; 
+                            
+                            addLog(`[정답] 튜토리얼 방해꾼의 에너지를 깎았습니다!`, "#00e676"); 
+                            addLog("[성공] 방해꾼을 물리쳤습니다!", "#ffd700"); 
+                            
+                            tutorialStep++; updateTutorialUI(); 
+                        } else { 
+                            alert("정답 '이성계'를 누르세요."); 
+                        } 
+                    }; 
+                    opt.appendChild(b); 
+                }); 
+            }
+        } else if (tutorialStep >= 4 && tutorialStep <= 6) {
+            overlay.classList.add('pos-bottom'); 
+            const rewardScreen = document.getElementById('reward-screen'); 
+            rewardScreen.style.justifyContent = 'flex-start'; 
+            rewardScreen.style.paddingTop = '10%'; 
+            
+            document.getElementById('main-screen').style.display = 'none'; 
+            rewardScreen.style.display = 'flex';
+            
+            const container = document.getElementById('reward-cards-container'); 
+            container.innerHTML = `
+                <div class="reward-card" id="tut-reward-card" style="animation: ${tutorialStep === 6 ? 'hintPulse 1.5s infinite' : 'none'}; z-index:1001; cursor:${tutorialStep === 6 ? 'pointer' : 'default'}; border: 3px solid #f39c12;">
+                    <div class="reward-icon">[용돈]</div>
+                    <div class="reward-text-wrap">
+                        <div class="reward-title" style="color:#f39c12;">깜짝 장학금</div>
+                        <div class="reward-desc">특별 용돈 50G 획득 ${tutorialStep === 6 ? '(클릭하세요!)' : ''}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (tutorialStep === 4 || tutorialStep === 5) { 
+                if(nextBtn) nextBtn.style.display = 'block'; 
+                document.getElementById('tut-reward-card').onclick = null; 
+            } else if (tutorialStep === 6) { 
+                if(nextBtn) nextBtn.style.display = 'none'; 
+                document.getElementById('tut-reward-card').onclick = () => { 
+                    addLog("[보상] 특별 용돈 50G를 획득했습니다!", "#ffd700"); 
+                    player.gold += 50; 
+                    const oldDiff = currentDifficulty; currentDifficulty = 'tutorial'; 
+                    updateUI(); 
+                    currentDifficulty = oldDiff; 
+                    tutorialStep++; updateTutorialUI(); 
+                }; 
+            }
+        } else if (tutorialStep === 7) { 
+            overlay.classList.add('pos-top'); 
+            if(nextBtn) nextBtn.style.display = 'none'; 
+            
+            const rewardScreen = document.getElementById('reward-screen'); 
+            rewardScreen.style.justifyContent = 'center'; 
+            rewardScreen.style.paddingTop = ''; 
+            rewardScreen.style.display = 'none'; 
+            
+            document.getElementById('main-screen').style.display = 'flex'; 
+            document.getElementById('monster-area').style.display = 'none'; 
+            document.getElementById('player-area').style.display = 'flex'; 
+            document.getElementById('hub-ui').style.display = 'grid'; 
+            
+            // 수정됨: 배틀 UI 잔상 완벽 숨김 처리
+            document.getElementById('battle-ui').style.display = 'none';
+            document.getElementById('quiz-box').style.display = 'none';
+            document.getElementById('options-ui').style.display = 'none';
+            
+            document.getElementById('hub-btn-shop').style.animation = "hintPulse 1.5s infinite";
+        } else if (tutorialStep === 8) { 
+            overlay.classList.add('pos-top'); 
+            if(nextBtn) nextBtn.style.display = 'none'; 
+            document.getElementById('shop-btn-shield').style.animation = "hintPulse 1.5s infinite";
+        } else if (tutorialStep === 9) { 
+            overlay.classList.add('pos-top'); 
+            if(nextBtn) nextBtn.style.display = 'none'; 
+            document.getElementById('hub-btn-char').style.animation = "hintPulse 1.5s infinite"; 
+            if (!player.ownedChars.includes('char_02')) player.ownedChars.push('char_02');
+        } else if (tutorialStep === 10) { 
+            overlay.classList.add('pos-bottom'); 
+            if(nextBtn) nextBtn.style.display = 'none'; 
+            const charModal = document.getElementById('character-modal'); 
+            charModal.style.top = '5%'; charModal.style.bottom = '40%'; 
+        } else if (tutorialStep === 11) { 
+            overlay.classList.add('pos-top'); 
+            if(nextBtn) nextBtn.style.display = 'none'; 
+            const charModal = document.getElementById('character-modal'); 
+            charModal.style.top = ''; charModal.style.bottom = ''; 
+            document.getElementById('hub-btn-bag').style.animation = "hintPulse 1.5s infinite";
+        } else if (tutorialStep === 12) { 
+            overlay.classList.add('pos-bottom'); 
+            if(nextBtn) nextBtn.style.display = 'none'; 
+            const invModal = document.getElementById('inventory-modal'); 
+            invModal.style.top = '5%'; invModal.style.bottom = '40%'; 
+        } else if (tutorialStep === 13) { 
+            overlay.classList.add('pos-bottom'); 
+            if(nextBtn) nextBtn.style.display = 'none'; 
+            
+            const invModal = document.getElementById('inventory-modal'); 
+            invModal.style.top = ''; invModal.style.bottom = ''; 
+            
+            document.getElementById('game-container').style.display = 'none'; 
+            document.getElementById('study-screen').style.display = 'flex'; 
+            
+            const studyBackBtn = document.getElementById('study-back-btn'); 
+            if(studyBackBtn) studyBackBtn.style.display = 'none'; 
+            
+            // 수정됨: 튜토리얼 겹침 방지를 위해 필터 잠시 숨기기 및 여백 확보
+            const filterContainer = document.getElementById('study-filter-container');
+            if (filterContainer) filterContainer.style.display = 'none';
+
+            const content = document.getElementById('study-content'); 
+            content.style.paddingBottom = '250px'; 
+            
+            content.innerHTML = `
+                <div class="category-header">튜토리얼 핵심 요약 ▼</div>
+                <div class="category-content" style="display:block;">
+                    <div class="study-item">
+                        <div class="study-keyword" id="tut-study-item" style="animation: hintPulse 1.5s infinite; z-index:1001;">조선의 건국자 <span id="tut-study-span" class="toggle-icon">+</span></div>
+                        <div class="study-desc" id="tut-study-desc">조선을 건국한 사람은 이성계(태조)입니다.</div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('tut-study-item').onclick = function() { 
+                let desc = document.getElementById('tut-study-desc'); 
+                let span = document.getElementById('tut-study-span'); 
+                this.style.animation = "none"; 
+                
+                if(desc.style.display === 'block') { 
+                    desc.style.display = 'none'; 
+                    span.innerText = '+'; 
+                    if(nextBtn) nextBtn.style.display = 'none'; 
+                } else { 
+                    desc.style.display = 'block'; 
+                    span.innerText = '-'; 
+                    if(nextBtn) { 
+                        nextBtn.style.display = 'block'; 
+                        nextBtn.style.animation = "hintPulse 1.5s infinite"; 
+                    } 
+                } 
+            };
+        } else if (tutorialStep === 14) { 
+            overlay.classList.add('pos-bottom'); 
+            document.getElementById('study-screen').style.display = 'none'; 
+            document.getElementById('study-content').style.paddingBottom = ''; 
+            document.getElementById('game-container').style.display = 'flex'; 
+            
+            if(nextBtn) { 
+                nextBtn.style.display = 'block'; 
+                nextBtn.style.animation = "none"; 
+                nextBtn.innerText = "튜토리얼 종료"; 
+            }
+        } else { 
+            overlay.classList.add('pos-bottom'); 
+            if(nextBtn) { 
+                nextBtn.style.display = 'block'; 
+                nextBtn.style.animation = "none"; 
+                nextBtn.innerText = "다음 >"; 
+            } 
+        }
+        
+        if(overlay && tutorialStep !== 3 && tutorialStep !== 6 && tutorialStep !== 13) { 
+            overlay.style.animation = 'none'; 
+            overlay.offsetHeight; 
+            overlay.style.animation = 'fadeInPanel 0.2s ease-out'; 
+        }
+    }
+
+    function nextTutorialStep() { 
+        tutorialStep++; 
+        updateTutorialUI(); 
+    }
+
+    function exitTutorial() {
+        isTutorialMode = false; 
+        monster = null; 
+        changeBgmMode('title');
+        
+        ['hub-btn-shop', 'shop-btn-shield', 'hub-btn-char', 'hub-btn-bag', 'btn-close-bag'].forEach(id => { 
+            let el = document.getElementById(id); 
+            if(el) el.style.animation = "none"; 
+        });
+        
+        const overlay = document.getElementById('tutorial-overlay'); 
+        if(overlay) { overlay.style.display = 'none'; overlay.className = 'pos-bottom'; }
+        
+        const nextBtn = document.getElementById('tutorial-next-btn'); 
+        if(nextBtn) { nextBtn.style.animation = "none"; nextBtn.innerText = "다음 >"; }
+        
+        document.getElementById('reward-screen').style.justifyContent = 'center'; 
+        document.getElementById('reward-screen').style.paddingTop = ''; 
+        document.getElementById('character-modal').style.top = ''; 
+        document.getElementById('character-modal').style.bottom = ''; 
+        document.getElementById('inventory-modal').style.top = ''; 
+        document.getElementById('inventory-modal').style.bottom = ''; 
+        document.getElementById('study-content').style.paddingBottom = '';
+        
+        // 수정됨: 공부하기 필터 UI 복구
+        const filterContainer = document.getElementById('study-filter-container');
+        if (filterContainer) filterContainer.style.display = 'flex';
+
+        const studyBackBtn = document.getElementById('study-back-btn'); 
+        if(studyBackBtn) studyBackBtn.style.display = 'block';
+        
+        document.getElementById('diff-badge').innerText = ""; 
+        document.getElementById('game-container').style.display = 'none'; 
+        document.getElementById('reward-screen').style.display = 'none'; 
+        document.getElementById('study-screen').style.display = 'none'; 
+        document.getElementById('options-ui').innerHTML = ""; 
+        document.getElementById('title-screen').style.display = 'flex'; 
+        
+        checkLoadButton();
+    }
+</script>
+</body>
+</html>
