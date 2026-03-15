@@ -192,17 +192,22 @@ function checkLoadButton() {
     btn.style.display = 'none';
 }
 
-function saveGame(isManual = false) {
-    if (isTutorialMode) { 
-        if (isManual) addLog("[안내] 튜토리얼 중에는 저장할 수 없습니다.", "#ffeb3b"); 
-        return; 
-    }
+function saveGlobalDataOnly() {
+    if (isTutorialMode || !player) return;
     const globalData = { 
         ownedChars: player.ownedChars, currentChar: player.currentChar, 
         totalGoldEarned: player.totalGoldEarned, totalPotionsUsed: player.totalPotionsUsed, 
         totalWrongAnswers: player.totalWrongAnswers, totalEvasions: player.totalEvasions 
     };
     setSafeStorage('historyTowerGlobal', JSON.stringify(globalData)); 
+}
+
+function saveGame(isManual = false) {
+    if (isTutorialMode) { 
+        if (isManual) addLog("[안내] 튜토리얼 중에는 저장할 수 없습니다.", "#ffeb3b"); 
+        return; 
+    }
+    saveGlobalDataOnly(); 
     setSafeStorage('historyTowerSave', JSON.stringify({ player: player, effects: activeEffects }));
     if (isManual) { 
         addLog("게임이 성공적으로 저장되었습니다.", "#a5d6a7"); 
@@ -335,7 +340,7 @@ function parseAllData() {
 
 function showHelp() { 
     if (isTutorialMode) return; 
-    alert("[ 🏰 지식 타워 초보자 가이드 ]\n\n⚔️ 배틀 방법:\n사회/과학 문제를 맞히면 방해꾼의 '에너지'를 깎을 수 있어요!\n반대로 틀리면 내 '집중력(체력)'이 떨어지니 조심하세요.\n\n💡 내 상태 설명:\n- 집중력 : 나의 체력이에요. 0이 되면 게임이 끝나요.\n- 기억력 : 퀴즈를 맞혔을 때 방해꾼의 에너지를 더 많이 깎는 힘!\n- 딴짓 피하기 : 방해꾼의 공격을 요리조리 피할 확률이에요."); 
+    alert("[ 🏰 지식 타워 초보자 가이드 ]\n\n⚔️ 배틀 방법:\n사회/과학 문제를 맞히면 방해꾼의 '에너지'를 깎을 수 있어요!\n반대로 틀리면 내 '집중력(체력)'이 떨어지니 조심하세요.\n\n💡 내 상태 설명:\n- 집중력 : 나의 체력이에요. 0이 되면 게임이 끝나요.\n- 기억력 : 퀴즈를 맞혔을 때 방해꾼의 에너지를 더 많이 깎는 힘!\n- 훼방 피하기 : 방해꾼의 공격을 요리조리 피할 확률이에요."); 
 }
 
 function addLog(msg, color="#fff") { 

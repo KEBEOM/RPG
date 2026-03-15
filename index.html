@@ -483,7 +483,7 @@
             <div class="stat-box" id="hp-container">집중력: <span id="hp-ui" style="color: #ff6b6b; font-weight: bold;">100/100</span></div>
             <div class="stat-box">골드: <span id="gold-ui">0</span>G</div>
             <div class="stat-box" style="color:#ffb74d;">기억력: <span id="atk-ui">15</span></div>
-            <div class="stat-box" style="color:#81c784;">딴짓 피하기: <span id="eva-ui">0%</span></div>
+            <div class="stat-box" style="color:#81c784;">훼방 피하기: <span id="eva-ui">0%</span></div>
             <div class="stat-box">초콜릿: <span id="potion-ui">3</span>개</div>
             <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
         </div>
@@ -521,6 +521,7 @@
                         <button id="shop-btn-shield" class="shop-btn" onclick="buyItem('shield')">[아이템] 철벽 백과사전 (50G)<span>방해꾼의 훼방 무효화</span></button>
                         <button class="shop-btn" onclick="buyItem('powerUp')">[아이템] 마법의 형광펜 (50G)<span>다음 2번 정답의 힘 상승</span></button>
                         <button class="shop-btn" onclick="buyItem('maxhp')">[성장] 만점 비법 노트 (100G)<span>최대 집중력 증가</span></button>
+                        <button class="shop-btn full-width" style="background-color: #8e44ad;" onclick="buyItem('randomStat')">[특훈] 알쏭달쏭 맹훈련 (50G)<span>집중력/기억력/훼방피하기 무작위 1~3 상승</span></button>
                         <button class="back-btn full-width" style="margin-top:0;" onclick="closeShop()">상점 닫기</button>
                     </div>
                     <div id="battle-ui" class="grid-ui">
@@ -576,7 +577,6 @@
 <script src="5_tutorial.js"></script>
 
 <script>
-    // 모든 스크립트가 로드된 직후에 기다림 없이 바로 강제 실행
     parseAllData();
 </script>
 </body>

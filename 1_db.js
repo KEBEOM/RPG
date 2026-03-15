@@ -24,10 +24,10 @@ const ITEM_DB = {
     armorBreak: { name: "족집게 빨간펜", desc: "다음 2번 정답의 힘 1.5배 상승", isPassive: false },
     boss_art_1: { name: "전설의 금동대향로", desc: "매 층 클리어 시 체력 15 자동 회복", isPassive: true },
     boss_art_2: { name: "성웅의 난중일기", desc: "기억력 +25 영구 상승", isPassive: true },
-    boss_art_3: { name: "수호자의 방패", desc: "딴짓 피하기 확률 +15% 영구 상승", isPassive: true },
+    boss_art_3: { name: "수호자의 방패", desc: "훼방 피하기 확률 +15% 영구 상승", isPassive: true },
     boss_art_4: { name: "왕의 어보", desc: "매 층 클리어 시 추가 용돈 20G 획득", isPassive: true },
     boss_art_5: { name: "천상열차분야지도", desc: "최대 집중력 +50, 기억력 +10 상승", isPassive: true },
-    boss_art_6: { name: "팔만대장경", desc: "딴짓 피하기 확률 +20% 영구 상승", isPassive: true },
+    boss_art_6: { name: "팔만대장경", desc: "훼방 피하기 확률 +20% 영구 상승", isPassive: true },
     boss_art_7: { name: "훈민정음 해례본", desc: "기억력 +40 영구 상승", isPassive: true },
     boss_art_8: { name: "거북선 모형", desc: "매 층 백과사전(방어) 1회 자동 충전", isPassive: true },
     boss_art_9: { name: "앙부일구", desc: "매 층 형광펜(공격강화) 1회 자동 충전", isPassive: true },
@@ -66,7 +66,7 @@ const PLAYER_CHARS = [
     { id: "hidden_02", name: "갑부", tier: "hidden", icon: ["$$ [ ₩_₩ ] $$", "￦￦ [ $O$ ] ￦￦"], price: -1, anim: "bounce", bgm: "hub_rich", unlockDesc: "누적 특별 용돈 1,000G 획득 시 해금" },
     { id: "hidden_03", name: "초코덕후", tier: "hidden", icon: ["■■ ( ´﹃｀)", "□■ ( º﹃ º)"], price: -1, anim: "bounce", bgm: "hub_sweet", unlockDesc: "초콜릿 누적 10회 냠냠 시 해금" },
     { id: "hidden_04", name: "오답달인", tier: "hidden", icon: ["✘_✘ [ ?_? ] ✘_✘", "✖_✖ [ !O! ] ✖_✖"], price: -1, anim: "bounce", bgm: "hub_study", unlockDesc: "문제 누적 10회 오답 시 해금" },
-    { id: "hidden_05", name: "방랑자", tier: "hidden", icon: ["彡 ≈(-_-)≈ 彡", "彡 ~~(0_0)~~ 彡"], price: -1, anim: "swing", bgm: "hub_wind", unlockDesc: "방해꾼 공격 누적 10회 피할 시 해금" },
+    { id: "hidden_05", name: "방랑자", tier: "hidden", icon: ["彡 ≈(-_-)≈ 彡", "彡 ~~(0_0)~~ 彡"], price: -1, anim: "swing", bgm: "hub_wind", unlockDesc: "방해꾼의 훼방 누적 10회 피할 시 해금" },
     { id: "hard_01", name: "불굴의 도전자", tier: "hidden", icon: ["炎 ᕙ( Ò﹏Ó)ᕗ 炎", "焱 ᕙ( Ò0Ó)ᕗ 焱"], price: -1, anim: "bounce", bgm: "hub_hard_1", unlockDesc: "하드 모드 10층 도달 시 해금" },
     { id: "hard_02", name: "고독한 현자", tier: "hidden", icon: ["✦ ꧁( ఠ_ఠ )꧂ ✦", "✧ ꧁( ఠoఠ )꧂ ✧"], price: -1, anim: "eye", bgm: "hub_hard_2", unlockDesc: "하드 모드 15층 도달 시 해금" },
     { id: "hard_03", name: "심연의 지배자", tier: "hidden", icon: ["▼ ◤( ◣_◢ )◥ ▼", "▲ ◣( ◣0◢ )◢ ▲"], price: -1, anim: "swing", bgm: "hub_hard_3", unlockDesc: "하드 모드 20층 도달 시 해금" },
@@ -128,15 +128,12 @@ const MELODIES = {
     gameover: { notes: [392.0, 329.6, 261.6, 196.0, 0, 0, 0, 0], tempo: 600, vol: 0.05 }
 };
 
-// 💡 일반 몹 보상 테이블
 const NORMAL_REWARD_CARDS = [
     { id: "gold_sm", icon: "[용돈]", title: "소소한 용돈", desc: "특별 용돈 15G 획득", action: () => { player.gold += 15; addLog("[보상] 15G를 얻었습니다.", "#ffd700"); updateUI(); return 'normal'; } },
     { id: "heal_sm", icon: "[휴식]", title: "잠깐의 휴식", desc: "집중력 20 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 20); addLog("[보상] 집중력을 20 회복했습니다.", "#a5d6a7"); updateUI(); return 'normal'; } },
     { id: "item_pot", icon: "[간식]", title: "당충전 초콜릿", desc: "초콜릿 1개 획득", action: () => { player.potions++; addLog("[보상] 초콜릿을 1개 얻었습니다.", "#ffb74d"); updateUI(); return 'normal'; } },
     { id: "encounter_elite", icon: "[위험]", title: "수상한 기운", desc: "정예 방해꾼과 바로 마주칩니다.", action: () => { addLog("[위험] 수상한 기운에 이끌려 정예 방해꾼과 전투를 시작합니다!", "#ff5252"); return 'elite_encounter'; } },
-    { id: "evasion_up", icon: "[회피]", title: "날렵한 몸놀림", desc: "딴짓 피하기 확률 2% 영구 증가", action: () => { player.evasion += 2; addLog("[보상] 딴짓 피하기 확률이 2% 올랐습니다.", "#81c784"); updateUI(); return 'normal'; } },
-    
-    // 🔥 백과사전 구매 -> 무작위 아이템 1개 획득으로 교체
+    { id: "evasion_up", icon: "[회피]", title: "날렵한 몸놀림", desc: "훼방 피하기 확률 2% 영구 증가", action: () => { player.evasion += 2; addLog("[보상] 훼방 피하기 확률이 2% 올랐습니다.", "#81c784"); updateUI(); return 'normal'; } },
     { id: "random_item_1", icon: "[선물]", title: "의문의 보따리", desc: "무작위 소모품 1개 획득", action: () => { 
         const items = Object.keys(ITEM_DB).filter(k => !ITEM_DB[k].isPassive); 
         const rndItem = items[Math.floor(Math.random() * items.length)]; 
@@ -144,19 +141,15 @@ const NORMAL_REWARD_CARDS = [
         addLog(`[보상] 무작위 아이템 '${ITEM_DB[rndItem].name}' 획득!`, "#4dd0e1"); 
         updateUI(); return 'normal'; 
     } },
-    
     { id: "maxhp_up", icon: "[성장]", title: "작은 깨달음", desc: "최대 집중력 5 증가", action: () => { player.maxHp += 5; player.hp += 5; addLog("[보상] 최대 집중력이 5 올랐습니다.", "#a5d6a7"); updateUI(); return 'normal'; } },
     { id: "atk_up", icon: "[기억]", title: "연필 깎기", desc: "기억력 1 영구 증가", action: () => { player.baseAtk += 1; addLog("[보상] 기억력이 1 올랐습니다.", "#ffd700"); updateUI(); return 'normal'; } },
-    { id: "risk_gold", icon: "[도박]", title: "위험한 도박", desc: "집중력 15 감소, 대신 35G 획득", action: () => { player.hp = Math.max(1, player.hp - 15); player.gold += 35; addLog("[보상] 집중력을 잃었지만 35G를 얻었습니다.", "#f39c12"); updateUI(); return 'normal'; } }
+    { id: "risk_gold", icon: "[도전]", title: "과감한 도전", desc: "집중력 15 감소, 대신 35G 획득", action: () => { player.hp = Math.max(1, player.hp - 15); player.gold += 35; addLog("[보상] 집중력을 잃었지만 35G를 얻었습니다.", "#f39c12"); updateUI(); return 'normal'; } }
 ];
 
-// 💡 정예 몹 보상 테이블
 const ELITE_REWARD_CARDS = [
     { id: "gold_md", icon: "[장학금]", title: "우수 장학금", desc: "특별 용돈 40G 획득", action: () => { player.gold += 40; addLog("[보상] 40G를 얻었습니다.", "#ffd700"); updateUI(); return 'elite'; } },
     { id: "heal_md", icon: "[대휴식]", title: "꿀맛 같은 휴식", desc: "집중력 50 회복", action: () => { player.hp = Math.min(player.maxHp, player.hp + 50); addLog("[보상] 집중력을 50 회복했습니다.", "#a5d6a7"); updateUI(); return 'elite'; } },
     { id: "atk_up_md", icon: "[큰기억]", title: "새로운 필기구", desc: "기억력 3 영구 증가", action: () => { player.baseAtk += 3; addLog("[보상] 기억력이 3 올랐습니다.", "#ffd700"); updateUI(); return 'elite'; } },
-    
-    // 🔥 지정 아이템 획득 -> 무작위 아이템 3개 획득으로 교체
     { id: "random_items_3", icon: "[보물]", title: "호화로운 보따리", desc: "무작위 소모품 3개 획득", action: () => { 
         const items = Object.keys(ITEM_DB).filter(k => !ITEM_DB[k].isPassive); 
         let getLog = []; 
@@ -168,15 +161,11 @@ const ELITE_REWARD_CARDS = [
         addLog(`[보상] 무작위 아이템 3개 획득! (${getLog.join(', ')})`, "#b388ff"); 
         updateUI(); return 'elite'; 
     } },
-    
-    // 🔥 회피율 3 증가 추가
-    { id: "evasion_up_md", icon: "[대회피]", title: "환상적인 몸놀림", desc: "딴짓 피하기 확률 3% 영구 증가", action: () => { 
+    { id: "evasion_up_md", icon: "[대회피]", title: "환상적인 몸놀림", desc: "훼방 피하기 확률 3% 영구 증가", action: () => { 
         player.evasion += 3; 
-        addLog("[보상] 딴짓 피하기 확률이 3% 올랐습니다.", "#81c784"); 
+        addLog("[보상] 훼방 피하기 확률이 3% 올랐습니다.", "#81c784"); 
         updateUI(); return 'elite'; 
     } },
-    
-    // 🔥 정예 몹 추가 조우
     { id: "encounter_elite_md", icon: "[대위험]", title: "끝나지 않은 위협", desc: "정예 방해꾼과 한 번 더 마주칩니다.", action: () => { 
         addLog("[위험] 숨돌릴 틈 없이 정예 방해꾼이 나타났습니다!", "#ff5252"); 
         return 'elite_encounter'; 

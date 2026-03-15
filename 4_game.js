@@ -266,7 +266,10 @@ function loadGameFromTitle() {
 function confirmReturnToTitle() {
     if (isTutorialMode) return addLog("[안내] 튜토리얼 중단은 안내창의 [중단하고 나가기]를 이용하세요.", "#ffeb3b");
     
-    if (confirm("타이틀 화면으로 돌아갑니다. 저장하지 않은 진행 상황은 모두 사라집니다.")) {
+    if (confirm("타이틀 화면으로 돌아갑니다. 저장하지 않은 진행 상황(현재 층수, 체력 등)은 모두 사라집니다.")) {
+        
+        if (typeof saveGlobalDataOnly === 'function') saveGlobalDataOnly();
+        
         monster = null; 
         changeBgmMode('title'); 
         document.getElementById('game-container').style.display = 'none'; 
@@ -419,7 +422,6 @@ function startEliteBattle() {
         mAtk = Math.floor(mAtk * 1.5); 
     }
     
-    // 💡 정예몹의 층수(Lv)를 명시하여 층수 오르는 것을 확실히 인지시킴
     monster = { 
         name: `[정예] Lv.${player.floor} ${baseM.name}`, 
         icon: baseM.icon, image: baseM.image, 
@@ -467,7 +469,6 @@ function loadQuiz() {
         return { text: o, isCorrect: i === currentQuiz.answer }; 
     });
     
-    // 💡 퀴즈 문항 100% 완전 랜덤 배치 (Fisher-Yates Shuffle)
     for (let i = shuffledOptions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
@@ -581,7 +582,6 @@ function winBattle() {
 
     player.gold += gold; 
     player.totalGoldEarned += gold; 
-    // 💡 정예몹을 잡아도 아래 코드에서 층수가 1층 정상적으로 상승합니다!
     player.floor++; 
     updateUI();
     
@@ -617,6 +617,9 @@ function checkDeath() {
         addLog("[휴식] 집중력을 모두 사용했습니다.", "#c62828"); 
         monster = null; 
         changeBgmMode('gameover'); 
+
+        if (typeof saveGlobalDataOnly === 'function') saveGlobalDataOnly();
+
         localStorage.removeItem('historyTowerSave'); 
         checkLoadButton();
         
@@ -624,6 +627,25 @@ function checkDeath() {
         document.getElementById('game-container').style.display = 'none'; 
         document.getElementById('title-screen').style.display = 'flex';
     }
+}
+
+function getUniqueRandomCards(pool, count) {
+    let uniquePool = [];
+    let seen = new Set();
+    for (let c of pool) {
+        if (!seen.has(c.id)) {
+            seen.add(c.id);
+            uniquePool.push(c);
+        }
+    }
+    
+    let chosen = [];
+    while (chosen.length < count && uniquePool.length > 0) {
+        let idx = Math.floor(Math.random() * uniquePool.length);
+        chosen.push(uniquePool[idx]);
+        uniquePool.splice(idx, 1); 
+    }
+    return chosen;
 }
 
 function showRewardScreen() {
@@ -639,59 +661,49 @@ function showRewardScreen() {
     let shuffled = []; 
     let borderCol = '#f39c12';
     
-    // 💡 다음 층이 보스전(10, 20, 30층...)일 경우 엘리트 보상 제외 스위치 작동!
     const isNextBoss = (player.floor % 10 === 0);
     
     if (monster.isBoss) { 
         borderCol = '#ff4081'; 
+        let validBoss = BOSS_REWARD_CARDS.filter(c => !player.inventory[c.id]); 
+        let validElite = ELITE_REWARD_CARDS.filter(c => !isNextBoss || c.id !== 'encounter_elite_md'); 
+        let validNormal = NORMAL_REWARD_CARDS.filter(c => !isNextBoss || c.id !== 'encounter_elite'); 
+        
         let chosenCards = []; 
         while (chosenCards.length < 3) { 
             let r = Math.random(); 
             let poolChoices; 
             
-            let validBoss = BOSS_REWARD_CARDS.filter(c => !player.inventory[c.id] && !chosenCards.some(x => x.id === c.id)); 
-            let validElite = ELITE_REWARD_CARDS.filter(c => !chosenCards.some(x => x.id === c.id)); 
+            let currentBoss = validBoss.filter(c => !chosenCards.some(x => x.id === c.id));
+            let currentElite = validElite.filter(c => !chosenCards.some(x => x.id === c.id));
+            let currentNormal = validNormal.filter(c => !chosenCards.some(x => x.id === c.id));
             
-            // 보스 직전에는 엘리트 조우 필터링
-            if (isNextBoss) validElite = validElite.filter(c => c.id !== 'encounter_elite_md');
-
-            let validNormal = NORMAL_REWARD_CARDS.filter(c => c.id !== 'encounter_elite' && !chosenCards.some(x => x.id === c.id)); 
+            if (r < 0.30 && currentBoss.length > 0) poolChoices = currentBoss; 
+            else if (r < 0.60 && currentElite.length > 0) poolChoices = currentElite; 
+            else poolChoices = currentNormal; 
             
-            if (r < 0.30 && validBoss.length > 0) poolChoices = validBoss; 
-            else if (r < 0.60 && validElite.length > 0) poolChoices = validElite; 
-            else poolChoices = validNormal; 
-            
-            if (!poolChoices || poolChoices.length === 0) poolChoices = validNormal; 
+            if (!poolChoices || poolChoices.length === 0) poolChoices = currentNormal; 
+            if (!poolChoices || poolChoices.length === 0) break;
             
             let card = poolChoices[Math.floor(Math.random() * poolChoices.length)]; 
-            if (card && !chosenCards.some(x => x.id === card.id)) chosenCards.push(card); 
+            chosenCards.push(card); 
         } 
         shuffled = chosenCards; 
     } 
     else if (monster.isElite) { 
         borderCol = '#b388ff'; 
-        let validElite = ELITE_REWARD_CARDS.slice();
-        
-        // 보스 직전에는 엘리트 조우 필터링
-        if (isNextBoss) validElite = validElite.filter(c => c.id !== 'encounter_elite_md');
-        
-        for (let i = validElite.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [validElite[i], validElite[j]] = [validElite[j], validElite[i]];
-        }
-        shuffled = validElite.slice(0, 3); 
+        let validElite = ELITE_REWARD_CARDS.filter(c => !isNextBoss || c.id !== 'encounter_elite_md');
+        shuffled = getUniqueRandomCards(validElite, 3);
     } 
     else { 
-        let pool = NORMAL_REWARD_CARDS.slice();
-        
-        // 보스 직전에는 엘리트 조우 필터링
-        if (isNextBoss) pool = pool.filter(r => r.id !== 'encounter_elite');
-        
-        for (let i = pool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [pool[i], pool[j]] = [pool[j], pool[i]];
-        }
-        shuffled = pool.slice(0, 3); 
+        let validNormal = NORMAL_REWARD_CARDS.filter(c => !isNextBoss || c.id !== 'encounter_elite');
+        shuffled = getUniqueRandomCards(validNormal, 3);
+    }
+    
+    while(shuffled.length < 3 && NORMAL_REWARD_CARDS.length > 0) {
+        let fallback = NORMAL_REWARD_CARDS[Math.floor(Math.random() * NORMAL_REWARD_CARDS.length)];
+        if(!shuffled.some(x => x.id === fallback.id)) shuffled.push(fallback);
+        else break;
     }
     
     shuffled.forEach(r => { 
@@ -708,8 +720,6 @@ function showRewardScreen() {
         card.onclick = () => { 
             let res = r.action(); 
             document.getElementById('reward-screen').style.display = 'none'; 
-            
-            // 메인 화면을 다시 켜주는 스위치 복구! (화면 투명해지는 버그 해결)
             document.getElementById('main-screen').style.display = 'flex'; 
             
             if (res === 'elite_encounter') {
@@ -743,7 +753,7 @@ function closeShop() {
 }
 
 function buyItem(type) { 
-    const prices = { potion: 30, shield: 50, powerUp: 50, maxhp: 100 }; 
+    const prices = { potion: 30, shield: 50, powerUp: 50, maxhp: 100, randomStat: 50 }; 
     
     if (isTutorialMode) { 
         if (tutorialStep !== 8 || type !== 'shield') { 
@@ -754,11 +764,38 @@ function buyItem(type) {
     if (player.gold >= prices[type]) { 
         player.gold -= prices[type]; 
         
-        if (type === 'potion') player.potions++; 
-        else if (type === 'maxhp') { player.maxHp += 20; player.hp += 20; } 
-        else player.inventory[type] = (player.inventory[type] || 0) + 1; 
+        if (type === 'potion') {
+            player.potions++; 
+            addLog(`[상점] 당충전 초콜릿 구매 완료!`, "#a5d6a7");
+        }
+        else if (type === 'maxhp') { 
+            player.maxHp += 20; player.hp += 20; 
+            addLog(`[상점] 만점 비법 노트 구매 완료!`, "#a5d6a7");
+        } 
+        else if (type === 'randomStat') {
+            let randVal = Math.random();
+            let amount = 1;
+            if (randVal >= 0.9) amount = 3;
+            else if (randVal >= 0.6) amount = 2;
+            
+            let statType = Math.floor(Math.random() * 3);
+            if (statType === 0) {
+                player.maxHp += amount;
+                player.hp += amount;
+                addLog(`[특훈] 대성공! 집중력이 ${amount} 올랐습니다!`, "#ffeb3b");
+            } else if (statType === 1) {
+                player.baseAtk += amount;
+                addLog(`[특훈] 대성공! 기억력이 ${amount} 올랐습니다!`, "#ffeb3b");
+            } else {
+                player.evasion += amount;
+                addLog(`[특훈] 대성공! 훼방 피하기가 ${amount}% 올랐습니다!`, "#ffeb3b");
+            }
+        }
+        else { 
+            player.inventory[type] = (player.inventory[type] || 0) + 1; 
+            addLog(`[상점] ${ITEM_DB[type] ? ITEM_DB[type].name : '아이템'} 구매 완료!`, "#a5d6a7");
+        } 
         
-        addLog(`[상점] ${ITEM_DB[type] ? ITEM_DB[type].name : '아이템'} 구매 완료!`, "#a5d6a7"); 
         updateUI(); 
         
         if(isTutorialMode && tutorialStep === 8 && type === 'shield') { 
@@ -889,8 +926,8 @@ function openCharacterRoom() {
         div.className = "list-item"; 
         div.innerHTML = `
             <div class="list-item-info">
-                <div class="list-item-icon" style="color:${nameStyleColor}; font-size: 1.1rem; border: 1px solid ${nameStyleColor}55;">${displayIcon}</div>
-                <div style="margin-left:10px; color:${nameStyleColor}; font-weight:bold; font-size: 0.9rem;">${displayName}</div>
+                <div class="list-item-icon" style="color:${nameStyleColor}; font-size: 0.65rem; line-height: 1.1; white-space: pre; border: 1px solid ${nameStyleColor}55; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; border-radius: 8px; overflow: hidden;">${displayIcon}</div>
+                <div style="margin-left:12px; color:${nameStyleColor}; font-weight:bold; font-size: 0.95rem;">${displayName}</div>
             </div>
             ${btn}
         `; 
@@ -933,6 +970,8 @@ function buyOrEquipChar(id) {
     updatePlayerAreaUI(); 
     checkAndApplyBGM(); 
     updateUI(); 
+
+    if (typeof saveGlobalDataOnly === 'function') saveGlobalDataOnly();
     
     if(isTutorialMode && tutorialStep === 10 && id === 'char_02') { 
         let btns = document.getElementById('character-list').querySelectorAll('.action-btn'); 
