@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>지식 타워 RPG</title>
+
+<script>
+    var rawQuizData = "";
+    var rawStudyData = "";
+</script>
+
+<script src="quiz/quiz_soc_3.js"></script>
+<script src="study/study_soc_3.js"></script>
+<script src="quiz/quiz_sci_3.js"></script>
+<script src="study/study_sci_3.js"></script>
+
+<script src="quiz/quiz_soc_4.js"></script>
+<script src="study/study_soc_4.js"></script>
+<script src="quiz/quiz_sci_4.js"></script>
+<script src="study/study_sci_4.js"></script>
+
+<script src="quiz/quiz_soc_5.js"></script>
+<script src="study/study_soc_5.js"></script>
+<script src="quiz/quiz_sci_5.js"></script>
+<script src="study/study_sci_5.js"></script>
+
+<script src="quiz/quiz_soc_6.js"></script>
+<script src="study/study_soc_6.js"></script>
+<script src="quiz/quiz_sci_6.js"></script>
+<script src="study/study_sci_6.js"></script>
+
+<style>
+    :root {
+        --safe-left: env(safe-area-inset-left);
+        --safe-right: env(safe-area-inset-right);
+        --safe-bottom: env(safe-area-inset-bottom);
+        --safe-top: env(safe-area-inset-top);
+    }
+
+    html, body {
+        width: 100%; height: 100%; margin: 0; padding: 0; 
+        background-color: #000; display: flex; justify-content: center; align-items: center;
+        font-family: 'NeoDunggeunmo', 'Malgun Gothic', sans-serif;
+        overflow: hidden; 
+    }
+
+    #app-wrapper {
+        width: 100%; height: 100%; max-width: 100%;
+        position: relative; background-color: #1a1a1a; color: #fff;
+        overflow: hidden; display: flex; flex-direction: column;
+        padding: 0 var(--safe-right) var(--safe-bottom) var(--safe-left);
+        box-sizing: border-box;
+    }
+
+    @media (min-width: 451px) {
+        #app-wrapper { max-width: 450px; height: 95vh; border-radius: 20px; box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+    }
+
+    .screen-panel { 
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+        background-color: #111; display: flex; flex-direction: column; 
+        justify-content: center; align-items: center; z-index: 100; 
+        padding: calc(var(--safe-top) + 60px) 20px 20px 20px; box-sizing: border-box; 
+    }
+    
+    .game-title { 
+        font-size: 2.8rem; color: #ffd700; text-align: center; 
+        margin-bottom: 10px; text-shadow: 2px 2px 0px #d32f2f; flex: none; 
+    }
+    #data-status { 
+        color: #a5d6a7; font-size: 1rem; margin-bottom: 15px; text-align: center; 
+    }
+    #high-score-display { 
+        font-size: 1.2rem; color: #4dd0e1; margin-bottom: 20px; font-weight: bold; 
+        text-shadow: 1px 1px 0px #333; background-color: #2c3e50; padding: 10px 20px; 
+        border-radius: 8px; border: 2px solid #34495e; 
+    }
+
+    .title-btn-group { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 280px; }
+    .title-btn { 
+        background-color: #e65100; color: white; border: none; padding: 15px; 
+        font-size: 1.3rem; border-radius: 10px; cursor: pointer; 
+        box-shadow: 0 4px 6px rgba(0,0,0,0.5); font-weight: bold; transition: transform 0.1s;
+    }
+    
+    .title-btn.tutorial-btn { background-color: #e91e63; }
+    .title-btn.study-btn { background-color: #0277bd; }
+    .title-btn.load-btn { background-color: #00838f; }
+    .title-btn.reset-btn { background-color: #c62828; font-size: 1.1rem; padding: 12px;} 
+    button:active { transform: scale(0.95); }
+    .back-btn { 
+        background-color: #616161; color: white; border: none; padding: 12px; 
+        font-size: 1rem; border-radius: 6px; cursor: pointer; flex: none; 
+        width: 100%; margin-top: 10px;
+    }
+
+    #top-right-ui { 
+        position: absolute; top: calc(var(--safe-top) + 12px); 
+        right: calc(var(--safe-right) + 12px); display: flex; gap: 8px; 
+        z-index: 500; align-items: center; 
+    }
+    .help-btn { 
+        background-color: #0277bd; border: 1.5px solid #fff; color: #fff; 
+        border-radius: 50%; width: 32px; height: 32px; cursor: pointer; 
+        font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; justify-content: center; 
+    }
+    .sound-btn { 
+        background-color: #616161; border: 1.5px solid #fff; color: #fff; 
+        border-radius: 16px; padding: 0 10px; height: 32px; cursor: pointer; 
+        font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; 
+        justify-content: center; transition: background-color 0.2s;
+    }
+    .dev-btn { 
+        background-color: #8e44ad; border: 1.5px solid #fff; color: #fff; 
+        border-radius: 16px; padding: 0 10px; height: 32px; cursor: pointer; 
+        font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: center; 
+    }
+
+    #range-screen { display: none; z-index: 120; }
+    .range-box { 
+        background-color: #2c3e50; padding: 25px; border-radius: 15px; 
+        border: 2px solid #f39c12; text-align: center; width: 100%; 
+        box-sizing: border-box; max-width: 400px;
+    }
+    .select-wrapper { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+    select { 
+        padding: 10px; font-size: 1rem; border-radius: 5px; width: 65%; 
+        background-color: #34495e; color: #fff; border: 2px solid #f39c12; font-family: inherit; font-weight: bold;
+    }
+
+    #reward-screen { display: none; background-color: #1a1a1a; z-index: 180; padding: 20px; justify-content: center; align-items: center; flex-direction: column;}
+    #reward-cards-container { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 400px; }
+    .reward-card { 
+        background-color: #2c3e50; border: 3px solid #f39c12; border-radius: 12px; 
+        display: flex; flex-direction: row; width: 100%; padding: 15px; 
+        align-items: center; text-align: left; box-shadow: 0 4px 8px rgba(0,0,0,0.4); 
+        box-sizing: border-box; cursor: pointer; transition: transform 0.2s;
+    }
+    .reward-icon { 
+        font-size: 0.95rem; margin-right: 15px; flex: none; background: #34495e; 
+        padding: 10px 5px; border-radius: 8px; text-align: center; min-width: 60px; 
+        font-weight: bold; color: #ffd700; box-sizing: border-box;
+    }
+    .reward-text-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .reward-title { color: #ffd700; font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; }
+    .reward-desc { color: #ecf0f1; font-size: 0.9rem; line-height: 1.3; word-break: keep-all;}
+
+    #study-screen { display: none; background-color: #1a1a1a; z-index: 150; }
+    #study-content { 
+        flex: 1; width: 100%; max-width: 600px; overflow-y: auto; 
+        background-color: #212f3d; border-radius: 10px; padding: 15px; 
+        border: 2px solid #34495e; box-sizing: border-box;
+    }
+    .category-header { 
+        background-color: #e65100; color: #fff; padding: 15px; border-radius: 8px; 
+        font-size: 1rem; font-weight: bold; margin-top: 10px; cursor: pointer; 
+        display: flex; justify-content: space-between; line-height: 1.4;
+    }
+    .category-content { display: none; padding-left: 10px; border-left: 3px solid #e65100; margin-bottom: 10px; margin-top: 10px; }
+    
+    .study-item { background-color: #34495e; border-radius: 8px; margin-bottom: 8px; overflow: hidden;}
+    .study-keyword { padding: 12px; font-size: 1.05rem; color: #4dd0e1; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center;}
+    .study-desc { display: none; padding: 12px; font-size: 0.95rem; color: #ecf0f1; background-color: #2c3e50; line-height: 1.5; border-top: 1px solid #455a64; word-break: keep-all;}
+
+    #game-container { display: none; flex-direction: column; height: 100%; width: 100%; position: relative; padding-top: calc(var(--safe-top) + 55px);}
+    
+    #status-bar { 
+        display: flex; justify-content: space-between; flex-wrap: wrap; 
+        background-color: #333; padding: 8px 12px; font-size: 0.9rem; 
+        border-top: 2px solid #555; border-bottom: 2px solid #555; gap: 5px; flex: none; z-index: 10; 
+    }
+    .stat-box { flex: 1 1 45%; min-width: 80px; }
+    .stat-box span { color: #ffd700; font-weight: bold; }
+    .hp-text { color: #ff6b6b; }
+    .hp-danger { animation: hpBlink 0.5s infinite alternate; font-weight: bold;}
+    @keyframes hpBlink { from { color: #ff6b6b; } to { color: #fff; text-shadow: 0 0 5px #ff0000;} }
+
+    #main-screen { flex: 1; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; }
+    #action-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; width: 100%; gap: 10px;}
+    #left-panel, #right-panel { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; }
+
+    #monster-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
+    #monster-name { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0; transition: color 0.3s, text-shadow 0.3s;}
+    
+    .name-normal { color: #ffffff; text-shadow: none; }
+    .name-elite { color: #e6b3ff !important; text-shadow: 0 0 8px rgba(230, 179, 255, 0.6); } 
+    .name-boss { color: #f4ffb3 !important; text-shadow: 0 0 8px rgba(244, 255, 179, 0.6); } 
+
+    #monster-image { 
+        width: auto; min-width: 120px; padding: 0 15px; height: 90px; 
+        background-color: transparent; border: none; display: flex; 
+        align-items: center; justify-content: center; font-size: 1.3rem; 
+        font-weight: bold; margin-bottom: 5px; color: #ffb74d; text-align: center; 
+        line-height: 1.2; white-space: nowrap;
+    }
+    
+    #player-area { display: none; flex-direction: column; align-items: center; width: 100%; justify-content: center;}
+    #player-name-ui { font-size: 1.3rem; margin-bottom: 5px; margin-top: 0; color: #bdc3c7; transition: color 0.3s;}
+    
+    #player-image-ui { 
+        width: auto; min-width: 120px; padding: 0 15px; height: 90px; 
+        background-color: #2c3e50; border: 3px solid #bdc3c7; border-radius: 10px; 
+        display: flex; align-items: center; justify-content: center; font-size: 1.3rem; 
+        font-weight: bold; margin-bottom: 5px; color: #fff; text-align: center; 
+        line-height: 1.2; white-space: nowrap; transition: border-color 0.3s;
+    }
+
+    #quiz-box { 
+        display: none; background-color: #2c3e50; padding: 15px; border-radius: 10px; 
+        border: 2px solid #f39c12; margin-bottom: 10px; width: 100%; font-size: 1rem; 
+        line-height: 1.4; word-break: keep-all; box-sizing: border-box; text-align: center; 
+    }
+
+    button { color: white; border: none; font-size: 0.95rem; border-radius: 8px; cursor: pointer; box-shadow: 0 3px 5px rgba(0,0,0,0.3); box-sizing: border-box; padding: 10px; font-family: inherit;}
+
+    .grid-ui { display: none; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; align-content: center; }
+    .full-width { grid-column: 1 / -1; } 
+    .option-btn { margin: 0 !important; font-size: 1rem; padding: 12px; background-color: #34495e; text-align: center; }
+
+    @keyframes hintPulse {
+        0% { box-shadow: 0 0 0px rgba(255, 215, 0, 0.5); border-color: #f39c12; }
+        50% { box-shadow: 0 0 15px rgba(255, 215, 0, 1); border-color: #ffd700; background-color: #4a4a1a;}
+        100% { box-shadow: 0 0 0px rgba(255, 215, 0, 0.5); border-color: #f39c12;}
+    }
+    .hint-btn { border: 2px solid #ffd700 !important; color: #ffd700 !important; font-weight: bold; animation: hintPulse 1.5s infinite; z-index: 1001;} 
+
+    .lobby-btn { background-color: #7b1fa2; font-size: 1rem; }
+    .bag-btn { background-color: #8d6e63; }
+    .system-btn { background-color: #455a64; }
+    .quit-btn { background-color: #c62828; }
+    .char-btn { background-color: #f57c00; } 
+    
+    .shop-btn { background-color: #00838f; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; padding: 10px 5px;}
+    .shop-btn span { font-size:0.75rem; color:#b2ebf2; word-break: keep-all;}
+
+    .quiz-btn { background-color: #d32f2f; font-size: 1.05rem; }
+    .potion-btn { background-color: #fbc02d; color: #333; font-weight: bold;}
+    
+    #log-box { 
+        flex: none; height: 120px; background-color: #000; border-top: 2px solid #555; 
+        padding: 8px; overflow-y: auto; font-size: 0.85rem; line-height: 1.3; box-sizing: border-box; 
+    }
+    #log-box p { margin: 4px 0; }
+
+    .custom-modal { 
+        display: none; position: absolute; top: 10%; left: 5%; right: 5%; bottom: 10%; 
+        background: rgba(30, 40, 50, 0.98); border: 3px solid #f39c12; z-index: 600; 
+        border-radius: 15px; padding: 15px; flex-direction: column; 
+        box-shadow: 0 10px 20px rgba(0,0,0,0.8); max-width: 500px; margin: 0 auto;
+    }
+    .modal-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    
+    .list-item { display: flex; justify-content: space-between; align-items: center; background: #34495e; padding: 10px; border-radius: 8px; }
+    .list-item-info { flex: 1; display: flex; align-items: center; gap: 10px;}
+    .list-item-icon { 
+        font-size: 0.85rem; background: #2c3e50; min-width: 85px; height: 45px; 
+        display: flex; justify-content: center; align-items: center; border-radius: 8px; 
+        font-weight: bold; padding: 0 5px; box-sizing: border-box; white-space: nowrap;
+    }
+    .list-item-text-wrap { display: flex; flex-direction: column; }
+    .list-item-title { font-size: 0.95rem; color: #ffd700; font-weight: bold; margin-bottom: 3px;}
+    .list-item-desc { font-size: 0.8rem; color: #bdc3c7; line-height: 1.2;}
+    .action-btn { background-color: #e65100; padding: 8px 12px; flex: none; margin-left: 10px; font-size: 0.85rem;}
+    .action-btn.equipped { background-color: #4CAF50; cursor: default; }
+    .action-btn.buy { background-color: #0277bd; }
+    .hidden-condition { font-size: 0.75rem; color: #ff8a65; padding: 5px; text-align: right; line-height: 1.2; word-break: keep-all; }
+
+    @keyframes fadeInPanel { from { opacity: 0; } to { opacity: 1; } }
+
+    #tutorial-overlay {
+        display: none; position: absolute; z-index: 9999 !important; background: rgba(30, 40, 50, 0.98);
+        border: 3px solid #00e676; border-radius: 15px; padding: 15px; box-sizing: border-box;
+        flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.9); animation: fadeInPanel 0.2s ease-out;
+    }
+    #tutorial-overlay.pos-bottom { bottom: 15px; top: auto; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; }
+    #tutorial-overlay.pos-top { top: calc(var(--safe-top) + 20px); bottom: auto; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; } 
+    #tutorial-overlay.pos-quiz { top: 60px; bottom: auto; left: 50%; transform: translateX(-50%); width: 90%; max-width: 500px; } 
+
+    .hlt { color: #ffd700; font-weight: bold; }
+    .hlt-cyan { color: #4dd0e1; font-weight: bold; }
+
+    #tutorial-text { font-size: 0.95rem; line-height: 1.5; color: #fff; margin-bottom: 10px; white-space: pre-line; word-break: keep-all; text-align: left; }
+    .tut-btn-wrap { display: flex; justify-content: space-between; gap: 8px; }
+    .tut-btn { padding: 8px 15px; font-size: 0.95rem; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+    .tut-exit { background-color: #616161; color: white; }
+    .tut-next { background-color: #00e676; color: #000; flex: 1; }
+
+    @media (max-height: 500px) and (orientation: landscape) {
+        #app-wrapper { max-width: 100%; border-radius: 0; }
+        #status-bar { padding: 4px 10px; font-size: 0.8rem; }
+        #action-area { flex-direction: row; gap: 15px; padding: 10px; align-items: stretch;}
+        #left-panel { width: 35%; justify-content: center; }
+        #right-panel { width: 60%; justify-content: center; }
+        #monster-area, #player-area { margin-bottom: 0; }
+        #monster-image, #player-image-ui { height: 60px; font-size: 0.9rem; }
+        #quiz-box { margin-bottom: 8px; padding: 10px; font-size: 0.95rem; }
+        .grid-ui { gap: 6px; }
+        button { padding: 8px; font-size: 0.85rem; }
+        .option-btn { padding: 8px; }
+        #log-box { height: 60px; font-size: 0.8rem; padding: 5px 10px; }
+        #reward-cards-container { flex-direction: row; justify-content: center; max-width: 100%; height: 100%; align-items: stretch; gap: 10px;}
+        .reward-card { flex: 1; flex-direction: column; padding: 10px; text-align: center; }
+        .reward-icon { margin-right: 0; margin-bottom: 5px; font-size: 1rem; min-width: 45px; padding: 5px;}
+        
+        #tutorial-overlay { padding: 10px; }
+        #tutorial-overlay.pos-bottom { bottom: 5px; width: 70%; }
+        #tutorial-overlay.pos-top { top: 5px; width: 70%; }
+        #tutorial-overlay.pos-quiz { top: 50%; left: 10px; transform: translateY(-50%); width: 40%; max-width: none; } 
+        #tutorial-text { font-size: 0.85rem; margin-bottom: 8px; line-height: 1.3; }
+        .tut-btn { padding: 6px 10px; font-size: 0.85rem; }
+    }
+
+    @media (min-width: 600px) and (max-width: 900px) and (min-height: 501px) {
+        #app-wrapper { max-width: 600px; height: 90vh; border-radius: 20px; }
+        .game-title { font-size: 3.5rem; }
+        #monster-image, #player-image-ui { height: 110px; font-size: 1.5rem; }
+        #monster-name, #player-name-ui { font-size: 1.6rem; }
+        #quiz-box { font-size: 1.2rem; padding: 20px; }
+        button { padding: 15px; font-size: 1.1rem; }
+        .option-btn { padding: 15px; }
+        .shop-btn span { font-size: 0.9rem; margin-top: 8px;}
+        #log-box { height: 120px; font-size: 1rem; }
+        #tutorial-overlay { max-width: 500px; padding: 20px; }
+        #tutorial-text { font-size: 1.1rem; margin-bottom: 15px;}
+        .tut-btn { padding: 10px 15px; font-size: 1.05rem; }
+    }
+
+    @media (min-width: 901px) and (min-height: 501px) {
+        #app-wrapper { max-width: 950px; height: 85vh; min-height: 600px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+        .game-title { font-size: 3.5rem; margin-bottom: 15px; }
+        .title-btn-group { flex-direction: row; max-width: 800px; gap: 20px; }
+        .title-btn { flex: 1; padding: 15px; font-size: 1.3rem; }
+        #status-bar { font-size: 1.05rem; padding: 10px 25px; }
+        #action-area { flex-direction: row; align-items: stretch; padding: 15px 30px; gap: 30px; }
+        #left-panel { width: 40%; border-right: 2px dashed #444; padding-right: 20px; justify-content: center; }
+        #right-panel { width: 60%; padding-left: 10px; justify-content: center; display: flex; flex-direction: column; }
+        #monster-image, #player-image-ui { height: 120px; font-size: 1.6rem; margin-bottom: 10px; min-width: 170px;}
+        #monster-name, #player-name-ui { font-size: 1.8rem; margin-bottom: 0;}
+        .hp-text { font-size: 1.2rem; margin-top: 5px;}
+        #quiz-box { font-size: 1.1rem; padding: 15px; margin-bottom: 15px; flex: none; }
+        .grid-ui { gap: 10px; }
+        button { font-size: 1.05rem; padding: 12px; }
+        .option-btn { font-size: 1.05rem; padding: 12px; margin-bottom: 0; } 
+        .shop-btn span { font-size: 0.85rem; margin-top: 5px;}
+        #log-box { height: 100px; font-size: 1rem; padding: 10px 30px; border-top: 2px solid #555;}
+        #reward-cards-container { flex-direction: row; max-width: 90%; gap: 15px; height: auto;}
+        .reward-card { flex: 1; flex-direction: column; text-align: center; padding: 25px 15px; }
+        .reward-card:hover { transform: translateY(-5px); background-color: #34495e;}
+        .reward-icon { margin-right: 0; margin-bottom: 10px; font-size: 1.1rem; }
+        .reward-title { font-size: 1.3rem; margin-bottom: 5px;}
+        .reward-desc { font-size: 0.95rem; }
+        #tutorial-overlay { padding: 25px; }
+        #tutorial-overlay.pos-bottom { bottom: 30px; width: 600px; top: auto;}
+        #tutorial-overlay.pos-top { top: 30px; width: 600px; bottom: auto;}
+        #tutorial-overlay.pos-quiz { top: 50%; left: 30px; transform: translateY(-50%); width: 35%; max-width: 400px; bottom: auto; }
+        #tutorial-text { font-size: 1.1rem; margin-bottom: 15px; }
+        .tut-btn { padding: 12px 20px; font-size: 1.1rem; }
+    }
+
+    #tutorial-spotlight {
+        display: none;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9000;
+        border-radius: 12px;
+        box-shadow: 0 0 0 2000px rgba(0,0,0,0.8), inset 0 0 15px rgba(255,215,0,0.6);
+        transition: all 0.3s ease;
+        left: -1000px;
+        top: -1000px;
+        width: 0;
+        height: 0;
+    }
+</style>
+</head>
+<body>
+
+<div id="app-wrapper">
+    <div id="tutorial-spotlight"></div>
+    <div id="top-right-ui">
+        <button id="dev-btn" class="dev-btn" onclick="openCheatModal()">치트</button>
+        <button id="sound-btn" class="sound-btn" onclick="toggleBGM()">음악 끔</button>
+        <button id="global-help" class="help-btn" onclick="showHelp()">?</button>
+    </div>
+
+    <div id="title-screen" class="screen-panel">
+        <h1 class="game-title">풀어라!<br>지식의 탑!</h1>
+        <div id="high-score-display">최고 도달 기록: <span id="high-score-ui">1</span>층</div>
+        <div id="data-status">데이터를 불러오는 중...</div>
+        <div class="title-btn-group">
+            <button class="title-btn tutorial-btn" onclick="startTutorial()">튜토리얼</button>
+            <button class="title-btn study-btn" onclick="openStudyScreen()">공부하기 (지식 노트)</button>
+            <button id="btn-continue" class="title-btn load-btn" style="display:none;" onclick="loadGameFromTitle()">이어하기</button>
+            <button class="title-btn" onclick="openCategoryScreen()">새 게임 (출제 범위)</button>
+            <button class="title-btn reset-btn" style="grid-column: 1 / -1;" onclick="resetAllData()">초기화</button>
+        </div>
+    </div>
+
+    <div id="range-screen" class="screen-panel">
+        <div class="range-box" id="category-box">
+            <h2>출제 범위 선택</h2>
+            <div style="display:flex; flex-direction:column; gap:10px; width:100%; margin-bottom:15px;">
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <span style="color:#a5d6a7; font-weight:bold; width: 45px; text-align: left; font-size: 0.9rem;">학년:</span>
+                    <button id="g-grade-3" class="title-btn" style="flex:1; padding:6px; font-size:0.9rem; background-color:#e65100;" onclick="setGameGrade('3학년')">3학년</button>
+                    <button id="g-grade-4" class="title-btn" style="flex:1; padding:6px; font-size:0.9rem; background-color:#616161;" onclick="setGameGrade('4학년')">4학년</button>
+                    <button id="g-grade-5" class="title-btn" style="flex:1; padding:6px; font-size:0.9rem; background-color:#616161;" onclick="setGameGrade('5학년')">5학년</button>
+                    <button id="g-grade-6" class="title-btn" style="flex:1; padding:6px; font-size:0.9rem; background-color:#616161;" onclick="setGameGrade('6학년')">6학년</button>
+                </div>
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <span style="color:#a5d6a7; font-weight:bold; width: 45px; text-align: left; font-size: 0.9rem;">학기:</span>
+                    <button id="g-sem-1" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setGameSemester('1학기')">1학기</button>
+                    <button id="g-sem-2" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setGameSemester('2학기')">2학기</button>
+                    <button id="g-sem-all" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#8e44ad;" onclick="setGameSemester('all')">공통</button>
+                </div>
+                <div style="display:flex; gap:5px; align-items:center;">
+                    <span style="color:#a5d6a7; font-weight:bold; width: 45px; text-align: left; font-size: 0.9rem;">과목:</span>
+                    <button id="g-subj-soc" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setGameSubject('사회')">사회</button>
+                    <button id="g-subj-sci" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setGameSubject('과학')">과학</button>
+                    <button id="g-subj-all" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#0277bd;" onclick="setGameSubject('all')">공통</button>
+                </div>
+            </div>
+            <div id="chapter-range-wrapper" style="display:none; margin-top:10px; padding-top:15px; border-top: 2px dashed #555;">
+                <div class="select-wrapper" style="margin-bottom:0;">
+                    <span style="color:#a5d6a7; font-weight:bold;">대단원:</span>
+                    <select id="chapter-select" style="width: 70%;" onchange="updateSubUnitOptions()">
+                        <option value="all">전체 단원</option>
+                    </select>
+                </div>
+            </div>
+            <div id="sub-unit-range-wrapper" style="display:none; margin-top:10px; padding-top:15px; border-top: 2px dashed #555;">
+                <p style="font-size: 0.9rem; color: #a5d6a7; margin-top:0; margin-bottom: 10px;">소단원 범위를 선택하세요.</p>
+                <div class="select-wrapper"><span>시작:</span><select id="start-category" style="width: 70%;"></select></div>
+                <div class="select-wrapper" style="margin-bottom:0;"><span>끝:</span><select id="end-category" style="width: 70%;"></select></div>
+            </div>
+            <button class="title-btn start-game-btn" style="width:100%; margin-top:20px;" onclick="goToDifficultyScreen()">다음 단계 (난이도 선택)</button>
+            <button class="back-btn" style="margin-top: 15px;" onclick="closeRangeScreen()">메인 메뉴로</button>
+        </div>
+
+        <div class="range-box" id="difficulty-box" style="display: none;">
+            <h2>난이도 선택</h2>
+            <div class="title-btn-group" style="max-width: 100%;">
+                <button class="title-btn" style="background-color: #4caf50;" onclick="startGameWithDifficulty('easy')">쉬움</button>
+                <button class="title-btn" style="background-color: #f39c12;" onclick="startGameWithDifficulty('normal')">보통</button>
+                <button class="title-btn" style="background-color: #e74c3c;" onclick="startGameWithDifficulty('hard')">어려움</button>
+            </div>
+            <button class="back-btn" style="margin-top: 15px;" onclick="backToCategoryScreen()">이전으로</button>
+        </div>
+    </div>
+
+    <div id="reward-screen" class="screen-panel">
+        <h2 class="game-title">층 클리어 보상</h2>
+        <div id="reward-cards-container"></div>
+    </div>
+
+    <div id="study-screen" class="screen-panel">
+        <h2 class="game-title" style="font-size: 2rem; margin-bottom: 15px;">지식 노트</h2>
+        <div id="study-filter-container" style="display:flex; flex-direction:column; gap:10px; width:100%; max-width:600px; margin-bottom:15px;">
+            <div style="display:flex; gap:5px;">
+                <button id="s-grade-3" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#e65100;" onclick="setStudyGrade('3학년')">3학년</button>
+                <button id="s-grade-4" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setStudyGrade('4학년')">4학년</button>
+                <button id="s-grade-5" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setStudyGrade('5학년')">5학년</button>
+                <button id="s-grade-6" class="title-btn" style="flex:1; padding:8px; font-size:1rem; background-color:#616161;" onclick="setStudyGrade('6학년')">6학년</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button id="s-sem-1" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#616161;" onclick="setStudySemester('1학기')">1학기</button>
+                <button id="s-sem-2" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#616161;" onclick="setStudySemester('2학기')">2학기</button>
+                <button id="s-sem-all" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#8e44ad;" onclick="setStudySemester('all')">공통</button>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button id="s-subj-soc" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#0277bd;" onclick="setStudySubject('사회')">사회</button>
+                <button id="s-subj-sci" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#616161;" onclick="setStudySubject('과학')">과학</button>
+                <button id="s-subj-all" class="title-btn" style="flex:1; padding:10px; font-size:1.1rem; background-color:#616161;" onclick="setStudySubject('all')">공통</button>
+            </div>
+        </div>
+        <div id="study-content"></div>
+        <button id="study-back-btn" class="back-btn" style="max-width: 600px;" onclick="closeStudyScreen()">돌아가기</button>
+    </div>
+
+    <div id="game-container">
+        <div id="status-bar">
+            <div class="stat-box" style="flex: 1 1 100%;">층수: <span id="floor-ui">1F</span> <span id="diff-badge" style="font-size:0.8rem; margin-left: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold;"></span></div>
+            <div class="stat-box" id="hp-container">집중력: <span id="hp-ui" style="color: #ff6b6b; font-weight: bold;">100/100</span></div>
+            <div class="stat-box">골드: <span id="gold-ui">0</span>G</div>
+            <div class="stat-box" style="color:#ffb74d;">기억력: <span id="atk-ui">15</span></div>
+            <div class="stat-box" style="color:#81c784;">딴짓 피하기: <span id="eva-ui">0%</span></div>
+            <div class="stat-box">초콜릿: <span id="potion-ui">3</span>개</div>
+            <div class="stat-box" style="width: 100%; color: #b2ebf2; font-size: 0.85rem; margin-top: 2px;" id="buff-ui">적용 효과 없음</div>
+        </div>
+
+        <div id="main-screen">
+            <div id="action-area">
+                <div id="left-panel">
+                    <div id="monster-area">
+                        <h2 id="monster-name" class="name-normal">도파민 유혹</h2>
+                        <div id="monster-image" data-is-text="true">(꒪⌓꒪)</div>
+                        <h3 class="hp-text" style="margin:0;">남은 방해 에너지: <span id="monster-hp">50/50</span></h3>
+                    </div>
+                    <div id="player-area">
+                        <h2 id="player-name-ui">일반학생</h2>
+                        <div id="player-image-ui">(・_・)</div>
+                        <h3 style="margin:0; color:#bdc3c7; font-size: 1rem;">현재 내 모습</h3>
+                    </div>
+                </div>
+
+                <div id="right-panel">
+                    <div id="quiz-box"></div>
+                    <div id="hub-ui" class="grid-ui">
+                        <div class="full-width" style="text-align: center; color: #a5d6a7; font-size: 1.1rem; margin-bottom: 5px; font-weight: bold; background-color: #2c3e50; padding: 10px; border-radius: 8px; border: 1.5px solid #4dd0e1;">
+                            [ 휴식 및 정비 공간 ]<br><span style="font-size:0.85rem; color:#bdc3c7; font-weight: normal;">다음 층으로 가기 전, 가방을 열거나 준비를 마치세요.</span>
+                        </div>
+                        <button id="hub-btn-next" class="lobby-btn full-width" onclick="startBattle()">다음 층 올라가기</button>
+                        <button id="hub-btn-char" class="char-btn full-width" onclick="openCharacterRoom()">[상점] 캐릭터 변경 및 구매</button>
+                        <button id="hub-btn-shop" class="lobby-btn" style="background-color: #2e7d32;" onclick="openShop()">[상점] 아이템 구매</button>
+                        <button id="hub-btn-bag" class="bag-btn" onclick="openInventory()">내 가방 (아이템)</button>
+                        <button class="system-btn" onclick="saveGame(true)">저장하기</button>
+                        <button class="quit-btn" onclick="confirmReturnToTitle()">나가기</button>
+                    </div>
+                    <div id="shop-ui" class="grid-ui">
+                        <button class="shop-btn" onclick="buyItem('potion')">[아이템] 당충전 초콜릿 (30G)<span>집중력 40 회복</span></button>
+                        <button id="shop-btn-shield" class="shop-btn" onclick="buyItem('shield')">[아이템] 철벽 백과사전 (50G)<span>방해꾼의 훼방 무효화</span></button>
+                        <button class="shop-btn" onclick="buyItem('powerUp')">[아이템] 마법의 형광펜 (50G)<span>다음 2번 정답의 힘 상승</span></button>
+                        <button class="shop-btn" onclick="buyItem('maxhp')">[성장] 만점 비법 노트 (100G)<span>최대 집중력 증가</span></button>
+                        <button class="back-btn full-width" style="margin-top:0;" onclick="closeShop()">상점 닫기</button>
+                    </div>
+                    <div id="battle-ui" class="grid-ui">
+                        <button class="quiz-btn full-width" onclick="loadQuiz()">지식 문제 풀기 (물리치기)</button>
+                        <button class="potion-btn" onclick="usePotion()">초콜릿 먹기 (회복) </button>
+                        <button class="bag-btn" onclick="openInventory()">내 가방 열기 (아이템)</button>
+                    </div>
+                    <div id="options-ui" class="grid-ui" style="grid-template-columns: 1fr;"></div>
+                </div>
+            </div>
+        </div>
+        <div id="log-box"></div>
+    </div>
+
+    <div id="inventory-modal" class="custom-modal">
+        <h2 style="margin-top: 0; color: #fff;">가방 내용물</h2>
+        <div id="inventory-list" class="modal-list"></div>
+        <button id="btn-close-bag" class="back-btn" onclick="closeInventory()" style="flex: none; margin-top:10px;">닫기</button>
+    </div>
+
+    <div id="character-modal" class="custom-modal">
+        <h2 style="margin-top: 0; color: #fff;">캐릭터 상점 & 옷장</h2>
+        <div id="character-list" class="modal-list"></div>
+        <button id="btn-close-char" class="back-btn" onclick="closeCharacterRoom()" style="flex: none; margin-top:10px;">닫기</button>
+    </div>
+
+    <div id="cheat-modal" class="custom-modal">
+        <h2 style="margin-top: 0; color: #fff; text-align: center;">개발자 치트 메뉴</h2>
+        <p style="font-size:0.9rem; color:#bdc3c7; text-align: center;">게임 진행 중에만 사용 가능합니다.</p>
+        <div class="modal-list"> 
+            <button class="title-btn" style="background-color: #f1c40f; color:#000;" onclick="cheatAction('gold')">골드 +10,000 획득</button>
+            <button class="title-btn" style="background-color: #e67e22; color:#fff;" onclick="cheatAction('chars')">모든 캐릭터 스킨 해금</button>
+            <button class="title-btn" style="background-color: #3498db; color:#fff;" onclick="cheatAction('items')">모든 아이템 1개씩 획득</button> 
+            <button class="title-btn" style="background-color: #e74c3c; color:#fff;" onclick="cheatAction('stats')">집중력/기억력 대폭 상승</button>
+            <button class="title-btn" style="background-color: #9b59b6; color:#fff;" onclick="cheatAction('floor')">보스 바로 만나기 (다음 10층)</button>
+        </div>
+        <button class="back-btn" onclick="closeCheatModal()" style="flex: none; margin-top:15px;">창 닫기</button>
+    </div>
+
+    <div id="tutorial-overlay" class="pos-bottom">
+        <div id="tutorial-text">튜토리얼 텍스트</div>
+        <div class="tut-btn-wrap">
+            <button class="tut-btn tut-exit" onclick="exitTutorial()">중단하고 나가기</button>
+            <button class="tut-btn tut-next" id="tutorial-next-btn" onclick="nextTutorialStep()">다음 ></button>
+        </div>
+    </div>
+</div>
+
+<script src="1_db.js"></script>
+<script src="2_system.js"></script>
+<script src="3_study.js"></script>
+<script src="4_game.js"></script>
+<script src="5_tutorial.js"></script>
+
+<script>
+    // 모든 스크립트가 로드된 직후에 기다림 없이 바로 강제 실행
+    parseAllData();
+</script>
+</body>
+</html>
